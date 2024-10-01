@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
   profilename: {
     color: 'black',
     fontWeight: '700',
-    fontSize: FSize.fs14,
+    fontSize: FSize.fs15,
   },
   profiledesc: {
     color: '#6B6B6B',
-    fontSize: FSize.fs11,
+    fontSize: FSize.fs12,
   },
   radioButtonContainer: {
     marginLeft: 'auto',

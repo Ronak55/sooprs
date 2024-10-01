@@ -119,8 +119,10 @@ const styles = StyleSheet.create({
   },
 
   section: {
-    marginHorizontal: wp(10),
-    marginVertical: wp(20),
+    // marginHorizontal: wp(10),
+    justifyContent:'center', 
+    alignItems:'center',   
+    marginVertical: wp(10),
   },
 
   text: {

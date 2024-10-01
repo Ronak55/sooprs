@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,14 +6,18 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  AsyncStorage,
+  Dimensions,
+  ScrollView, // Added import
 } from 'react-native';
-import {wp, hp} from '../assets/commonCSS/GlobalCSS';
+import { wp, hp } from '../assets/commonCSS/GlobalCSS';
 import Colors from '../assets/commonCSS/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Images from '../assets/image';
 import Modal from 'react-native-modal';
 import ButtonNew from './ButtonNew';
 import FSize from '../assets/commonCSS/FSize';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const Filter = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +47,7 @@ const Filter = () => {
     );
   };
 
-  const renderItem = ({item, type}) => (
+  const renderItem = ({ item, type }) => (
     <TouchableOpacity
       style={[
         styles.item,
@@ -139,52 +143,73 @@ const Filter = () => {
               <Text style={styles.resetButton}>Reset</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Category</Text>
-            <FlatList
-              data={categories}
-              renderItem={item => renderItem({...item, type: 'category'})}
-              keyExtractor={item => item}
-              horizontal
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.section}>
+              <View style={styles.categorySection}>
+              <Text style={styles.sectionTitle}>Category</Text>
+              <TouchableOpacity onPress={()=>{}}>
+                <Text style={styles.viewalltext}>View All ></Text>
+              </TouchableOpacity>
+              </View>
+              <FlatList
+                data={categories}
+                renderItem={item => renderItem({ ...item, type: 'category' })}
+                keyExtractor={item => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View style={styles.section}>
+            <View style={styles.categorySection}>
+              <Text style={styles.sectionTitle}>Skills</Text>
+              <TouchableOpacity onPress={()=>{}}>
+                <Text style={styles.viewalltext}>View All ></Text>
+              </TouchableOpacity>
+              </View>
+              <FlatList
+                data={skills}
+                renderItem={item => renderItem({ ...item, type: 'skill' })}
+                keyExtractor={item => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Verification</Text>
+              <FlatList
+                data={verification}
+                renderItem={item => renderItem({ ...item, type: 'verification' })}
+                keyExtractor={item => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View style={styles.section}>
+            <View style={styles.categorySection}>
+              <Text style={styles.sectionTitle}>Category</Text>
+              <TouchableOpacity onPress={()=>{}}>
+                <Text style={styles.viewalltext}>View All ></Text>
+              </TouchableOpacity>
+              </View>
+              <FlatList
+                data={locations}
+                renderItem={item => renderItem({ ...item, type: 'location' })}
+                keyExtractor={item => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            </ScrollView>
+            <ButtonNew
+              imgSource={undefined}
+              btntext="Show 250 Results"
+              bgColor={Colors.sooprsblue}
+              textColor={Colors.white}
+              onPress={() => {
+                saveToAsyncStorage();
+                toggleModal(); // Optionally close the modal after saving
+              }}
             />
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Skills</Text>
-            <FlatList
-              data={skills}
-              renderItem={item => renderItem({...item, type: 'skill'})}
-              keyExtractor={item => item}
-              horizontal
-            />
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Verification</Text>
-            <FlatList
-              data={verification}
-              renderItem={item => renderItem({...item, type: 'verification'})}
-              keyExtractor={item => item}
-              horizontal
-            />
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Location</Text>
-            <FlatList
-              data={locations}
-              renderItem={item => renderItem({...item, type: 'location'})}
-              keyExtractor={item => item}
-              horizontal
-            />
-          </View>
-          <ButtonNew
-            imgSource={undefined}
-            btntext="Show 250 Results"
-            bgColor={Colors.sooprsblue}
-            textColor={Colors.white}
-            onPress={() => {
-              saveToAsyncStorage();
-              toggleModal(); // Optionally close the modal after saving
-            }}
-          />
         </View>
       </Modal>
     </>
@@ -215,8 +240,25 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: wp(5),
     borderBottomLeftRadius: wp(5),
     padding: wp(5),
-    height: hp(70),
-    width: wp(75),
+    height: screenHeight * 0.8,
+    width: screenWidth * 0.9, 
+  },
+
+  categorySection:{
+
+    flexDirection:'row',
+    justifyContent:'space-between'
+
+  },
+
+  viewalltext:{
+    color:Colors.sooprsblue,
+    fontWeight:'bold',
+    fontSize:FSize.fs13
+  },
+
+  scrollViewContent: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: 'row',
@@ -225,16 +267,17 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
   headerText: {
-    fontSize: wp(5),
+    fontSize: FSize.fs18,
     fontWeight: 'bold',
     color: Colors.black,
   },
   resetButton: {
-    color: Colors.sooprsblue,
-    fontSize: wp(4),
+    color: Colors.gray,
+    fontWeight:'bold',
+    fontSize: FSize.fs14,
   },
   section: {
-    marginBottom: hp(6),
+    marginBottom: hp(3),
   },
   sectionTitle: {
     fontSize: FSize.fs17,
@@ -243,26 +286,16 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   item: {
-    padding: wp(3),
-    marginRight: wp(10),
-    borderRadius: wp(10),
+    paddingVertical: hp(1.5),
+    paddingHorizontal: wp(5),
+    marginRight: wp(4),
+    borderRadius: wp(5),
     borderWidth: 1,
     borderColor: Colors.gray,
     alignItems: 'center',
   },
   itemText: {
-    fontSize: FSize.fs15,
-  },
-  showButton: {
-    backgroundColor: Colors.sooprsblue,
-    paddingVertical: hp(1.5),
-    borderRadius: wp(3),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  showButtonText: {
-    color: Colors.white,
-    fontSize: wp(4),
+    fontSize: FSize.fs13,
   },
   backButton: {
     width: wp(5),

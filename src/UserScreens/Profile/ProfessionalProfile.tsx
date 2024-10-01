@@ -27,12 +27,7 @@ const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}
 
   return (
     <View style={styles.container}>
-      <Header
-        img={Images.profileImagetwo}
-        name="Jacob Collis"
-        btnName="Post a project"
-      />
-      <ScrollView>
+      <ScrollView style={styles.profileView}>
       <ProfileComponent navigation={navigation} img={img} name={name} role={role} rating={rating}/>
       <ProfileContent heading={profileInfo[0].heading} content={profileInfo[0].content}/>
       <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/>
@@ -49,6 +44,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+
+  profileView:{
+
+    margin:wp(2)
+  },
+
   profileSection: {
     marginHorizontal: wp(5),
     marginVertical: hp(5),

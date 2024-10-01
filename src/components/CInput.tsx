@@ -48,7 +48,7 @@ const CInput = ({
         ]}>
         <TextInput
           style={[
-            { textAlignVertical: 'top', fontSize:FSize.fs15, paddingLeft: wp(2), color: Colors.black},
+            { textAlignVertical: multiline ? 'top' : 'center', fontSize:FSize.fs13, paddingLeft: wp(1), color: Colors.black},
           ]}
           placeholder={!isFocused ? `${name}` : ''}
           placeholderTextColor="#BCBCBC"
