@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React, {act, useState} from 'react';
+import React, {useState} from 'react';
 import Colors from './assets/commonCSS/Colors';
 import FSize from './assets/commonCSS/FSize';
 import Images from './assets/image';

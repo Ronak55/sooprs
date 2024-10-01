@@ -37,8 +37,8 @@ const Home = ({navigation} : {navigation:any}) => {
           <Text style={styles.homeInfo}>Find the Top </Text>
           <Text style={[styles.homeInfo, styles.profText]}>Professionals</Text>
           <Text style={styles.homeInfo}> for you</Text>
-          <Text style={styles.homeInfo}>with super </Text>
-          <Text style={[styles.homeInfo, styles.profText]}>speed !</Text>
+          <Text style={styles.homeInfo}> super </Text>
+          <Text style={[styles.homeInfo, styles.profText]}>quick!</Text>
         </View>
         <View style={styles.searchFilter}>
           <SearchBar placeholderName='Professionals'/>

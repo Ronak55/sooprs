@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View, Alert, StatusBar} from 'react-native';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import Colors from '../assets/commonCSS/Colors';
@@ -10,6 +10,12 @@ import ButtonNew from '../components/ButtonNew';
 import Images from '../assets/image';
 import CustomAlert from '../components/CustomAlert';
 import FSize from '../assets/commonCSS/FSize';
+import { validateEmail, validatePhoneNumber } from '../services/CommonFunction';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
+import countryCodes from '../countries_codes.json';
+import { postData } from '../services/mobile-api';
+import Toast from 'react-native-toast-message';
+
 
 const Signup = ({navigation, route}: {navigation: any; route: any}) => {
   const {profileType} = route.params;
@@ -21,21 +27,16 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
+  const [country, setCountry] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    {label: 'India (+91)', value: '+91'},
-    {label: 'United States (+1)', value: '+1'},
-    {label: 'United Kingdom (+44)', value: '+44'},
-    {label: 'Australia (+61)', value: '+61'},
-    {label: 'Germany (+49)', value: '+49'},
-    {label: 'France (+33)', value: '+33'},
-    {label: 'Japan (+81)', value: '+81'},
-    {label: 'China (+86)', value: '+86'},
-    {label: 'Brazil (+55)', value: '+55'},
-  ]);
+  const [items, setItems] = useState([]);
   const [isProfessional, setIsProfessional] = useState(false);
+  
+  useEffect(() => {
+    setItems(countryCodes);
+  }, []);
 
   const showAlert = (title: string, message: string) => {
     setAlertTitle(title);
@@ -43,11 +44,6 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
     setAlertVisible(true);
   };
 
-  const validateEmail = (email: string) => {
-    return email.match(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    );
-  };
 
   const validpassword = (pass: string) => {
     return pass?.match(
@@ -56,54 +52,101 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
   };
 
   const handleOnPress = () => {
-    // if (!name.trim()) {
-    //   showAlert('Invalid Name', 'Please Enter your name');
-    //   return;
-    // }
-
-    // if (!validateEmail(email.trim())) {
-    //   showAlert('Invalid Email', 'Please enter a valid email');
-    //   return;
-    // }
-
-    // if (!phone.trim()) {
-    //   showAlert('Invalid Phone Number', 'Please Enter your phone number');
-    //   return;
-    // }
-    // if (phone.length > 10 || phone.length < 10) {
-    //   showAlert('Invalid phone Number', 'Please Enter a valid phone number');
-    //   return;
-    // }
-    // if (!password.trim()) {
-    //   showAlert('Invalid Password', 'Please enter password');
-    //   return;
-    // }
-    // if (!validpassword(password.trim())) {
-    //   showAlert(
-    //     'Invalid Password',
-    //     'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
-    //   );
-    //   return;
-    // }
-
-    // if (!validpassword(confirmPassword.trim())) {
-    //   showAlert(
-    //     'Invalid Password',
-    //     'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
-    //   );
-    //   return;
-    // }
-
-    // if (password !== confirmPassword) {
-    //   showAlert('Invalid Password', 'Password do not match');
-    //   return;
-    // }
-    if (profileType === 'Client') {
-      navigation.navigate('ClientLoggedIn');
-    } else if (profileType === 'Professional') {
-      navigation.navigate('ProfessionalLoggedIn');
+    if (!name.trim()) {
+      showAlert('Invalid Name', 'Please Enter your name');
+      return;
     }
-  };
+
+    if (!validateEmail(email.trim())) {
+      showAlert('Invalid Email', 'Please enter a valid email');
+      return;
+    }
+
+    if (!phone.trim()) {
+      showAlert('Invalid Phone Number', 'Please Enter your phone number');
+      return;
+    }
+    if (phone.length > 10 || phone.length < 10) {
+      showAlert('Invalid phone Number', 'Please Enter a valid phone number');
+      return;
+    }
+    if (!password.trim()) {
+      showAlert('Invalid Password', 'Please enter password');
+      return;
+    }
+    if (!validpassword(password.trim())) {
+      showAlert(
+        'Invalid Password',
+        'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
+      );
+      return;
+    }
+
+    if (!validpassword(confirmPassword.trim())) {
+      showAlert(
+        'Invalid Password',
+        'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showAlert('Invalid Password', 'Password do not match');
+      return;
+    }
+
+    const payload = {
+      is_buyer: profileType === 'Client' ? 1 : 0,
+      name:name,
+      email:email,
+      country:country,
+      countryCode:countryCode,
+      mobile:phone,
+      password:password,
+      repeatPassword:confirmPassword
+    }
+
+    postData(payload, mobile_siteConfig.REGISTER)
+    .then((response) => {
+      if (response.msg === 'ok' || response.status === 200) {
+        console.log("Success:::::", response);
+        
+        // Show success message
+        Toast.show({
+          type: 'success',
+          text1: 'Registration Successful',
+          text2: 'You have registered successfully!',
+          position: 'top',
+        });
+
+        let resetAction = CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: profileType === 'Client' ? 'ClientLoggedIn' : 'ProfessionalLoggedIn' }
+          ],
+        });
+        navigation.dispatch(resetAction);
+        
+      } else if (response.status === 400) {
+        // Show error message for status 400
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2:'Registration failed. Please try again.',
+          position: 'top',
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2:"Something went wrong. Please try again.",
+        position: 'top',
+      });
+    });
+  }
 
   // const setccode = val => {
   //   console.log('valll::', val);
@@ -153,6 +196,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
         textStyle={styles.countryCodeTextStyle}
         onSelectItem={(item) => {
           setCountryCode(item.value);
+          setCountry(item.label.split('(')[0].trim());
         }}
         // Adjust the item appearance if needed
         // itemSeparator={true}
@@ -235,7 +279,7 @@ const styles = StyleSheet.create({
   },
   title: {
     marginHorizontal: wp(10),
-    marginVertical: hp(8),
+    marginVertical: hp(5),
   },
   titleText: {
     fontFamily: 'poppins',
