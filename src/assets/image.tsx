@@ -54,7 +54,8 @@ starIcon: require('../assets/Icons/starIcon.png'),
 reviewerone: require('../assets/Icons/reviewerone.png'),
 reviewertwo: require('../assets/Icons/reviewertwo.png'),
 reviewerthree: require('../assets/Icons/reviewerthree.png'),
-chevronRight: require('../assets/Icons/chevronRight.png')
+chevronRight: require('../assets/Icons/chevronRight.png'),
+favoriteIcon: require('../assets/Icons/favorite.png')
 
 }
 

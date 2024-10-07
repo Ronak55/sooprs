@@ -25,10 +25,15 @@ import ButtonNew from '../components/ButtonNew';
 import CustomAlert from '../components/CustomAlert';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
+import { postData } from '../services/mobile-api';
+import Toast from 'react-native-toast-message';
+import { storeDataToAsyncStorage } from '../services/CommonFunction';
+import { CommonActions } from '@react-navigation/native';
 
 const Login = ({navigation, route}: {navigation: any, route:any}) => {
 
-  // const {profileType} = route.params;
+  const {profileType} = route.params;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
@@ -64,22 +69,64 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
       return;
     }
 
-    if (!validpassword(password.trim())) {
-      showAlert(
-        'Invalid Password',
-        'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
-      );
-      return;
+    // if (!validpassword(password.trim())) {
+    //   showAlert(
+    //     'Invalid Password',
+    //     'Password must contain minimum 8 characters, at least 1 letter, 1 number and 1 special character',
+    //   );
+    //   return;
+    // }
+
+    const payload = {
+      email:email,
+      password:password,
+      is_buyer: profileType === 'Client' ? 1 : 0,
     }
 
-    // if(profileType === 'Client'){
+    postData(payload, mobile_siteConfig.LOGIN)
+    .then((response) => {
 
-    //     navigation.navigate('ClientLoggedIn');
+      if(response.status==='200' || response.msg==='Login successful!'){
 
-    // } else if(profileType === 'Professional'){
+        console.log('response token:::::::::::', response)
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'You have loggedin successfully!',
+          position: 'top',
+        });
 
-    //     navigation.navigate('ProfessionalLoggedIn');
-    // }
+        storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, "TRUE");
+        storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id)
+        storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
+        storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
+
+        let resetAction = CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: profileType === 'Client' ? 'ClientLoggedIn' : 'ProfessionalLoggedIn' }
+          ],
+        });
+        navigation.dispatch(resetAction);
+      } else if (response.status === 400) {
+        // Show error message for status 400
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2:'Login failed. Please try again.',
+          position: 'top',
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2:"Something went wrong. Please try again.",
+        position: 'top',
+      });
+    });
   };
 
   return (

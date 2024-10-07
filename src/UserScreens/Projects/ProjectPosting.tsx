@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { decode } from 'html-entities';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FSize from '../../assets/commonCSS/FSize';
@@ -17,6 +18,9 @@ import Images from '../../assets/image';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ButtonNew from '../../components/ButtonNew';
 import CInput from '../../components/CInput';
+import {postData, postDataWithToken} from '../../services/mobile-api';
+import {mobile_siteConfig} from '../../services/mobile-siteConfig';
+import CustomDropdown from '../../components/CustomDropdown';
 
 const ProjectPosting = ({navigation}: {navigation: any}) => {
   const [activeCategory, setActiveCategory] = useState(1);
@@ -32,20 +36,13 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   const [maxBudget, setmaxBudget] = useState('');
   const [projectTitle, setprojectTitle] = useState('');
   const [projectDescription, setprojectDescription] = useState('');
-
-
   const [completedSections, setCompletedSections] = useState({
     category: false,
     budget: false,
     project: false,
   });
 
-  const [items, setItems] = useState([
-    {label: 'Website Development', value: 'Website Development'},
-    {label: 'App Development', value: 'App Development'},
-    {label: 'Hybrid App Development', value: 'Hybrid App Development'},
-    {label: 'Digital Marketing', value: 'Digital Marketing'},
-  ]);
+  const [items, setItems] = useState([]);
 
   const postProgress = [
     {
@@ -65,17 +62,56 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   ];
 
   const budgetRange = ['0-500', '500-1000', '1000-2000', '2000-3000', 'Other'];
-  
+
+  const getServices = () => {
+    postDataWithToken(mobile_siteConfig.GET_CATEGORIES)
+      .then(response => {
+        if (response.msg && Array.isArray(response.msg)) {
+          // console.log("categories response::::", response.msg);
+          const services = response.msg.map((service: any) => ({
+            label: service.service_name, // Set service_name as label
+            value: service.service_name, // Set service_name as value
+          }));
+
+          setItems(services);
+        } else if (response.status === '400') {
+          // Handle 400 error (Bad Request)
+          console.error('Error 400: Bad request. Please check the payload.');
+        } else {
+          console.error('Response msg is not an array or is undefined.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching services:', error);
+      });
+  };
+
+  const postProject = async () => {
+    const email = await AsyncStorage.getItem('email');
+
+    const payload = {
+      email: email,
+    };
+  };
+
+  useEffect(() => {
+    getServices();
+  }, []);
+
+  useEffect(() => {
+    console.log('items::::::::::::;', items);
+  }, [items]);
+
   const handlebackButton = () => {
     if (activeCategory > 1) {
       setActiveCategory(prevCategory => prevCategory - 1);
-      
+
       if (activeCategory === 2) {
         setIsCategory(true);
         setIsBudget(false);
         setCompletedSections(prev => ({...prev, budget: false}));
       }
-      
+
       if (activeCategory === 3) {
         setIsBudget(true);
         setIsProject(false);
@@ -84,7 +120,70 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       navigation.goBack(); // Navigate back to previous screen if on the first step
     }
   };
-  
+
+  const handleProjectDesc = async () => {
+    let minBudgetAmount = 0;
+    let maxBudgetAmount = 0;
+
+    // Determine min and max budget based on selectedBudget
+    if (selectedBudget) {
+        const budgetMap = {
+            '0-500': { min: 0, max: 500 },
+            '500-1000': { min: 500, max: 1000 },
+            '1000-2000': { min: 1000, max: 2000 },
+            '2000-3000': { min: 2000, max: 3000 },
+            'Other': { min: minBudget, max: maxBudget },
+        };
+        const budgetRange = budgetMap[selectedBudget];
+        if (budgetRange) {
+            minBudgetAmount = budgetRange.min;
+            maxBudgetAmount = budgetRange.max;
+        }
+    }
+
+    // Create keywords from serviceName and requirements
+    const keywords = `${serviceName}, ${requirements}`;
+
+    // Create FormData
+    const formData = new FormData();
+    formData.append('keywords', keywords);
+    formData.append('min_budget_amount', minBudgetAmount);
+    formData.append('max_budget_amount', maxBudgetAmount);
+
+    try {
+        // Send POST request with FormData
+        const response = await fetch("https://sooprs.com/post-project-description.php", {
+            method: "POST",
+            body: formData,
+        });
+
+        // Log the raw response for debugging
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+
+        // Check if the response is successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok' + response.statusText);
+        }
+
+        // Decode any HTML entities in the response
+        const decodedResponse = decode(responseText);
+        console.log('Decoded AI data response:', decodedResponse);
+
+        // Split the response into title and description
+        const responseLines = decodedResponse.split('\n');
+        const projectTitle = responseLines[0].trim(); // First line is the title
+        const projectDescription = responseLines.slice(1).join('\n').trim(); // Join the rest as the description
+
+        // Store the title and description in state
+        setprojectTitle(projectTitle);
+        setprojectDescription(projectDescription);
+        
+    } catch (error) {
+        console.error('Error posting project description:', error);
+    }
+};
+
 
   const handleNextPress = async () => {
     // Check if category section is completed
@@ -109,6 +208,8 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
           text1: 'Please mention your budget.',
         });
         return;
+      } else {
+        handleProjectDesc();
       }
     }
 
@@ -172,8 +273,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
     <KeyboardAwareScrollView style={styles.container}>
       <View style={styles.projectPosting}>
         <View style={styles.totalheading}>
-          <TouchableOpacity
-            onPress={handlebackButton}>
+          <TouchableOpacity onPress={handlebackButton}>
             <Image
               source={Images.backArrow}
               style={styles.backArrow}
@@ -256,19 +356,10 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         {isCategory && (
           <View style={styles.categories}>
             <View style={styles.categoryPickerContainer}>
-              <DropDownPicker
-                open={open}
-                value={category}
+              <CustomDropdown
                 items={items}
-                setOpen={setOpen}
-                setValue={setCategory}
-                setItems={setItems}
-                style={styles.categoryPickerStyle}
-                dropDownContainerStyle={styles.dropDownContainerStyle}
-                placeholder="Select Category"
-                labelStyle={styles.labelStyle}
-                containerStyle={styles.categoryPicker}
-                textStyle={styles.categoryTextStyle}
+                selectedValue={category}
+                setSelectedValue={setCategory}
               />
             </View>
             <View style={styles.serviceSection}>
@@ -531,6 +622,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     borderColor: 'gray',
+    zIndex: 1000,
   },
 
   labelStyle: {
@@ -540,7 +632,7 @@ const styles = StyleSheet.create({
   },
 
   serviceSection: {
-    marginTop: hp(5),
+    marginTop: hp(3),
     flexDirection: 'column',
     gap: wp(1),
   },
@@ -638,7 +730,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     width: wp(5),
     height: hp(5),
-    objectFit:'contain',
-    tintColor:Colors.white
+    objectFit: 'contain',
+    tintColor: Colors.white,
   },
 });

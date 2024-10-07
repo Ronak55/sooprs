@@ -8,7 +8,9 @@ import FSize from '../assets/commonCSS/FSize'
 const Header = ({navigation, img, name, btnName} : {navigation: any, img:any, name:String, btnName:String}) => {
   return (
     <View style={styles.header}>
+      <TouchableOpacity onPress={()=>{navigation.navigate('ClientProfile')}}>
       <Image source={img} resizeMode='contain' style={styles.imgStyling}/>
+      </TouchableOpacity>
       <Text style={styles.greetText}>Hello, {name}</Text>
       <Image source = {Images.helloIcon} resizeMode='contain' style={styles.hello}/>
       <View style={styles.buttons}>

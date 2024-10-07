@@ -4,17 +4,17 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { TabView, SceneMap } from 'react-native-tab-view';
 import Colors from '../assets/commonCSS/Colors';
 import { hp, wp } from '../assets/commonCSS/GlobalCSS';
-import Portfolio from '../UserScreens/TabView/Portfolio';
-import Services from '../UserScreens/TabView/Services';
-import Skills from '../UserScreens/TabView/Skills';
-import Reviews from '../UserScreens/TabView/Reviews';
-import CompanyInfo from '../ProfessionalScreens/TabView/CompanyInfo';
-import Projects from '../ProfessionalScreens/TabView/Projects';
+import Portfolio from '../ProfessionalScreens/TabView/Portfolio';
+import Services from '../ProfessionalScreens/TabView/Services';
+import Skills from '../ProfessionalScreens/TabView/Skills';
+import Reviews from '../ProfessionalScreens/TabView/Reviews';
+import CompanyInfo from '../UserScreens/TabView/CompanyInfo';
+import Projects from '../UserScreens/TabView/Projects';
 import FSize from '../assets/commonCSS/FSize';
 
 const Tab = createMaterialTopTabNavigator();
 
-const ProfileTabs = ({ tabs }: { tabs: any }) => {
+const ProfileTabs = ({ tabs, isClient }: { tabs: any, isClient:any}) => {
   const renderTabScreens = () => {
     return tabs.map((tab: any, index: any) => {
       let Component;
@@ -70,7 +70,7 @@ const ProfileTabs = ({ tabs }: { tabs: any }) => {
 
         },
         tabBarItemStyle: {
-          width: wp(24),
+          width: isClient ? wp(34) : wp(24),
         },
         tabBarIndicatorStyle: {
           backgroundColor: '#0077FF',

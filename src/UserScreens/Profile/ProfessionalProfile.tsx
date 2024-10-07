@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView} from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {wp, hp} from '../../assets/commonCSS/GlobalCSS';
 import FSize from '../../assets/commonCSS/FSize';
 import Header from '../../components/Header';
@@ -13,6 +13,7 @@ import ProfileTabs from '../../components/ProfileTabs';
 const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}) => {
 
   const {img, name, role, rating} = route.params;
+  const [isClient, setisClient] = useState(false);
 
   const tabs = ['Portfolio', 'Services', 'Skills','Reviews'];
 
@@ -31,7 +32,7 @@ const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}
       <ProfileComponent navigation={navigation} img={img} name={name} role={role} rating={rating}/>
       <ProfileContent heading={profileInfo[0].heading} content={profileInfo[0].content}/>
       <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/>
-      <ProfileTabs tabs={tabs}/>
+      <ProfileTabs tabs={tabs} isClient={isClient}/>
       </ScrollView>
     </View>
   );

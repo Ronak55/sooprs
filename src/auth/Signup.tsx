@@ -10,7 +10,7 @@ import ButtonNew from '../components/ButtonNew';
 import Images from '../assets/image';
 import CustomAlert from '../components/CustomAlert';
 import FSize from '../assets/commonCSS/FSize';
-import { validateEmail, validatePhoneNumber } from '../services/CommonFunction';
+import { storeDataToAsyncStorage, validateEmail, validatePhoneNumber } from '../services/CommonFunction';
 import { mobile_siteConfig } from '../services/mobile-siteConfig';
 import countryCodes from '../countries_codes.json';
 import { postData } from '../services/mobile-api';
@@ -118,6 +118,9 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
           text2: 'You have registered successfully!',
           position: 'top',
         });
+
+        storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, "TRUE");
+        storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
 
         let resetAction = CommonActions.reset({
           index: 0,

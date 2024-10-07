@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
     sectionList: {
         flexDirection: 'row',
-        marginTop:hp(3),
+        // marginTop:hp(3),
         justifyContent: 'space-between',
       },
     

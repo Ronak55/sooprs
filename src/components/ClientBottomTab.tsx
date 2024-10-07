@@ -5,7 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import ClientHome from '../UserScreens/Home/ClientHome';
-import Projects from '../UserScreens/Projects/Projects';
+import Projects from '../UserScreens/Projects/ViewProjects';
 import Professionals from '../UserScreens/Professionals/Professionals';
 import Gigs from '../UserScreens/Gigs/Gigs';
 import Account from '../UserScreens/Account/Account';
@@ -97,8 +97,8 @@ const ClientBottomTab = () => {
       <Bottom.Screen name={"Home"} component={HomeStack} />
       <Bottom.Screen name="Projects" component={Projects} />
       <Bottom.Screen name="Professionals" component={Professionals} />
-      <Bottom.Screen name="Gigs" component={Gigs} />
-      <Bottom.Screen name="Account" component={Account} />
+      {/* <Bottom.Screen name="Gigs" component={Gigs} /> */}
+      <Bottom.Screen name="Account" component={ClientProfile} />
     </Bottom.Navigator>
   );
 };

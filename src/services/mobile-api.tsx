@@ -5,7 +5,7 @@ import { getDataFromAsyncStorage } from "./CommonFunction";
 
 export async function postData(data: any, urlPath: string) {
   return new Promise((resolve, reject) => {
-    fetch(mobile_siteConfig.BASE_URL + urlPath, {
+    fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath, {
       method: "POST",
       mode: "cors",
       // cache: 'no-cache',
@@ -35,14 +35,14 @@ export async function postData(data: any, urlPath: string) {
   });
 }
 
-export async function postDataWithToken(data: any, urlPath: string) {
-  let token = await AsyncStorage.getItem(
-    mobile_siteConfig.MOB_ACCESS_TOKEN_KEY
-  );
-  console.log("=== postDataWithToken === ", token);
+export async function postDataWithToken(urlPath: string) {
+  // let token = await AsyncStorage.getItem(
+  //   mobile_siteConfig.MOB_ACCESS_TOKEN_KEY
+  // );
+  // console.log("=== postDataWithToken === ", token);
   return new Promise((resolve, reject) => {
-    console.log("=== POST", mobile_siteConfig.BASE_URL + urlPath);
-    fetch(mobile_siteConfig.BASE_URL + urlPath, {
+    console.log("=== POST", mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath);
+    fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath, {
       method: "POST",
       mode: "cors",
       // cache: "no-cache",
@@ -50,9 +50,9 @@ export async function postDataWithToken(data: any, urlPath: string) {
       headers: {
         "Content-Type": "application/json",
         Origin: "localhost",
-        authorization: "Bearer " + token,
+        // authorization: "Bearer " + token,
       },
-      body: JSON.stringify(data),
+      // body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((json) => {
@@ -67,19 +67,16 @@ export async function postDataWithToken(data: any, urlPath: string) {
 
 export async function getData(urlPath: string) {
   console.log('=== getData URL ===', mobile_siteConfig.BASE_URL + urlPath);
-  let accessTokenKey = await AsyncStorage.getItem(
-    mobile_siteConfig.MOB_ACCESS_TOKEN_KEY
-  );
   return new Promise((resolve, reject) => {
-    fetch(mobile_siteConfig.BASE_URL + urlPath, {
+    fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath, {
       method: "GET",
       mode: "cors",
       // cache: "no-cache",
       credentials: "same-origin",
       headers: {
+        Accept: "*/*",
         "Content-Type": "application/json",
-        Origin: "localhost",
-        authorization: "Bearer " + accessTokenKey,
+        // Origin: "localhost",
       },
     })
       .then((response) => response.json())
@@ -123,9 +120,6 @@ export async function patchData(data: any, urlPath: string) {
       headers: {
         "Content-Type": "application/json",
         Origin: "http://localhost:3000",
-        authorization:
-          "Bearer " +
-          AsyncStorage.getItem(mobile_siteConfig.MOB_ACCESS_TOKEN_KEY),
       },
       body: JSON.stringify(data),
     });
