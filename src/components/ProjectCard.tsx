@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.sooprsblue,
     paddingHorizontal: wp(2),
     paddingVertical: wp(2),
-    width: wp(30),
+    width: wp(45),
   },
   categoryText: {
     color: Colors.white,

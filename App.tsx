@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Onboarding from './src/Onboarding';
 import ForgotPassword from './src/auth/ForgotPassword';
-import Success from './src/auth/Success';
+import RegisterSuccess from './src/auth/Success';
 import Login from './src/auth/Login';
 import ProfileSelection from './src/auth/ProfileSelection';
 import Signup from './src/auth/Signup';;
@@ -26,7 +26,7 @@ const Authentication = ()=>{
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Forgot" component={ForgotPassword} />
-      <Stack.Screen name="Success" component={Success} />
+      <Stack.Screen name="Success" component={RegisterSuccess} />
     </Stack.Navigator>
   );
 

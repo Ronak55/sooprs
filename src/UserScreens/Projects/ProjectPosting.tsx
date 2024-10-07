@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { decode } from 'html-entities';
+import {decode} from 'html-entities';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import React, {useEffect, useState} from 'react';
 import Toast from 'react-native-toast-message';
@@ -32,6 +32,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   const [serviceName, setserviceName] = useState('');
   const [requirements, setRequirements] = useState('');
   const [selectedBudget, setSelectedBudget] = useState('');
+  const [serviceID, setServiceID] = useState('');
   const [minBudget, setminBudget] = useState('');
   const [maxBudget, setmaxBudget] = useState('');
   const [projectTitle, setprojectTitle] = useState('');
@@ -43,6 +44,11 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   });
 
   const [items, setItems] = useState([]);
+  const [minBudgetAmount, setminBudgetAmount] = useState('');
+  const [maxBudgetAmount, setmaxBudgetAmount] = useState('');
+  let minBudgetSelect=0;
+  let maxBudgetSelect=0;
+
 
   const postProgress = [
     {
@@ -69,9 +75,12 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         if (response.msg && Array.isArray(response.msg)) {
           // console.log("categories response::::", response.msg);
           const services = response.msg.map((service: any) => ({
+            id: service.id,
             label: service.service_name, // Set service_name as label
             value: service.service_name, // Set service_name as value
           }));
+
+          console.log('services::::::', services);
 
           setItems(services);
         } else if (response.status === '400') {
@@ -84,14 +93,6 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       .catch(error => {
         console.error('Error fetching services:', error);
       });
-  };
-
-  const postProject = async () => {
-    const email = await AsyncStorage.getItem('email');
-
-    const payload = {
-      email: email,
-    };
   };
 
   useEffect(() => {
@@ -122,68 +123,122 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   };
 
   const handleProjectDesc = async () => {
-    let minBudgetAmount = 0;
-    let maxBudgetAmount = 0;
-
     // Determine min and max budget based on selectedBudget
     if (selectedBudget) {
-        const budgetMap = {
-            '0-500': { min: 0, max: 500 },
-            '500-1000': { min: 500, max: 1000 },
-            '1000-2000': { min: 1000, max: 2000 },
-            '2000-3000': { min: 2000, max: 3000 },
-            'Other': { min: minBudget, max: maxBudget },
-        };
-        const budgetRange = budgetMap[selectedBudget];
-        if (budgetRange) {
-            minBudgetAmount = budgetRange.min;
-            maxBudgetAmount = budgetRange.max;
-        }
+      const budgetMap = {
+        '0-500': {min: 0, max: 500},
+        '500-1000': {min: 500, max: 1000},
+        '1000-2000': {min: 1000, max: 2000},
+        '2000-3000': {min: 2000, max: 3000},
+        Other: {min: minBudget, max: maxBudget},
+      };
+      const budgetRange = budgetMap[selectedBudget];
+      if (budgetRange) {
+        setminBudgetAmount(budgetRange.min);
+        setmaxBudgetAmount(budgetRange.max);
+        minBudgetSelect = budgetRange.min;
+        maxBudgetSelect = budgetRange.max;
+      }
     }
 
     // Create keywords from serviceName and requirements
     const keywords = `${serviceName}, ${requirements}`;
 
     // Create FormData
-    const formData = new FormData();
-    formData.append('keywords', keywords);
-    formData.append('min_budget_amount', minBudgetAmount);
-    formData.append('max_budget_amount', maxBudgetAmount);
+    const formdata = new FormData();
+    formdata.append('keywords', keywords);
+    formdata.append('min_budget_amount', minBudgetSelect);
+    formdata.append('max_budget_amount', maxBudgetSelect);
+
+    console.log('budget formdata:::::::::', formdata);
 
     try {
-        // Send POST request with FormData
-        const response = await fetch("https://sooprs.com/post-project-description.php", {
-            method: "POST",
-            body: formData,
-        });
+      // Send POST request with FormData
+      const response = await fetch(
+        'https://sooprs.com/post-project-description.php',
+        {
+          method: 'POST',
+          body: formdata,
+        },
+      );
 
-        // Log the raw response for debugging
-        const responseText = await response.text();
-        console.log('Raw response:', responseText);
+      // Log the raw response for debugging
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
 
-        // Check if the response is successful
-        if (!response.ok) {
-            throw new Error('Network response was not ok' + response.statusText);
-        }
+      // Check if the response is successful
+      if (!response) {
+        throw new Error('Network response was not ok');
+      }
 
-        // Decode any HTML entities in the response
-        const decodedResponse = decode(responseText);
-        console.log('Decoded AI data response:', decodedResponse);
+      // Decode any HTML entities in the response
+      const decodedResponse = decode(responseText);
+      console.log('Decoded AI data response:', decodedResponse);
 
-        // Split the response into title and description
-        const responseLines = decodedResponse.split('\n');
-        const projectTitle = responseLines[0].trim(); // First line is the title
-        const projectDescription = responseLines.slice(1).join('\n').trim(); // Join the rest as the description
+      // Split the response into title and description
+      const responseLines = decodedResponse.split('\n');
+      const projectTitle = responseLines[0].trim(); // First line is the title
+      const projectDescription = responseLines.slice(1).join('\n').trim(); // Join the rest as the description
 
-        // Store the title and description in state
-        setprojectTitle(projectTitle);
-        setprojectDescription(projectDescription);
-        
+      // Store the title and description in state
+      setprojectTitle(projectTitle);
+      setprojectDescription(projectDescription);
     } catch (error) {
-        console.error('Error posting project description:', error);
+      console.error('Error posting project description:', error);
     }
-};
+  };
 
+  const handleSaveProject = async () => {
+    try {
+      // Get email from AsyncStorage
+      const email = await AsyncStorage.getItem('email');
+      if (!email) {
+        throw new Error('Email not found in AsyncStorage');
+      }
+      console.log('email::::::::::::::;;', email);
+
+      // Create form data
+      const formdata = new FormData();
+      formdata.append('email', email);
+      formdata.append('category', serviceID); // Make sure 'items' is defined elsewhere
+      formdata.append('project_title', projectTitle);
+      formdata.append('description', projectDescription);
+      formdata.append('min_budget_amount', minBudgetAmount);
+      formdata.append('max_budget_amount', maxBudgetAmount);
+
+      // Log the form data before sending it
+      console.log('FormData content:::::::', formdata);
+
+      // Make API call using fetch
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/save_post_project',
+        {
+          method: 'POST',
+          body: formdata, // FormData automatically sets 'multipart/form-data' headers
+        },
+      );
+
+      // Check if the response is okay
+      const responseData = await response.json();
+      console.log('Response Data::::', responseData);
+
+      if (response.status === 200) {
+        console.log('Project posted successfully!');
+        return;
+
+      } else {
+        console.error(
+          'Failed to post project. Status:',
+          response.status,
+          'Message:',
+          responseData.msg,
+        );
+      }
+    } catch (error) {
+      // Handle any other errors (e.g., network issues or form data errors)
+      console.error('An error occurred in handleSaveProject:', error.message);
+    }
+  };
 
   const handleNextPress = async () => {
     // Check if category section is completed
@@ -208,8 +263,6 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
           text1: 'Please mention your budget.',
         });
         return;
-      } else {
-        handleProjectDesc();
       }
     }
 
@@ -245,19 +298,16 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
     }
 
     if (activeCategory === 2) {
+      handleProjectDesc();
       setIsBudget(!isBudget);
       setIsProject(!isProject);
       setCompletedSections(prev => ({...prev, budget: true}));
     }
 
     if (activeCategory === 3) {
-      setIsProject(!isProject);
-      navigation.navigate('Success', {
-        successMessage: 'Your project has been posted successfully.',
-        btnText: 'Back to home screen',
-        navigateTo: 'ClientLoggedIn',
-      });
+      handleSaveProject();
       setCompletedSections(prev => ({...prev, project: true}));
+      navigation.navigate('ClientHome');
     }
 
     setActiveCategory(prevCategory =>
@@ -360,6 +410,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
                 items={items}
                 selectedValue={category}
                 setSelectedValue={setCategory}
+                setServiceID={setServiceID}
               />
             </View>
             <View style={styles.serviceSection}>

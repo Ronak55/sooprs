@@ -10,18 +10,19 @@ import {
 import { wp, hp } from '../assets/commonCSS/GlobalCSS'; // Importing wp and hp
 import FSize from '../assets/commonCSS/FSize';
 
-const CustomDropdown = ({ items, selectedValue, setSelectedValue }) => {
+const CustomDropdown = ({ items, selectedValue, setSelectedValue, setServiceID}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (item) => {
-    setSelectedValue(item);
+    setSelectedValue(item.value);
+    setServiceID(item.id);
     setIsOpen(false);
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => handleSelect(item.value)}
+      onPress={() => handleSelect(item)}
     >
       <Text style={styles.itemText}>{item.label}</Text>
     </TouchableOpacity>
