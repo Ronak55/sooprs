@@ -122,13 +122,13 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
         storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, "TRUE");
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
 
-        let resetAction = CommonActions.reset({
-          index: 0,
-          routes: [
-            { name: profileType === 'Client' ? 'ClientLoggedIn' : 'ProfessionalLoggedIn' }
-          ],
-        });
-        navigation.dispatch(resetAction);
+        // let resetAction = CommonActions.reset({
+        //   index: 0,
+        //   routes: [
+        //     { name: profileType === 'Client' ? 'ClientLoggedIn' : 'ProfessionalLoggedIn' }
+        //   ],
+        // });
+        navigation.navigate('Login', {profileType: profileType});
         
       } else if (response.status === 400) {
         // Show error message for status 400

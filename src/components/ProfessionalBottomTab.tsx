@@ -11,6 +11,7 @@ import Account from '../ProfessionalScreens/Account/Account';
 import Images from '../assets/image';
 import Profile from '../UserScreens/Profile/ProfessionalProfile';
 import FSize from '../assets/commonCSS/FSize';
+import ProjectDetails from './ProjectDetails';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -19,6 +20,7 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="ProfessionalHome" component={ProfessionalHome} />
+      <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
       <Stack.Screen name="Projects" component={Projects} />
       <Stack.Screen name="Chat" component={Chat} />
       <Stack.Screen name="Account" component={Account} />
@@ -63,7 +65,7 @@ const getTabBarIcon = (route:any, focused:boolean) =>{
 
 }
 
-const ClientBottomTab = () => {
+const ProfessionalBottomTab = () => {
   return (
     <Bottom.Navigator
       screenOptions={({route}) => ({
@@ -93,6 +95,6 @@ const ClientBottomTab = () => {
   );
 };
 
-export default ClientBottomTab;
+export default ProfessionalBottomTab;
 
 const styles = StyleSheet.create({});

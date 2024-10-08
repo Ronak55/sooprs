@@ -1,5 +1,5 @@
+import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
@@ -8,23 +8,42 @@ import Images from '../assets/image';
 const ProjectCard = ({
     navigation,
     name,
+    id,
     desc,
     category,
     budget,
     bids,
     index,
     createdAt,
+    isProfessional
   }: {
     navigation: any;
     name: any;
+    id:any,
     desc: any;
     budget: any;
     category: any;
     bids: any;
     index: any;
     createdAt: any;
+    isProfessional:any
   }) => {
+    const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
+
+    const toggleReadMore = () => {
+      setIsExpanded(!isExpanded);
+    };
+
+    // Function to show limited text when the card is collapsed
+    const getLimitedDescription = (description: string) => {
+      const limit = 150; // Set character limit
+      return description.length > limit
+        ? `${description.substring(0, limit)}...`
+        : description;
+    };
+
     return (
+    <TouchableOpacity onPress={()=>{isProfessional ? navigation.navigate('ProjectDetails', {id, name, desc, category, budget, createdAt}) : navigation.navigate('ProjectBids', {id:id})}}>
       <View style={styles.cardContainer}>
         <View style={styles.column}>
           {/* Header section showing project name and favorite icon */}
@@ -34,21 +53,32 @@ const ProjectCard = ({
               <Image source={Images.favoriteIcon} style={styles.favoriteIcon} />
             </TouchableOpacity>
           </View>
-          
+
           {/* Date section */}
           <View style={styles.dateContainer}>
             <Text style={styles.dateText}>{createdAt}</Text>
           </View>
-          
+
           {/* Skills and description section */}
           <View style={styles.skillsContainer}>
             <Text style={styles.skillsText}>Service</Text>
             <View style={styles.categoryBadge}>
               <Text style={styles.categoryText}>{category}</Text>
             </View>
-            <Text style={styles.descText}>{desc}</Text>
+
+            {/* Show limited or full description based on the isExpanded state */}
+            <Text style={styles.descText}>
+              {isExpanded ? desc : getLimitedDescription(desc)}
+            </Text>
+
+            {/* Read More / Read Less Button */}
+            <TouchableOpacity onPress={toggleReadMore}>
+              <Text style={styles.readMoreText}>
+                {isExpanded ? 'Read Less' : 'Read More'}
+              </Text>
+            </TouchableOpacity>
           </View>
-          
+
           {/* Footer section showing budget and bids */}
           <View style={styles.footer}>
             <View style={styles.budgetContainer}>
@@ -62,9 +92,9 @@ const ProjectCard = ({
           </View>
         </View>
       </View>
+      </TouchableOpacity>
     );
   };
-  
 
 export default ProjectCard;
 
@@ -83,11 +113,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start', // Align items to the top to allow wrapping
+    paddingVertical: hp(1), // Optional: Adds vertical padding to the header
   },
   nameText: {
     color: Colors.black,
     fontSize: FSize.fs16,
     fontWeight: '500',
+    maxWidth: '90%',
   },
   favoriteIcon: {
     width: wp(5),
@@ -135,6 +168,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: FSize.fs12,
   },
+  readMoreText: {
+    marginTop: hp(1),
+    color: Colors.sooprsblue,
+    fontWeight: '600',
+    fontSize: FSize.fs13,
+  },
   footer: {
     marginTop: hp(2),
     flexDirection: 'row',
@@ -165,22 +204,5 @@ const styles = StyleSheet.create({
   bidsValue: {
     color: Colors.black,
     fontSize: FSize.fs12,
-  },
-  contactInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-    paddingLeft: wp(3),
-  },
-  contactIcon: {
-    width: wp(2),
-    height: hp(2),
-  },
-  contactText: {
-    fontWeight: '500',
-    fontSize: FSize.fs12,
-    color: Colors.black,
-    paddingLeft: wp(1),
   },
 });

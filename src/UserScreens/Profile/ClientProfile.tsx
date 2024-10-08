@@ -34,7 +34,7 @@ const ClientProfile = ({navigation, route}: {navigation: any; route: any;}) => {
       <ScrollView style={styles.profileView}>
       <ProfileComponent navigation={navigation} img={profileInfo[0].img} name={profileInfo[0].name} role={profileInfo[0].role} rating={profileInfo[0].rating}/>
       <ProfileContent heading={profileInfo[0].heading} content={profileInfo[0].content}/>
-      <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/>
+      {/* <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/> */}
       <ProfileTabs tabs={tabs} isClient={isClient}/>
       </ScrollView>
     </View>

@@ -1,30 +1,19 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Colors from '../../assets/commonCSS/Colors';
-import ProjectCard from '../../components/ProjectCard';
-import {wp} from '../../assets/commonCSS/GlobalCSS';
+import Colors from '../assets/commonCSS/Colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {postData} from '../../services/mobile-api';
-import {mobile_siteConfig} from '../../services/mobile-siteConfig';
+import { hp, wp } from '../assets/commonCSS/GlobalCSS';
+import ProjectCard from './ProjectCard';
 import {useIsFocused} from '@react-navigation/native';
 
-const Projects = ({navigation}: {navigation: any}) => {
+const AllProjects = ({navigation}: {navigation: any}) => {
   const [projectDetails, setProjectDetails] = useState([]);
   const isFocused = useIsFocused();
 
   const getProjects = async () => {
     try {
-      // Fetch UID from AsyncStorage
-      const uid = await AsyncStorage.getItem('uid');
-
-      if (!uid) {
-        console.error('UID not found');
-        return;
-      }
-
       // Create the form data
       const formdata = new FormData();
-      formdata.append('variable', uid); // Adjust the 'variable' key if necessary
       formdata.append('offset', 0);
       formdata.append('limit', 10);
 
@@ -33,7 +22,7 @@ const Projects = ({navigation}: {navigation: any}) => {
 
       // Make the POST request using fetch
       const response = await fetch(
-        'https://sooprs.com/api2/public/index.php/get_enquiries_ajax',
+        'https://sooprs.com/api2/public/index.php/get_all_leads',
         {
           method: 'POST',
           body: formdata, // Send formdata as the request body
@@ -48,7 +37,7 @@ const Projects = ({navigation}: {navigation: any}) => {
       const responseData = await response.json();
 
       // Log the full response data
-      console.log('Response Data:', responseData);
+      console.log('Projects response Data::::', responseData);
 
       // Check if the response status is 200 (as a number, not string)
       if (responseData.status === 200) {
@@ -58,7 +47,6 @@ const Projects = ({navigation}: {navigation: any}) => {
         console.error('An error has occurred!');
       }
     } catch (error) {
-      // Log any errors that occur during the fetch or data processing
       console.error('Error fetching projects:', error);
     }
   };
@@ -66,37 +54,18 @@ const Projects = ({navigation}: {navigation: any}) => {
     getProjects();
   }, [isFocused]);
 
-  //   const projectDetails = [
-  //     {
-  //       name: 'Need a food delivery app UI Design',
-  //       desc: 'I am looking to develop a dynamic and user-friendly mobile application and am seeking skilled professionals to bring this vision to life. The app aims to provide a seamless and engaging experience for users, combining functionality with an intuitive design.',
-  //       category: 'App Development',
-  //       budget: '$0 - $500',
-  //       bids: '4',
-  //       createdAt:'18/02/2024'
-  //     },
-
-  //     {
-  //       name: 'Need a food delivery app UI Design',
-  //       desc: 'I am looking to develop a dynamic and user-friendly mobile application and am seeking skilled professionals to bring this vision to life. The app aims to provide a seamless and engaging experience for users, combining functionality with an intuitive design.',
-  //       category: 'App Development',
-  //       budget: '$0 - $500',
-  //       bids: '4',
-  //       createdAt:'18/02/2024'
-  //     },
-  //   ];
   const renderItem = ({item, index}: {item: any; index: any}) => (
       <ProjectCard
         navigation={navigation}
         name={item.project_title} // Project title from the data
         id={item.id}
         desc={item.description} // Description from the data
-        category={item['service-name']} // Service name from the data
+        category={item.service_name} // Service name from the data
         budget={`${item.min_budget} - ${item.max_budget_amount}`} // Budget range
-        bids={item.bid_count} // Bid count
-        createdAt={item.formatCreatedAt} // Formatted date
+        bids={item.num_leads} // Bid count
+        createdAt={item.created_at} // Formatted date
         index={index}
-        isProfessional={false}
+        isProfessional={true}
       />
   );
 
@@ -112,12 +81,11 @@ const Projects = ({navigation}: {navigation: any}) => {
   );
 };
 
-export default Projects;
+export default AllProjects;
 
 const styles = StyleSheet.create({
   projectsList: {
     backgroundColor: Colors.white,
     flex: 1,
-    marginHorizontal: wp(2),
   },
 });

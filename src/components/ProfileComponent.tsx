@@ -45,11 +45,11 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
           <View style={styles.profile}>
             {/* <TouchableOpacity onPress={selectImage}> */}
               <View style={[styles.profileIcon]}>
-                <Image style={styles.Icon} resizeMode="contain" source={Images.profileImagetwo} />
+                <Image style={styles.Icon} resizeMode="contain" source={{uri:img}} />
               </View>
             {/* </TouchableOpacity> */}
             <Text style={styles.profileName}>{name}</Text>
-            <Text style={styles.profileRole}>{role}</Text>
+            <Text style={styles.profileRole}>{role?.join(', ')}</Text>
             <View style={styles.ratings}>
             <Image
               style={styles.starIcon}
@@ -68,7 +68,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
   const styles = StyleSheet.create({
 
     profileSection: {
-      marginHorizontal: wp(3),
+      marginHorizontal: wp(5),
       marginVertical: hp(1),
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -80,7 +80,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
     profile: {
       flexDirection: 'column',
       justifyContent: 'center',
-      marginRight: wp(25),
+      marginRight: wp(10),
       marginVertical: hp(3),
       alignItems:'center',
       gap:1
@@ -117,7 +117,8 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
     profileRole: {
       fontSize: FSize.fs12,
       fontWeight: '500',
-      color:Colors.gray
+      color:Colors.gray,
+      maxWidth:'90%'
     },
   
     ratings:{

@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView} from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {wp, hp} from '../../assets/commonCSS/GlobalCSS';
 import FSize from '../../assets/commonCSS/FSize';
 import Header from '../../components/Header';
@@ -12,27 +12,25 @@ import ProfileTabs from '../../components/ProfileTabs';
 
 const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}) => {
 
-  const {img, name, role, rating} = route.params;
+  const {img, name, services, skills, avgrating, listing_about} = route.params;
+
   const [isClient, setisClient] = useState(false);
 
   const tabs = ['Portfolio', 'Services', 'Skills','Reviews'];
 
+  useEffect(()=>{
 
-  const profileInfo = [
-    {
-      heading : "Bio", 
-      content : "Hello! I am John Doe, a passionate and skilled web developer with over 8 years of experience crafting dynamic, responsive, and user-friendly websites. With a deep understanding of both front-end and back-end development, I have the expertise to bring any digital vision to life."
-    }
-  ]
+  console.log('services data::::::::::;', services)
 
+  }, [route.params])
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.profileView}>
-      <ProfileComponent navigation={navigation} img={img} name={name} role={role} rating={rating}/>
-      <ProfileContent heading={profileInfo[0].heading} content={profileInfo[0].content}/>
-      <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/>
-      <ProfileTabs tabs={tabs} isClient={isClient}/>
+      <ProfileComponent navigation={navigation} img={img} name={name} role={services} rating={avgrating}/>
+      <ProfileContent heading={"Bio"} content={listing_about}/>
+      {/* <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/> */}
+      <ProfileTabs tabs={tabs} isClient={isClient} services={services} skills={skills}/>
       </ScrollView>
     </View>
   );

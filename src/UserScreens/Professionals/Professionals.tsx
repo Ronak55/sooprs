@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Image, ScrollView} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {hp, wp} from '../../assets/commonCSS/GlobalCSS';
 import FSize from '../../assets/commonCSS/FSize';
 import Images from '../../assets/image';
@@ -12,6 +12,49 @@ import HomeSectionTitle from '../../components/HomeSectionTitle';
 import CategoriesList from '../../components/CategoriesList';
 
 const Professionals = ({navigation}: {navigation: any}) => {
+
+  const [professionals, setProfessionals] = useState<any[]>([]);
+  const [services, setServices] = useState([]);
+  
+
+  const getProfessionals = () => {
+    const formdata = new FormData();
+    formdata.append('offset', 0);
+    formdata.append('limit', 10);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formdata,
+    };
+
+    fetch(
+      'https://sooprs.com/api2/public/index.php/get_professionals_ajax',
+      requestOptions,
+    )
+      .then(response => response.json())
+      .then(res => {
+        if (res.status === 200) {
+          res.msg.map((item)=>{
+            console.log('professional data::::::', item.data);
+            setProfessionals(item.data);
+            setServices(item.services);
+          })
+
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching professionals:', error);
+      });
+  };
+
+  useEffect(() => {
+    getProfessionals();
+  }, []);
+
+
   return (
     <ScrollView style={styles.container}>
       <Header
@@ -41,7 +84,7 @@ const Professionals = ({navigation}: {navigation: any}) => {
           cardbgColor="#D4E3FC24"
         /> */}
         <HomeSectionTitle navigation={navigation} titleOne="Categories" titleTwo="" btntxt="See all" onPress=""/> 
-        <CategoriesList navigation={navigation}/>
+        <CategoriesList navigation={navigation} professionals={professionals}/>
       </View>
     </ScrollView>
   );

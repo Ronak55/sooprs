@@ -5,22 +5,31 @@ import { hp, wp } from '../assets/commonCSS/GlobalCSS';
 import Images from '../assets/image';
 import FSize from '../assets/commonCSS/FSize';
 
-const ProfessionalCard = ({navigation, img, name, role, rating, index} : {navigation:any, img:any, name:any, role:any, rating:any, index:any}) => {
+const ProfessionalCard = ({navigation, img, name, services, skills, avgrating, listing_about, index} : {navigation:any, img:any, name:any, services:any, skills:any, avgrating:any, listing_about:any, index:any}) => {
 
    const backgroundColor = index % 2 === 0 ? '#407BFF1A' : '#FFFBDC';
 
+   const getLimitedBio = (listing_about: string) => {
+    const limit = 20; // Set character limit to 50
+    if (!listing_about) return ''; // Handle cases where listing_about is null or undefined
+    return listing_about.length > limit
+      ? `${listing_about.substring(0, limit)}...`
+      : listing_about;
+};
+
+
   return (
     <View>
-    <TouchableOpacity style={styles.card} onPress={()=>{navigation.navigate('ProfessionalProfile', { img, name, role, rating})}}>
+    <TouchableOpacity style={styles.card} onPress={()=>{navigation.navigate('ProfessionalProfile', { img, name, services, skills, avgrating, listing_about})}}>
       <View style={[styles.imgBack, { backgroundColor }]}>
-      <Image source={img} style={styles.image} resizeMode='contain'/>
+      <Image source={{uri:img}} style={styles.image} resizeMode='contain'/>
       </View>
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.role}>{role}</Text>
+        <Text style={styles.role}>{getLimitedBio(listing_about)}</Text>
         <View style={styles.ratingStyle}>
         <Image style={styles.starIcon} source={Images.starIcon} resizeMode='contain'/>
-        <Text style={styles.rating}>{rating} / 5</Text>
+        <Text style={styles.rating}>{avgrating} / 5</Text>
         <TouchableOpacity style={styles.arrowBtn}>
             <Image source={Images.rigthArrowIcon} resizeMode='contain' style={styles.arrow}/>
         </TouchableOpacity>

@@ -35,7 +35,8 @@ export const mobile_siteConfig = Object.freeze({
     GET_CATEGORIES:'sr_services_all',
     POST_PROJECT:'save_post_project',
     GET_DESCRIPTION:'post-project-description',
-    GET_PROJECTS:'get_enquiries_ajax'
+    GET_PROJECTS:'get_enquiries_ajax',
+    QUERY_DETAIL:'query_detail'
 
 
 })

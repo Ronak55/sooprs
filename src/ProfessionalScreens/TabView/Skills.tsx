@@ -1,19 +1,24 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import ServicesCard from '../../components/ServicesCard';
 import { hp, wp } from '../../assets/commonCSS/GlobalCSS';
 
-const Skills = () => {
+const Skills = ({route} : {route:any}) => {
 
-  const SkillList = ['PHP', 'Java', 'HTML & CSS', 'Bootstrap', 'jQuery', 'Photoshop', 'Figma', 'Adobe Illustrator', 'Canva', 'InDesign'];
+  // const skills = ['PHP', 'Java', 'HTML & CSS', 'Bootstrap', 'jQuery', 'Photoshop', 'Figma', 'Adobe Illustrator', 'Canva', 'InDesign'];
 
+  const skills = route.params?.skills;
 
-  const renderItem = ({ item } : {item:any}) => <ServicesCard item={item} />;
+  const renderItem = ({ item } : {item:any}) => <ServicesCard item={item} />
+
+  useEffect(() => {
+    console.log('skills from route:::::::::', route.params);
+  }, []);
 
   return (
     <View style={styles.skillsContainer}>
       <FlatList
-        data={SkillList}
+        data={skills}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}

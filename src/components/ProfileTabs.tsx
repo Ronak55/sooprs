@@ -14,10 +14,16 @@ import FSize from '../assets/commonCSS/FSize';
 
 const Tab = createMaterialTopTabNavigator();
 
-const ProfileTabs = ({ tabs, isClient }: { tabs: any, isClient:any}) => {
+interface TabParams {
+  services?: string[];
+  skills?: string[];  
+}
+
+const ProfileTabs = ({ tabs, isClient, services, skills }: { tabs: any, isClient:any, services:string[], skills:string[]}) => {
   const renderTabScreens = () => {
     return tabs.map((tab: any, index: any) => {
       let Component;
+      const initialParams: TabParams = {};
 
       switch (tab) {
         case 'Portfolio':
@@ -25,9 +31,11 @@ const ProfileTabs = ({ tabs, isClient }: { tabs: any, isClient:any}) => {
           break;
         case 'Services':
           Component = Services;
+          initialParams.services = services;
           break;
         case 'Skills':
           Component = Skills;
+          initialParams.skills = skills; 
           break;
         case 'Reviews':
           Component = Reviews;
@@ -46,7 +54,7 @@ const ProfileTabs = ({ tabs, isClient }: { tabs: any, isClient:any}) => {
           );
       }
 
-      return <Tab.Screen key={index} name={tab} component={Component} />
+      return <Tab.Screen key={index} name={tab} component={Component} initialParams={initialParams}/>
     });
   };
 

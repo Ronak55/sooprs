@@ -14,6 +14,7 @@ import ProfessionalProfile from '../UserScreens/Profile/ProfessionalProfile';
 import ClientProfile from '../UserScreens/Profile/ClientProfile';
 import FSize from '../assets/commonCSS/FSize';
 import ProjectPosting from '../UserScreens/Projects/ProjectPosting';
+import ProjectBids from '../UserScreens/Projects/ProjectBids';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -26,6 +27,7 @@ const HomeStack = () => {
       <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
       <Stack.Screen name="ProjectPosting" component={ProjectPosting} />
       <Stack.Screen name="Projects" component={Projects} />
+      <Stack.Screen name="ProjectBids" component={ProjectBids} />
       <Stack.Screen name="Professionals" component={Professionals} />
       <Stack.Screen name="Gigs" component={Gigs} />
     </Stack.Navigator>

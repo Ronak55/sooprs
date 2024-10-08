@@ -1,32 +1,67 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
-import React from 'react';
-import Images from '../assets/image';
-import { hp, wp } from '../assets/commonCSS/GlobalCSS';
-import Colors from '../assets/commonCSS/Colors';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import ProfessionalCard from './ProfessionalCard';
-import { data } from './CombindedData';
+import { hp } from '../assets/commonCSS/GlobalCSS';
 
 const ProfessionalList = ({ navigation }: { navigation: any }) => {
-  // Flatten the array of professionals
-  const professionalData = data.flatMap(category => category.professionals);
+  const [professionals, setProfessionals] = useState<any[]>([]);
 
-  // console.log("pro data::::::::", professionalData)
+  const getProfessionals = () => {
+    const formdata = new FormData();
+    formdata.append('offset', 0);
+    formdata.append('limit', 10);
 
-  const renderItem = ({ item, index }: { item: any, index: any }) => (
-    <ProfessionalCard
-      navigation={navigation}
-      img={item.img}
-      name={item.name}
-      role={item.role}
-      rating={item.rating}
-      index={index}
-    />
-  );
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formdata,
+    };
+
+    fetch('https://sooprs.com/api2/public/index.php/get_professionals_ajax', requestOptions)
+      .then(response => response.json())
+      .then(res => {
+        if (res.status === 200) {
+          console.log('professional data:', res.msg);
+          setProfessionals(res.msg);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching professionals:', error);
+      });
+  };
+
+  useEffect(() => {
+    getProfessionals();
+  }, []);
+
+  const renderItem = ({ item, index }: { item: any, index:any }) => {
+    // Extracting necessary fields from the data
+    const { name, image, listing_about } = item.data;
+    const avgrating = item.avgrating;
+    const services = item.services;
+    const skills = item.skills;
+    const img = image ? image : 'default-image-url'; // Provide a fallback if no image is available
+
+    return (
+      <ProfessionalCard
+        navigation={navigation}
+        img={img}
+        name={name}
+        services={services}
+        skills={skills}
+        avgrating={avgrating}
+        listing_about={listing_about}
+        index={index}
+      />
+    );
+  };
 
   return (
     <View style={styles.ProfessionalList}>
       <FlatList
-        data={professionalData}
+        data={professionals}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal

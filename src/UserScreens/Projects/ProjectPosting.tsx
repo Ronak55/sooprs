@@ -195,11 +195,11 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       if (!email) {
         throw new Error('Email not found in AsyncStorage');
       }
-      console.log('email::::::::::::::;;', email);
+      console.log('email::::::::::::::;;', JSON.parse(email));
 
       // Create form data
       const formdata = new FormData();
-      formdata.append('email', email);
+      formdata.append('email', JSON.parse(email));
       formdata.append('category', serviceID); // Make sure 'items' is defined elsewhere
       formdata.append('project_title', projectTitle);
       formdata.append('description', projectDescription);
