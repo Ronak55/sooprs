@@ -6,6 +6,7 @@ import Images from '../assets/image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import FSize from '../assets/commonCSS/FSize';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
 const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visible: boolean; onClose: () => void }) => {
     const [amount, setAmount] = useState('');
@@ -23,10 +24,19 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
             position: 'top',
             text1: 'Please enter a valid amount',
           });
+          onClose();
           return; // Exit the function if the amount is invalid
         }
       
-        const lead_id = await AsyncStorage.getItem('uid');
+        let lead_id = await AsyncStorage.getItem('uid');
+  
+        // If lead_id has extra quotes, remove them
+        if (lead_id) {
+          lead_id = lead_id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+        }
+
+        console.log('Lead ID:::::', lead_id);
+
       
         const formdata = new FormData();
         formdata.append('id', id);
@@ -42,10 +52,12 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
           body: formdata,
         };
       
-        fetch('https://sooprs.com/api2/public/index.php/query_detail', requestOptions)
+        fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + mobile_siteConfig.ADD_BID, requestOptions)
           .then(response => response.json())
           .then(res => {
-            if (res.status === 200) {
+            if (res) {
+              console.log('payload response:::::::::', formdata);
+              console.log('response amount::::::::::', res);
               Toast.show({
                 type: 'success',
                 position: 'top',

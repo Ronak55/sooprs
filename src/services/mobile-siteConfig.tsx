@@ -18,6 +18,10 @@ export const mobile_siteConfig = Object.freeze({
 
     EMAIL:'email',
 
+    // name
+
+    NAME:'name',
+
     //PASSWORD
     FORGOT_PASSWORD:'forgetpassword',
     RESET_PASSWORD:'resetpassword',
@@ -36,7 +40,8 @@ export const mobile_siteConfig = Object.freeze({
     POST_PROJECT:'save_post_project',
     GET_DESCRIPTION:'post-project-description',
     GET_PROJECTS:'get_enquiries_ajax',
-    QUERY_DETAIL:'query_detail'
+    QUERY_DETAIL:'query_detail',
+    ADD_BID:'add_bid'
 
 
 })

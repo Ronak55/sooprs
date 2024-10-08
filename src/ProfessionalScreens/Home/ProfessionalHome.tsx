@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, StatusBar, Image, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { wp, hp } from '../../assets/commonCSS/GlobalCSS'
 import Colors from '../../assets/commonCSS/Colors'
 import FSize from '../../assets/commonCSS/FSize'
@@ -9,8 +9,26 @@ import SearchBar from '../../components/SearchBar'
 import Filter from '../../components/Filter'
 import IntroCard from '../../components/IntroCard'
 import AllProjects from '../../components/AllProjects'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mobile_siteConfig } from '../../services/mobile-siteConfig'
 
 const Home = ({navigation} : {navigation:any}) => {
+
+  const [name, setName] = useState('');
+
+  const getName = async()=>{
+
+    const userName = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+    setName(userName ?? '');
+
+  }
+
+  useEffect(()=>{
+
+    getName();
+    
+  }, [])
+  
   return (
    <>
      <StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -18,7 +36,7 @@ const Home = ({navigation} : {navigation:any}) => {
       <Header
         navigation={navigation}
         img={Images.profileImagetwo}
-        name="Jacob Collis"
+        name={name || "user"}
         btnName="Post a project"
       />
       <View style={styles.section}>

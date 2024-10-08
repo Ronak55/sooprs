@@ -121,7 +121,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
 
         storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, "TRUE");
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
-
+        storeDataToAsyncStorage(mobile_siteConfig.NAME, name)
         // let resetAction = CommonActions.reset({
         //   index: 0,
         //   routes: [
