@@ -209,7 +209,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
               title="Mobile"
               name="Enter your mobile number"
               newlabel={true}
-              style={{width: '73%'}}
+              style={{width: '70%'}}
               setValue={(val: React.SetStateAction<string>) => {
                 setPhone(val);
               }}
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   title: {
-    marginHorizontal: wp(10),
+    marginHorizontal: wp(8),
     marginVertical: hp(5),
   },
   titleText: {

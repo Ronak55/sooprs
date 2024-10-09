@@ -100,6 +100,8 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
         storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id)
         storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
+        // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
+      
 
         let resetAction = CommonActions.reset({
           index: 0,
@@ -110,10 +112,12 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
         navigation.dispatch(resetAction);
       } else if (response.status === 400) {
         // Show error message for status 400
+        console.log('response token:::::::::::', response)
+
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2:'Login failed. Please try again.',
+          text2: response.msg || 'Login failed. Please try again.',
           position: 'top',
         });
       }

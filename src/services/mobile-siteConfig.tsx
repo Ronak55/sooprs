@@ -23,6 +23,7 @@ export const mobile_siteConfig = Object.freeze({
     NAME:'name',
 
     //PASSWORD
+    PASSWORD:'password',
     FORGOT_PASSWORD:'forgetpassword',
     RESET_PASSWORD:'resetpassword',
 
@@ -41,7 +42,9 @@ export const mobile_siteConfig = Object.freeze({
     GET_DESCRIPTION:'post-project-description',
     GET_PROJECTS:'get_enquiries_ajax',
     QUERY_DETAIL:'query_detail',
-    ADD_BID:'add_bid'
+    ADD_BID:'add_bid',
+    MY_BIDS:'get_my_leads',
+    FILTER_PROFF:'filter_service_ajax'
 
 
 })

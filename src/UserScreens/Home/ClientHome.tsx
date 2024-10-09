@@ -20,16 +20,25 @@ import HomeSectionTitle from '../../components/HomeSectionTitle';
 import GigsList from '../../components/GigsList';
 import FSize from '../../assets/commonCSS/FSize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { mobile_siteConfig } from '../../services/mobile-siteConfig';
+import { useIsFocused } from '@react-navigation/native';
 
 const Home = ({navigation} : {navigation:any}) => {
 
   const [name, setName] = useState('');
+  const isFocused = useIsFocused();
+  
 
   const getName = async()=>{
 
-    const userName = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-    setName(userName ?? '');
+    try {
+      const storedDetails = await AsyncStorage.getItem('profileDetails');
+      if (storedDetails !== null) {
+        const { name } = JSON.parse(storedDetails);
+        setName(name ?? '');
+      }
+    } catch (e) {
+      console.log('Error retrieving profile details:', e);
+    }
 
   }
 
@@ -37,7 +46,7 @@ const Home = ({navigation} : {navigation:any}) => {
 
     getName();
     
-  }, [])
+  }, [isFocused])
 
   return (
     <>
@@ -46,8 +55,9 @@ const Home = ({navigation} : {navigation:any}) => {
       <Header
         navigation={navigation}
         img={Images.profileImagetwo}
-        name={name}
+        name={name || 'User'}
         btnName="Post a project"
+        isClient={true}
       />
       <View style={styles.section}>
         <View style={styles.textAlign}>

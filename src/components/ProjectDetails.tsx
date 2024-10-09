@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image, ScrollView} from 'react-native';
 import Colors from '../assets/commonCSS/Colors';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
@@ -36,54 +36,48 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           Project Details
         </Text>
       </View>
-      <View style={styles.projectSection}>
-        <View style={styles.projectTitle}>
-          <Text style={styles.title}>{name}</Text>
-        </View>
-        <View style={styles.projectPosted}>
-          <View style={styles.posted}>
-            <Text style={styles.postedText}>Posted:</Text>
-            <Text style={styles.postedDate}> {createdAt}</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.projectSection}>
+          <View style={styles.projectTitle}>
+            <Text style={styles.title}>{name}</Text>
           </View>
-          <View style={styles.posted}>
-            <Text style={styles.postedText}>Budget:</Text>
-            <Text style={styles.postedDate}> ${budget}</Text>
+          <View style={styles.projectPosted}>
+            <View style={styles.posted}>
+              <Text style={styles.postedText}>Posted:</Text>
+              <Text style={styles.postedDate}> {createdAt}</Text>
+            </View>
+            <View style={styles.posted}>
+              <Text style={styles.postedText}>Budget:</Text>
+              <Text style={styles.postedDate}> ${budget}</Text>
+            </View>
           </View>
-          {/* <View style={styles.posted}>
-            <Image
-              source={Images.locationIcon}
-              style={styles.contactIcon}
-              resizeMode="contain"
-            />
-            <Text style={styles.postedDate}> New Delhi</Text>
-          </View> */}
+          <View>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.bidbtn}>
+              <Text style={styles.btnText}>Bid</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View>
-          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.bidbtn}>
-            <Text style={styles.btnText}>Bid</Text>
-          </TouchableOpacity>
+        <View style={styles.skillSection}>
+          <Text style={styles.skillText}>Skills</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={() => {}} style={styles.catbtn}>
+              <Text style={styles.btnText}>{category}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View style={styles.skillSection}>
-        <Text style={styles.skillText}>Skills</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.catbtn}>
-            <Text style={styles.btnText}>{category}</Text>
-          </TouchableOpacity>
+        <View style={styles.skillSection}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={() => {}} style={styles.descbtn}>
+              <Text style={styles.descText}>Description</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.descDetails}>
+              <Text style={styles.detailsText}>
+                  {desc}
+              </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.skillSection}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.descbtn}>
-            <Text style={styles.descText}>Description</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.descDetails}>
-            <Text style={styles.detailsText}>
-                {desc}
-            </Text>
-        </View>
-      </View>
+      </ScrollView>
       <BidModal id={id} budget={budget} visible={isModalVisible} onClose={() => setModalVisible(false)} />
     </View>
   );
@@ -107,6 +101,9 @@ const styles = StyleSheet.create({
     width: wp(8),
     height: hp(8),
   },
+  scrollContainer: {
+    paddingBottom: hp(5), // Add extra space at the bottom for better scrolling
+  },
   projectSection: {
     marginVertical: hp(2),
     marginHorizontal: wp(5),
@@ -114,13 +111,11 @@ const styles = StyleSheet.create({
   projectTitle: {
     flexDirection: 'column',
   },
-
   title: {
     fontWeight: '600',
     fontSize: FSize.fs20,
     color: Colors.black,
   },
-
   projectPosted: {
     marginVertical: hp(2),
     flexDirection: 'row',
@@ -140,11 +135,6 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs12,
     fontWeight: '500',
   },
-  contactIcon: {
-    width: wp(3),
-    height: hp(3),
-  },
-
   catbtn: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -154,7 +144,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1),
     width: wp(50),
   },
-
   descbtn: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -163,7 +152,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1.5),
     width: wp(45),
   },
-
   bidbtn: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -172,43 +160,36 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.sooprsblue,
     paddingVertical: hp(1.5),
   },
-
   buttonContainer: {
     marginTop: hp(1),
-    marginRight: wp(2), // Add spacing between the buttons
+    marginRight: wp(2),
   },
-
   btnText: {
     color: Colors.white,
     fontWeight: '500',
     fontSize: FSize.fs13,
   },
-
   skillSection: {
     flexDirection: 'column',
     marginVertical: hp(2),
     marginHorizontal: wp(5),
   },
-
   skillText: {
     color: Colors.sooprsblue,
     fontSize: FSize.fs20,
     fontWeight: '500',
   },
-
   descText: {
     color: Colors.white,
     fontSize: FSize.fs14,
     fontWeight: '500',
   },
-
-  descDetails:{
-    marginVertical:hp(3)
+  descDetails: {
+    marginVertical: hp(3),
   },
-
-  detailsText:{
-    color:Colors.black,
-    fontWeight:'400',
-    fontSize:FSize.fs14
-  }
+  detailsText: {
+    color: Colors.black,
+    fontWeight: '400',
+    fontSize: FSize.fs14,
+  },
 });

@@ -39,10 +39,10 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
 
       
         const formdata = new FormData();
-        formdata.append('id', id);
+        formdata.append('id', lead_id);
         formdata.append('amount', amount);
         formdata.append('description', description);
-        formdata.append('lead_id', lead_id);
+        formdata.append('lead_id', id);
       
         const requestOptions = {
           method: 'POST',

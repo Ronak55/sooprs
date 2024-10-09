@@ -49,7 +49,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
               </View>
             {/* </TouchableOpacity> */}
             <Text style={styles.profileName}>{name}</Text>
-            <Text style={styles.profileRole}>{role?.join(', ')}</Text>
+            <Text style={styles.profileRole}>{role}</Text>
             <View style={styles.ratings}>
             <Image
               style={styles.starIcon}

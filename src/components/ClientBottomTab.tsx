@@ -15,6 +15,8 @@ import ClientProfile from '../UserScreens/Profile/ClientProfile';
 import FSize from '../assets/commonCSS/FSize';
 import ProjectPosting from '../UserScreens/Projects/ProjectPosting';
 import ProjectBids from '../UserScreens/Projects/ProjectBids';
+import ManageDetails from './ManageDetails';
+import ManagePassword from './ManagePassword';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,6 +31,8 @@ const HomeStack = () => {
       <Stack.Screen name="Projects" component={Projects} />
       <Stack.Screen name="ProjectBids" component={ProjectBids} />
       <Stack.Screen name="Professionals" component={Professionals} />
+      <Stack.Screen name="ManageDetails" component={ManageDetails} />
+      <Stack.Screen name="ManagePassword" component={ManagePassword} />
       <Stack.Screen name="Gigs" component={Gigs} />
     </Stack.Navigator>
   );
@@ -100,7 +104,7 @@ const ClientBottomTab = () => {
       <Bottom.Screen name="Projects" component={Projects} />
       <Bottom.Screen name="Professionals" component={Professionals} />
       {/* <Bottom.Screen name="Gigs" component={Gigs} /> */}
-      <Bottom.Screen name="Account" component={ClientProfile} />
+      <Bottom.Screen name="Account" component={Account} />
     </Bottom.Navigator>
   );
 };

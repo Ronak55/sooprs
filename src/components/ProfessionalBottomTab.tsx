@@ -9,9 +9,11 @@ import Projects from '../ProfessionalScreens/Projects/Projects';
 import Chat from '../ProfessionalScreens/Chat/Chat';
 import Account from '../ProfessionalScreens/Account/Account';
 import Images from '../assets/image';
-import Profile from '../UserScreens/Profile/ProfessionalProfile';
+import ProfessionalProfile from '../UserScreens/Profile/ProfessionalProfile';
 import FSize from '../assets/commonCSS/FSize';
 import ProjectDetails from './ProjectDetails';
+import ManageDetails from './ManageDetails';
+import ManagePassword from './ManagePassword';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,6 +26,9 @@ const HomeStack = () => {
       <Stack.Screen name="Projects" component={Projects} />
       <Stack.Screen name="Chat" component={Chat} />
       <Stack.Screen name="Account" component={Account} />
+      <Stack.Screen name="ManageDetails" component={ManageDetails} />
+      <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
+      <Stack.Screen name="ManagePassword" component={ManagePassword} />
     </Stack.Navigator>
   );
 };
@@ -89,7 +94,7 @@ const ProfessionalBottomTab = () => {
       })}>
       <Bottom.Screen name={"Home"} component={HomeStack} />
       <Bottom.Screen name="Projects" component={Projects} />
-      <Bottom.Screen name="Chat" component={Chat} />
+      {/* <Bottom.Screen name="Chat" component={Chat} /> */}
       <Bottom.Screen name="Account" component={Account} />
     </Bottom.Navigator>
   );

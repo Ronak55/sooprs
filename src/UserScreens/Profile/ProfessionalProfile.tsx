@@ -12,7 +12,7 @@ import ProfileTabs from '../../components/ProfileTabs';
 
 const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}) => {
 
-  const {img, name, services, skills, avgrating, listing_about} = route.params;
+  const {img, name, services, skills, avgrating, listing_about} = route?.params;
 
   const [isClient, setisClient] = useState(false);
 

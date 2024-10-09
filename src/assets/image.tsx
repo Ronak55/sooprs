@@ -55,7 +55,10 @@ reviewerone: require('../assets/Icons/reviewerone.png'),
 reviewertwo: require('../assets/Icons/reviewertwo.png'),
 reviewerthree: require('../assets/Icons/reviewerthree.png'),
 chevronRight: require('../assets/Icons/chevronRight.png'),
-favoriteIcon: require('../assets/Icons/favorite.png')
+favoriteIcon: require('../assets/Icons/favorite.png'),
+walletIcon:require('../assets/Icons/wallet.png'),
+bankIcon:require('../assets/Icons/bankaccount.png'),
+uparrowIcon:require('../assets/Icons/uparrow.png')
 
 }
 

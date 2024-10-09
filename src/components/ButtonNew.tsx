@@ -1,6 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import React from 'react';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
+import FSize from '../assets/commonCSS/FSize';
 
 const ButtonNew = ({
   imgSource,
@@ -23,8 +24,9 @@ const ButtonNew = ({
         borderColor: '#0077FF',
         alignItems: 'center',
         justifyContent: 'center',
-        width: wp(82),
-        height: hp(6),
+        paddingHorizontal:wp(22),
+        paddingVertical:hp(1.5),
+        // height: hp(5.5),
         borderRadius: wp(2),
         marginBottom:hp(2)
       }}
@@ -35,7 +37,7 @@ const ButtonNew = ({
             source={imgSource}
             resizeMode="contain"
             style={styles.imageStyling}></Image>
-          <Text style={{color: textColor, fontWeight: '500'}}>{btntext}</Text>
+          <Text style={{color: textColor, fontWeight: '500', fontSize:FSize.fs13}}>{btntext}</Text>
         </View>
       ) : (
         <Text style={{color: textColor, fontWeight: '500'}}>{btntext}</Text>

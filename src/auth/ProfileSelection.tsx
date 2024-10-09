@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
   },
 
   section: {
-    // marginHorizontal: wp(10),
-    justifyContent:'center', 
-    alignItems:'center',   
+    marginHorizontal: wp(8),
+    // justifyContent:'center', 
+    // alignItems:'center',   
     marginVertical: wp(10),
   },
 
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#08090D',
     fontSize: FSize.fs22,
+    alignSelf:'center'
   },
 
   profileSelect: {
