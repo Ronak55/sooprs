@@ -29,7 +29,7 @@ const Account = ({navigation} : {navigation:any}) => {
           Edit Profile
         </Text>
       </View>
-      <AccountProfile navigation={navigation}/>
+      <AccountProfile navigation={navigation} isClient={false}/>
     </View>
   );
 };

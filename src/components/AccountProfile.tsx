@@ -1,32 +1,38 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FSize from '../assets/commonCSS/FSize';
 import Colors from '../assets/commonCSS/Colors';
 import Images from '../assets/image';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
-const AccountProfile = ({navigation}: {navigation: any}) => {
+const AccountProfile = ({
+  navigation,
+  isClient,
+}: {
+  navigation: any;
+  isClient: any;
+}) => {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [profileImage, setProfileImage] = useState(Images.profileImage);
   const isFocused = useIsFocused();
 
-
   useEffect(() => {
     const loadProfileDetails = async () => {
       try {
         const storedDetails = await AsyncStorage.getItem('profileDetails');
+
+        const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+        
+        const parsedName = JSON.parse(name);
+
         if (storedDetails !== null) {
-          const { name, role, profileImage } = JSON.parse(storedDetails);
-          setName(name);
+          const {role, profileImage} = JSON.parse(storedDetails);
+
+          setName(parsedName);
           setRole(role);
           setProfileImage(profileImage);
         }
@@ -36,35 +42,30 @@ const AccountProfile = ({navigation}: {navigation: any}) => {
     };
 
     const getImageFromStorage = async () => {
-        try {
-          const imageUrl = await AsyncStorage.getItem('profileImageUrl');
-          if (imageUrl) {
-            console.log('Retrieved image URL:', imageUrl);
-            setProfileImage({uri: imageUrl}); // Use the stored image URL
-          }
-        } catch (error) {
-          console.error('Error retrieving image from AsyncStorage:', error);
+      try {
+        const imageUrl = await AsyncStorage.getItem('profileImageUrl');
+        if (imageUrl) {
+          console.log('Retrieved image URL:', imageUrl);
+          setProfileImage({uri: imageUrl}); // Use the stored image URL
         }
-      };
+      } catch (error) {
+        console.error('Error retrieving image from AsyncStorage:', error);
+      }
+    };
     loadProfileDetails();
     getImageFromStorage();
-
   }, [isFocused]);
 
   return (
     <View style={styles.profile}>
       <View style={styles.profileHeading}>
-          <View style={[styles.profileIcon]}>
-            <Image
-              style={styles.Icon}
-              resizeMode="cover"
-              source={profileImage}
-            />
-          </View>
+        <View style={[styles.profileIcon]}>
+          <Image style={styles.Icon} resizeMode="cover" source={profileImage} />
+        </View>
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
         <Text style={styles.profileRole}>{role ? role : 'Role'}</Text>
       </View>
-      <View style={styles.profileSection}>
+      <ScrollView contentContainerStyle={styles.profileSection}>
         <View style={styles.commonSettings}>
           <View style={styles.settings}>
             <Image
@@ -74,46 +75,31 @@ const AccountProfile = ({navigation}: {navigation: any}) => {
             />
             <Text style={styles.accountText}>Profile Settings</Text>
           </View>
-          <TouchableOpacity onPress={()=>{navigation.navigate('ManageDetails')}}>
-          <View style={styles.details}>
-            <Text style={styles.detailsText}>Manage Details</Text>
-            <Image
-              style={styles.rightArrowIcon}
-              resizeMode="cover"
-              source={Images.rigthArrowIcon}
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ManageDetails');
+            }}>
+            <View style={styles.details}>
+              <Text style={styles.detailsText}>Manage Details</Text>
+              <Image
+                style={styles.rightArrowIcon}
+                resizeMode="cover"
+                source={Images.rigthArrowIcon}
+              />
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{navigation.navigate('ManagePassword')}}>
-          <View style={styles.details}>
-            <Text style={styles.detailsText}>Manage Password</Text>
-            <Image
-              style={styles.rightArrowIcon}
-              resizeMode="cover"
-              source={Images.rigthArrowIcon}
-            />
-          </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.commonSettings}>
-          <View style={styles.settings}>
-            <Image
-              style={styles.accountIcon}
-              resizeMode="cover"
-              source={Images.walletIcon}
-            />
-            <Text style={styles.accountText}>Wallet</Text>
-          </View>
-          <TouchableOpacity onPress={()=>{navigation.navigate('')}}>
-          <View style={styles.details}>
-            <Text style={styles.detailsText}>Add card details</Text>
-            <Image
-              style={styles.rightArrowIcon}
-              resizeMode="cover"
-              source={Images.rigthArrowIcon}
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ManagePassword');
+            }}>
+            <View style={styles.details}>
+              <Text style={styles.detailsText}>Manage Password</Text>
+              <Image
+                style={styles.rightArrowIcon}
+                resizeMode="cover"
+                source={Images.rigthArrowIcon}
+              />
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -126,18 +112,120 @@ const AccountProfile = ({navigation}: {navigation: any}) => {
             />
             <Text style={styles.accountText}>Bank Details</Text>
           </View>
-          <TouchableOpacity onPress={()=>{navigation.navigate('')}}>
-          <View style={styles.details}>
-            <Text style={styles.detailsText}>Add Bank details</Text>
-            <Image
-              style={styles.rightArrowIcon}
-              resizeMode="cover"
-              source={Images.rigthArrowIcon}
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('BankDetails');
+            }}>
+            <View style={styles.details}>
+              <Text style={styles.detailsText}>Add Bank details</Text>
+              <Image
+                style={styles.rightArrowIcon}
+                resizeMode="cover"
+                source={Images.rigthArrowIcon}
+              />
+            </View>
           </TouchableOpacity>
         </View>
-      </View>
+        {!isClient && (
+          <>
+            <View style={styles.commonSettings}>
+              <View style={styles.settings}>
+                <Image
+                  style={styles.accountIcon}
+                  resizeMode="cover"
+                  source={Images.walletIcon}
+                />
+                <Text style={styles.accountText}>Wallet</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AddCredits');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Add credits</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.commonSettings}>
+              <View style={styles.settings}>
+                <Image
+                  style={styles.accountIcon}
+                  resizeMode="cover"
+                  source={Images.bankIcon}
+                />
+                <Text style={styles.accountText}>Portfolio</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('ManagePortfolio');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Manage Portfolio</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AddSkills');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Skills</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AddExperience');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Experience</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.commonSettings}>
+              <View style={styles.settings}>
+                <Image
+                  style={styles.accountIcon}
+                  resizeMode="cover"
+                  source={Images.walletIcon}
+                />
+                <Text style={styles.accountText}>Lead Settings</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AddServices');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Manage Services</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </ScrollView>
     </View>
   );
 };
@@ -159,7 +247,8 @@ const styles = StyleSheet.create({
 
   profileSection: {
     flexDirection: 'column',
-    marginVertical: hp(1),
+    // marginVertical: hp(1),
+    marginBottom:hp(5),
     marginHorizontal: wp(10),
   },
 

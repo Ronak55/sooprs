@@ -26,6 +26,7 @@ export const mobile_siteConfig = Object.freeze({
     PASSWORD:'password',
     FORGOT_PASSWORD:'forgetpassword',
     RESET_PASSWORD:'resetpassword',
+    UPDATE_PASSWORD:'update-password',
 
     //OTP
     VERIFY_OTP:'verifyOtp',
@@ -44,7 +45,13 @@ export const mobile_siteConfig = Object.freeze({
     QUERY_DETAIL:'query_detail',
     ADD_BID:'add_bid',
     MY_BIDS:'get_my_leads',
-    FILTER_PROFF:'filter_service_ajax'
+    FILTER_PROFF:'filter_service_ajax',
 
+    //profile
+
+    GET_USER_PROFILE:'get-user-profile',
+    UPDATE_PROFILE_PROFESSIONAL:'update_profile_professional',
+    UPLOAD_PICTURE:'upload_picture'
+  
 
 })

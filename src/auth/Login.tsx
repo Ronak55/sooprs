@@ -100,6 +100,7 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
         storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id)
         storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
+        storeDataToAsyncStorage(mobile_siteConfig.NAME, response.slug)
         // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
       
 

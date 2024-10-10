@@ -35,6 +35,33 @@ export async function postData(data: any, urlPath: string) {
   });
 }
 
+export async function postFormData(formData: FormData, urlPath: string) {
+  return new Promise((resolve, reject) => {
+    fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        Accept: '*/*',
+        // Note: No need to specify 'Content-Type' for FormData, it will be automatically set by fetch.
+      },
+      body: formData, // Pass FormData directly
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.status == 200) {
+          return resolve(json); // Successful response
+        } else {
+          return resolve(json); // Handle API errors within the response
+        }
+      })
+      .catch((error) => {
+        console.log(`=== ERROR === ${urlPath}`, error);
+        reject(error); // Catch fetch errors
+      });
+  });
+}
+
+
 export async function postDataWithToken(urlPath: string) {
   // let token = await AsyncStorage.getItem(
   //   mobile_siteConfig.MOB_ACCESS_TOKEN_KEY

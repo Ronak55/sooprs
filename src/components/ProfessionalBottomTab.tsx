@@ -14,6 +14,12 @@ import FSize from '../assets/commonCSS/FSize';
 import ProjectDetails from './ProjectDetails';
 import ManageDetails from './ManageDetails';
 import ManagePassword from './ManagePassword';
+import AddCredits from './AddCredits';
+import AddSkills from './AddSkills';
+import BankDetails from './BankDetails';
+import ManagePortfolio from './ManagePortfolio';
+import AddServices from './AddServices';
+import AddExperience from './AddExperience';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,6 +35,12 @@ const HomeStack = () => {
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
       <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
       <Stack.Screen name="ManagePassword" component={ManagePassword} />
+      <Stack.Screen name="AddCredits" component={AddCredits} />
+      <Stack.Screen name="AddSkills" component={AddSkills} />
+      <Stack.Screen name="AddServices" component={AddServices} />
+      <Stack.Screen name="AddExperience" component={AddExperience} />
+      <Stack.Screen name="BankDetails" component={BankDetails} />
+      <Stack.Screen name="ManagePortfolio" component={ManagePortfolio} />
     </Stack.Navigator>
   );
 };
