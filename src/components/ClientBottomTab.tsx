@@ -17,6 +17,8 @@ import ProjectPosting from '../UserScreens/Projects/ProjectPosting';
 import ProjectBids from '../UserScreens/Projects/ProjectBids';
 import ManageDetails from './ManageDetails';
 import ManagePassword from './ManagePassword';
+import AllProfessionals from './AllProfessionals';
+import CategoriesList from './CategoriesList';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -31,6 +33,8 @@ const HomeStack = () => {
       <Stack.Screen name="Projects" component={Projects} />
       <Stack.Screen name="ProjectBids" component={ProjectBids} />
       <Stack.Screen name="Professionals" component={Professionals} />
+      <Stack.Screen name="CategoriesList" component={CategoriesList} />
+      <Stack.Screen name="AllProfessionals" component={AllProfessionals} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
       <Stack.Screen name="ManagePassword" component={ManagePassword} />
       <Stack.Screen name="Gigs" component={Gigs} />

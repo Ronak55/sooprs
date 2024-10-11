@@ -21,10 +21,11 @@ interface TabParams {
 
 const ProfileTabs = ({ tabs, isClient, services, skills }: { tabs: any, isClient:any, services:string[], skills:string[]}) => {
   const renderTabScreens = () => {
+    console.log('tabs:::::::::::::', tabs);
+    
     return tabs.map((tab: any, index: any) => {
       let Component;
       const initialParams: TabParams = {};
-
       switch (tab) {
         case 'Portfolio':
           Component = Portfolio;
@@ -53,6 +54,8 @@ const ProfileTabs = ({ tabs, isClient, services, skills }: { tabs: any, isClient
             </View>
           );
       }
+
+      console.log('Rendering Tab:', tab, 'with params:', initialParams);
 
       return <Tab.Screen key={index} name={tab} component={Component} initialParams={initialParams}/>
     });

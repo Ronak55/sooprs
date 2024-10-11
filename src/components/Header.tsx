@@ -32,7 +32,7 @@ const Header = ({
         resizeMode="contain"
         style={styles.hello}
       />
-      <View style={{paddingHorizontal: btnName ? wp(10) : wp(35), flexDirection: 'row', gap: 15}}>
+      <View style={{paddingHorizontal: btnName ? wp(3) : wp(35), flexDirection: 'row', gap: 15}}>
         {btnName && (
           <TouchableOpacity
             style={styles.postButton}

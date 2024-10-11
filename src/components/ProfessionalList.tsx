@@ -23,7 +23,7 @@ const ProfessionalList = ({ navigation }: { navigation: any }) => {
       .then(response => response.json())
       .then(res => {
         if (res.status === 200) {
-          console.log('professional data:', res.msg);
+          console.log('professional data:::::', res.msg);
           setProfessionals(res.msg);
         }
       })

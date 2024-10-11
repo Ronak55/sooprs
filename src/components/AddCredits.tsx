@@ -48,30 +48,133 @@ const AddCredits = ({navigation}: {navigation: any}) => {
   const AllTab = () => (
     <FlatList
       data={transactions}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.updated_at}
       renderItem={({ item }) => (
-        <View style={[styles.transactionCard, item.transaction_type === "0" ? styles.debitCard : styles.creditCard]}>
+        <View
+          style={[
+            styles.transactionCard,
+            item.transaction_type === "0" ? styles.debitCard : styles.creditCard,
+          ]}
+        >
+          <View style={styles.transactionRow}>
+            {/* Transaction Date */}
+            <Text style={styles.transactionDate}>
+              {item.transaction_date || "No Date"}
+            </Text>
+  
+            {/* Transaction ID */}
+            {item.transaction_id ? (
+              <Text style={styles.transactionId}>
+                ID: {item.transaction_id}
+              </Text>
+            ) : null}
+          </View>
+  
           <Text style={styles.transactionRemark}>{item.remark}</Text>
-          <Text style={styles.transactionType}>{item.transaction_type === "0" ? "Debited" : "Credited"}</Text>
-          <Text style={styles.transactionAmount}>₹{item.amount}</Text> {/* Display amount without label */}
-          <Text style={styles.transactionId}>ID: {item.transaction_id}</Text> {/* Shortened ID label */}
+  
+          <View style={styles.transactionDetails}>
+            {/* Transaction Amount */}
+            <Text style={styles.transactionAmount}>
+              {item.amount}
+            </Text>
+  
+            {/* Transaction Type */}
+            <Text style={styles.transactionType}>
+              {item.transaction_type==='0' ? 'Debited' : 'Credited'}
+            </Text>
+          </View>
         </View>
       )}
       contentContainerStyle={{ padding: wp(4) }} // 16
     />
   );
   
-
   const CreditedTab = () => (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       <Text style={{color:Colors.black}}>Credited Transactions</Text>
-    </View>
+    <FlatList
+    data={transactions.filter(item => item.transaction_type === "1")}
+    keyExtractor={(item) => item.updated_at}
+    renderItem={({ item }) => (
+      <View
+        style={[
+          styles.transactionCard,
+          styles.creditCard,
+        ]}
+      >
+        <View style={styles.transactionRow}>
+          {/* Transaction Date */}
+          <Text style={styles.transactionDate}>
+            {item.transaction_date || "No Date"}
+          </Text>
+
+          {/* Transaction ID */}
+          {item.transaction_id ? (
+            <Text style={styles.transactionId}>
+              ID: {item.transaction_id}
+            </Text>
+          ) : null}
+        </View>
+
+        <Text style={styles.transactionRemark}>{item.remark}</Text>
+
+        <View style={styles.transactionDetails}>
+          {/* Transaction Amount */}
+          <Text style={styles.transactionAmount}>
+            {item.amount}
+          </Text>
+
+          {/* Transaction Type */}
+          <Text style={styles.transactionType}>
+            Credited
+          </Text>
+        </View>
+      </View>
+    )}
+    contentContainerStyle={{ padding: wp(4) }} // 16
+  />
   );
 
   const DebitedTab = () => (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       <Text style={{color:Colors.black}}>Debited Transactions</Text>
-    </View>
+    <FlatList
+    data={transactions.filter(item => item.transaction_type === "0")}
+    keyExtractor={(item) => item.updated_at}
+    renderItem={({ item }) => (
+      <View
+        style={[
+          styles.transactionCard,
+          styles.debitCard,
+        ]}
+      >
+        <View style={styles.transactionRow}>
+          {/* Transaction Date */}
+          <Text style={styles.transactionDate}>
+            {item.transaction_date || "No Date"}
+          </Text>
+
+          {/* Transaction ID */}
+          {item.transaction_id ? (
+            <Text style={styles.transactionId}>
+              ID: {item.transaction_id}
+            </Text>
+          ) : null}
+        </View>
+
+        <Text style={styles.transactionRemark}>{item.remark}</Text>
+
+        <View style={styles.transactionDetails}>
+          {/* Transaction Amount */}
+          <Text style={styles.transactionAmount}>
+            {item.amount}
+          </Text>
+
+          {/* Transaction Type */}
+          <Text style={styles.transactionType}>
+            Debited
+          </Text>
+        </View>
+      </View>
+    )}
+    contentContainerStyle={{ padding: wp(4) }} // 16
+  />
   );
 
   const renderScene = SceneMap({
@@ -197,7 +300,8 @@ const AddCredits = ({navigation}: {navigation: any}) => {
   
           if (res.status === 200) {
             console.log('transactions fetched::::', res.msg)
-            setTransactions(res.msg);
+            
+            setTransactions(res.msg)
           } else {
             console.error('Error fetching transactions:', res.msg);
           }
@@ -516,32 +620,49 @@ const styles = StyleSheet.create({
     padding: wp(4), // 16
     borderRadius: wp(2), // 8
     marginBottom: hp(2), // 12
+    backgroundColor: '#f9f9f9', // Light gray background
     elevation: 2,
+    borderColor: '#ddd', 
+    borderWidth: 1,
   },
   debitCard: {
-    backgroundColor: '#ffcccc', // Light red for debit
+    backgroundColor: '#ffe6e6', 
   },
   creditCard: {
-    backgroundColor: '#ccffcc', // Light green for credit
+    backgroundColor: '#e6ffe6',
+  },
+  transactionRow: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    marginBottom: hp(1),
   },
   transactionRemark: {
-    fontSize: FSize.fs16, // Use fs16 for remark
+    fontSize: FSize.fs16,
     fontWeight: 'bold',
-    marginBottom: hp(1), // Margin for spacing
+    color: '#333', 
+    marginBottom: hp(1), 
   },
-  transactionType: {
-    fontSize: FSize.fs14, // Use fs14 for transaction type
-    marginBottom: hp(0.5), // Smaller margin for spacing
-    color: '#333', // Dark color for better visibility
+  transactionDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: hp(1), 
   },
   transactionAmount: {
-    fontSize: FSize.fs16, // Use fs16 for amount
-    fontWeight: '600', // Semi-bold font weight
-    color: '#0077FF', // Use a distinct color for amounts
-    marginBottom: hp(0.5), // Small margin for spacing
+    fontSize: FSize.fs16, 
+    fontWeight: '600', 
+    color: '#0077FF',
+  },
+  transactionType: {
+    fontSize: FSize.fs14, // Slightly smaller for transaction type
+    color: '#666', // Gray for less emphasis compared to amount
   },
   transactionId: {
-    fontSize: FSize.fs12, // Smaller font size for transaction ID
-    color: '#666',
+    fontSize: FSize.fs12, // Smaller size for the transaction ID
+    color: '#999', // Light gray for less emphasis
   },
+  transactionDate: {
+    fontSize: FSize.fs12, // Smaller font for date
+    color: '#999',
+  },
+ 
 });

@@ -21,6 +21,7 @@ import GigsList from '../../components/GigsList';
 import FSize from '../../assets/commonCSS/FSize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { mobile_siteConfig } from '../../services/mobile-siteConfig';
 
 const Home = ({navigation} : {navigation:any}) => {
 
@@ -31,14 +32,15 @@ const Home = ({navigation} : {navigation:any}) => {
   const getName = async()=>{
 
     try {
-      const storedDetails = await AsyncStorage.getItem('profileDetails');
-      if (storedDetails !== null) {
-        const { name } = JSON.parse(storedDetails);
-        setName(name ?? '');
+      const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const parsedName = JSON.parse(name)
+      if (name !== null) {
+        setName(parsedName ?? '');
       }
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
+
 
   }
 

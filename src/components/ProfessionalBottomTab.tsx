@@ -20,6 +20,8 @@ import BankDetails from './BankDetails';
 import ManagePortfolio from './ManagePortfolio';
 import AddServices from './AddServices';
 import AddExperience from './AddExperience';
+import AddPortfolio from './AddPortfolio';
+import ManageExperience from './ManageExperience';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -39,7 +41,9 @@ const HomeStack = () => {
       <Stack.Screen name="AddSkills" component={AddSkills} />
       <Stack.Screen name="AddServices" component={AddServices} />
       <Stack.Screen name="AddExperience" component={AddExperience} />
+      <Stack.Screen name="AddPortfolio" component={AddPortfolio} />
       <Stack.Screen name="BankDetails" component={BankDetails} />
+      <Stack.Screen name="ManageExperience" component={ManageExperience} />
       <Stack.Screen name="ManagePortfolio" component={ManagePortfolio} />
     </Stack.Navigator>
   );

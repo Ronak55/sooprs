@@ -1,5 +1,13 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity, Alert, ScrollView} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {wp, hp} from '../../assets/commonCSS/GlobalCSS';
 import FSize from '../../assets/commonCSS/FSize';
 import Header from '../../components/Header';
@@ -10,28 +18,45 @@ import ProfileContent from '../../components/ProfileContent';
 import ContactDetails from '../../components/ContactDetails';
 import ProfileTabs from '../../components/ProfileTabs';
 
-const ProfessionalProfile = ({navigation, route}: {navigation: any; route: any;}) => {
-
+const ProfessionalProfile = ({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) => {
   const {img, name, services, skills, avgrating, listing_about} = route?.params;
 
   const [isClient, setisClient] = useState(false);
 
-  const tabs = ['Portfolio', 'Services', 'Skills','Reviews'];
+  const tabs = ['Portfolio', 'Services', 'Skills', 'Reviews'];
 
-  useEffect(()=>{
-
-  console.log('services data::::::::::;', services)
-
-  }, [route.params])
+  useEffect(() => {
+    console.log('Services in ProfessionalProfile:', services);
+    console.log('Skills in ProfessionalProfile:', skills);
+  }, [services, skills]);
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.profileView}>
-      <ProfileComponent navigation={navigation} img={img} name={name} role={services} rating={avgrating}/>
-      <ProfileContent heading={"Bio"} content={listing_about}/>
-      {/* <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/> */}
-      <ProfileTabs tabs={tabs} isClient={isClient} services={services} skills={skills}/>
-      </ScrollView>
+      {/* <ScrollView style={styles.profileView}> */}
+       <View style={{justifyContent:'center', alignItems:'center'}}>
+        <ProfileComponent
+          navigation={navigation}
+          img={img}
+          name={name}
+          role={services}
+          rating={avgrating}
+        />
+        </View>
+        <ProfileContent heading={'Bio'} content={listing_about} />
+        {/* <ContactDetails email="rj.rjain567@gmail.com" phone="8474081159" location="New Delhi"/> */}
+        {/* </ScrollView> */}
+        <ProfileTabs
+          tabs={tabs}
+          isClient={isClient}
+          services={services}
+          skills={skills}
+        />
     </View>
   );
 };
@@ -44,9 +69,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
-  profileView:{
-
-    margin:wp(2)
+  profileView: {
+    margin: wp(2),
   },
 
   profileSection: {
@@ -55,7 +79,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  
+
   backArrow: {
     width: wp(8),
     height: hp(8),
@@ -65,8 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: wp(20),
     marginVertical: hp(5),
-    alignItems:'center',
-    gap:1
+    alignItems: 'center',
+    gap: 1,
   },
   profileIcon: {
     width: wp(50),
@@ -76,13 +100,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: wp(30),
-    marginBottom:wp(2)
+    marginBottom: wp(2),
   },
   Icon: {
     width: hp(23),
     height: hp(23),
     borderRadius: wp(50),
-
   },
   starIcon: {
     width: wp(3),
@@ -95,17 +118,17 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: FSize.fs24,
     fontWeight: '600',
-    color:Colors.black
+    color: Colors.black,
   },
   profileRole: {
     fontSize: FSize.fs12,
     fontWeight: '500',
-    color:Colors.gray
+    color: Colors.gray,
   },
 
-  ratings:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center'
-  }
+  ratings: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

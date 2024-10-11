@@ -131,6 +131,8 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
         navigation.navigate('Login', {profileType: profileType});
         
       } else if (response.status === 400) {
+
+        console.log("Failure:::::", response);
         // Show error message for status 400
         Toast.show({
           type: 'error',

@@ -1,12 +1,21 @@
-import {Image, StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FSize from '../assets/commonCSS/FSize';
 import Colors from '../assets/commonCSS/Colors';
 import Images from '../assets/image';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useIsFocused} from '@react-navigation/native';
-import { mobile_siteConfig } from '../services/mobile-siteConfig';
+import {CommonActions, useIsFocused} from '@react-navigation/native';
+import {mobile_siteConfig} from '../services/mobile-siteConfig';
+import ButtonNew from './ButtonNew';
 
 const AccountProfile = ({
   navigation,
@@ -26,7 +35,7 @@ const AccountProfile = ({
         const storedDetails = await AsyncStorage.getItem('profileDetails');
 
         const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-        
+
         const parsedName = JSON.parse(name);
 
         if (storedDetails !== null) {
@@ -55,6 +64,31 @@ const AccountProfile = ({
     loadProfileDetails();
     getImageFromStorage();
   }, [isFocused]);
+
+  const confirmLogout = async () => {
+    await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
+    await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'FALSE');
+    let reset = CommonActions.reset({
+      index: 0,
+      routes: [{name: 'Authentication'}],
+    });
+    navigation.dispatch(reset);
+  };
+
+  const handleLogout = async () => {
+    Alert.alert('Logout', 'Are you sure want to logout?', [
+      {
+        text: 'No',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => confirmLogout(),
+        style: 'cancel',
+      },
+    ]);
+  };
 
   return (
     <View style={styles.profile}>
@@ -102,7 +136,6 @@ const AccountProfile = ({
             </View>
           </TouchableOpacity>
         </View>
-
         <View style={styles.commonSettings}>
           <View style={styles.settings}>
             <Image
@@ -188,7 +221,7 @@ const AccountProfile = ({
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('AddExperience');
+                  navigation.navigate('ManageExperience');
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Experience</Text>
@@ -225,6 +258,12 @@ const AccountProfile = ({
             </View>
           </>
         )}
+        <View style={styles.logout}>
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <Image source={Images.logoutIcon} style={styles.icon} />
+            <Text style={styles.text}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -248,7 +287,7 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'column',
     // marginVertical: hp(1),
-    marginBottom:hp(5),
+    marginBottom: hp(5),
     marginHorizontal: wp(10),
   },
 
@@ -256,7 +295,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginVertical: hp(1.5),
   },
-
   settings: {
     flexDirection: 'row',
     gap: wp(3),
@@ -322,5 +360,32 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: Colors.gray,
     maxWidth: '90%',
+  },
+
+  logout: {
+    marginVertical: hp(2),
+    marginHorizontal: wp(17),
+    
+  },
+
+
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    padding: hp(2),
+    borderRadius: wp(3),
+    justifyContent: 'center',
+    
+  },
+  icon: {
+    width: wp(4),
+    height: hp(2),
+    marginRight: wp(2),
+  },
+  text: {
+    color: 'white',
+    fontSize: FSize.fs14,
+    fontWeight: 'bold',
   },
 });

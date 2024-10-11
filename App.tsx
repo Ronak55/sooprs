@@ -13,6 +13,7 @@ import Signup from './src/auth/Signup';;
 import ClientBottomTab from './src/components/ClientBottomTab';
 import ProfessionalBottomTab from './src/components/ProfessionalBottomTab';
 import Toast from 'react-native-toast-message';
+import Splash from './src/Splash';
 
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +39,7 @@ return (
  
 
   <Stack.Navigator screenOptions={{headerShown:false}}>
+    <Stack.Screen name='Splash' component={Splash}/>
     <Stack.Screen name='Onboarding' component={Onboarding}/>
     <Stack.Screen name='Authentication' component={Authentication}/>
 

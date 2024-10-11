@@ -68,7 +68,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
   const styles = StyleSheet.create({
 
     profileSection: {
-      marginHorizontal: wp(5),
+      // marginHorizontal: wp(5),
       marginVertical: hp(1),
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -79,7 +79,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
     },
     profile: {
       flexDirection: 'column',
-      justifyContent: 'center',
+      // justifyContent: 'center',
       marginRight: wp(10),
       marginVertical: hp(3),
       alignItems:'center',

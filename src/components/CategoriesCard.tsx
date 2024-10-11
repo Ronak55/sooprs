@@ -4,12 +4,14 @@ import { wp, hp } from '../assets/commonCSS/GlobalCSS'
 import Colors from '../assets/commonCSS/Colors'
 import FSize from '../assets/commonCSS/FSize'
 
-const CategoriesCard = ({navigation, img, name, index} : {navigation:any, img:any, name:any, index:any}) => {
+const CategoriesCard = ({navigation, img, name, index,  onSelectService,} : {navigation:any, img:any, name:any, index:any, onSelectService: (serviceName: string) => void;}) => {
   return (
     <View>
-    <TouchableOpacity style={styles.card} onPress={()=>{}}>
+    <TouchableOpacity style={styles.card} onPress={() => {
+     onSelectService(name); // Call the passed function});
+    }}>
       <View style={styles.imgBack}>
-      <Image source={img} style={styles.image} resizeMode='contain'/>
+      <Image source={{uri : img}} style={styles.image} resizeMode='contain'/>
       </View>
       <View>
         <Text style={styles.name}>{name}</Text>

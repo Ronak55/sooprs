@@ -7,6 +7,7 @@ OnboardingScreen2: require('../assets/images/boardingscreen2.png'),
 OnboardingScreen3: require('../assets/images/boardingscreen3.png'),
 
 Sooprslogo: require('../assets/images/sooprslogo.png'),
+Sooprsnewlogo:  require('../assets/images/sooprsnewlogo.png'),
 
 Clientlogo: require("../assets/images/client.png"),
 
@@ -58,7 +59,8 @@ chevronRight: require('../assets/Icons/chevronRight.png'),
 favoriteIcon: require('../assets/Icons/favorite.png'),
 walletIcon:require('../assets/Icons/wallet.png'),
 bankIcon:require('../assets/Icons/bankaccount.png'),
-uparrowIcon:require('../assets/Icons/uparrow.png')
+uparrowIcon:require('../assets/Icons/uparrow.png'),
+logoutIcon:require('../assets/Icons/logout.png')
 
 }
 
