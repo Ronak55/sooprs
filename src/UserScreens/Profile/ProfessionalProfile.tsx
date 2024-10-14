@@ -25,7 +25,7 @@ const ProfessionalProfile = ({
   navigation: any;
   route: any;
 }) => {
-  const {img, name, services, skills, avgrating, listing_about} = route?.params;
+  const {id, img, name, services, skills, avgrating, listing_about} = route?.params;
 
   const [isClient, setisClient] = useState(false);
 
@@ -34,7 +34,8 @@ const ProfessionalProfile = ({
   useEffect(() => {
     console.log('Services in ProfessionalProfile:', services);
     console.log('Skills in ProfessionalProfile:', skills);
-  }, [services, skills]);
+    console.log('portfolio get id:::::::', id)
+  }, [services, skills, id]);
 
   return (
     <View style={styles.container}>
@@ -54,6 +55,7 @@ const ProfessionalProfile = ({
         <ProfileTabs
           tabs={tabs}
           isClient={isClient}
+          portfolio={id}
           services={services}
           skills={skills}
         />

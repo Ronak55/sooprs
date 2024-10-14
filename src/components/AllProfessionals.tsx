@@ -77,7 +77,7 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
 
   // Render individual professional cards
   const renderItem = ({ item, index }: { item: any, index: any }) => {
-    const { name, image, listing_about } = item.data;
+    const {id, name, image, listing_about } = item.data;
     const avgrating = item.avgrating;
     const services = item.services;
     const skills = item.skills;
@@ -85,6 +85,7 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
     return (
       <ProfessionalCard
         navigation={navigation}
+        id={id}
         img={image}
         name={name}
         services={services}

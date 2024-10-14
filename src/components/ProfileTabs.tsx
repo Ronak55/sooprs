@@ -19,16 +19,18 @@ interface TabParams {
   skills?: string[];  
 }
 
-const ProfileTabs = ({ tabs, isClient, services, skills }: { tabs: any, isClient:any, services:string[], skills:string[]}) => {
+const ProfileTabs = ({ tabs, isClient, id, services, skills }: { tabs: any, id:any, isClient:any, services:string[], skills:string[]}) => {
+ 
   const renderTabScreens = () => {
     console.log('tabs:::::::::::::', tabs);
-    
+
     return tabs.map((tab: any, index: any) => {
       let Component;
       const initialParams: TabParams = {};
       switch (tab) {
         case 'Portfolio':
           Component = Portfolio;
+          initialParams.services = id
           break;
         case 'Services':
           Component = Services;
@@ -66,7 +68,6 @@ const ProfileTabs = ({ tabs, isClient, services, skills }: { tabs: any, isClient
     screenOptions={({ route }) => ({
         tabBarLabel: ({ focused }) => (
           <Text
-        
             style={{ color: focused ? Colors.white : Colors.black, fontSize:FSize.fs12 }}
           >
             {route.name}

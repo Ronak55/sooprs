@@ -162,7 +162,7 @@ import {
       backgroundColor: Colors.white,
       borderRadius: 10,
       width: wp(43),
-      height: hp(26),
+      height: hp(30),
       marginBottom: hp(4),
       marginRight: wp(3),
       elevation: 4,

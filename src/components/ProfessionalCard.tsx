@@ -5,7 +5,7 @@ import { hp, wp } from '../assets/commonCSS/GlobalCSS';
 import Images from '../assets/image';
 import FSize from '../assets/commonCSS/FSize';
 
-const ProfessionalCard = ({navigation, img, name, services, skills, avgrating, listing_about, index} : {navigation:any, img:any, name:any, services:any, skills:any, avgrating:any, listing_about:any, index:any}) => {
+const ProfessionalCard = ({id, navigation, img, name, services, skills, avgrating, listing_about, index} : {id:any, navigation:any, img:any, name:any, services:any, skills:any, avgrating:any, listing_about:any, index:any}) => {
 
    const backgroundColor = index % 2 === 0 ? '#407BFF1A' : '#FFFBDC';
 
@@ -20,7 +20,7 @@ const ProfessionalCard = ({navigation, img, name, services, skills, avgrating, l
 
   return (
     <View>
-    <TouchableOpacity style={styles.card} onPress={()=>{navigation.navigate('ProfessionalProfile', { img, name, services, skills, avgrating, listing_about})}}>
+    <TouchableOpacity style={styles.card} onPress={()=>{navigation.navigate('ProfessionalProfile', {id, img, name, services, skills, avgrating, listing_about})}}>
       <View style={[styles.imgBack, { backgroundColor }]}>
       <Image source={{uri:img}} style={styles.image} resizeMode='contain'/>
       </View>

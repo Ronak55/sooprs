@@ -60,7 +60,10 @@ favoriteIcon: require('../assets/Icons/favorite.png'),
 walletIcon:require('../assets/Icons/wallet.png'),
 bankIcon:require('../assets/Icons/bankaccount.png'),
 uparrowIcon:require('../assets/Icons/uparrow.png'),
-logoutIcon:require('../assets/Icons/logout.png')
+logoutIcon:require('../assets/Icons/logout.png'),
+tickIcon: require('../assets/Icons/tick.png'),
+identityIcon: require('../assets/Icons/identity.png'),
+nationalityIcon: require('../assets/Icons/nationality.png')
 
 }
 
