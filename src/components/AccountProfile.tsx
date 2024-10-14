@@ -256,6 +256,42 @@ const AccountProfile = ({
                 </View>
               </TouchableOpacity>
             </View>
+            <View style={styles.commonSettings}>
+              <View style={styles.settings}>
+                <Image
+                  style={styles.accountIcon}
+                  resizeMode="cover"
+                  source={Images.resumeIcon}
+                />
+                <Text style={styles.accountText}>Resume</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('ManageResume');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Resume</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('ManageAcademics');
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Academics</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
           </>
         )}
         <View style={styles.logout}>
