@@ -21,6 +21,8 @@ const ManageResume = ({navigation}: {navigation: any}) => {
   const [fileUri, setFileUri] = useState<string | null>(null); // State to hold file URI
   const [uploading, setUploading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null); // State to hold download URL
+  const [fileType, setFileType] = useState('');
+
 
   const handleFileUpload = async () => {
     try {
@@ -30,7 +32,9 @@ const ManageResume = ({navigation}: {navigation: any}) => {
 
       // If the user selects a file
       if (result && result[0]) {
+        console.log('file path:::::::::::::::::::', result[0].uri)
         setFileUri(result[0].uri); // Set the file URI
+        setFileType(result[0].type);
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -58,10 +62,12 @@ const ManageResume = ({navigation}: {navigation: any}) => {
     // Append id and the selected file to formData
     formData.append('id', lead_id ? lead_id.replace(/^"|"$/g, '') : '');
     formData.append('resume', {
-      uri: fileUri,
-      name: 'resume',
-      type: 'application/pdf', // Modify this type based on the file type
-    });
+        uri: fileUri,
+        name: `resume.${fileType.split('/')[1]}`, // Use the file extension from fileType
+        type: fileType, // Use the selected file's type
+      });
+    
+    console.log('formdata::::::::::', formData)
 
     try {
       // Call the upload API
@@ -74,7 +80,8 @@ const ManageResume = ({navigation}: {navigation: any}) => {
       );
       const result = await response.json();
 
-      if (result.msg) {
+      if (result.status==200) {
+        console.log('download link::::::::::', result.msg)
         setDownloadUrl(result.msg); // Set the download URL
         Toast.show({
           type: 'success',
@@ -82,6 +89,7 @@ const ManageResume = ({navigation}: {navigation: any}) => {
           text2: 'File uploaded successfully!',
         });
       } else {
+        console.log('download link::::::::::', result.msg)
         Toast.show({
           type: 'error',
           text1: 'Upload Error',
@@ -133,11 +141,12 @@ const ManageResume = ({navigation}: {navigation: any}) => {
       </View>
 
       {downloadUrl && (
-        <TouchableOpacity onPress={() => Linking.openURL(downloadUrl)}>
+        <View style={styles.download}>
           <Text style={styles.downloadText}>
-            To download your file Click here
-          </Text>
-        </TouchableOpacity>
+            To download your file  </Text>
+            <TouchableOpacity onPress={() => Linking.openURL(downloadUrl)}>
+            <Text style={styles.downloadTextColored}>Click here </Text></TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -192,15 +201,30 @@ const styles = StyleSheet.create({
   },
 
   downloadText: {
-    color: Colors.sooprsblue,
+    color: Colors.black,
     fontWeight: '500',
     fontSize: FSize.fs14,
-    textDecorationLine: 'underline',
     textAlign: 'center',
   },
 
   resumebtn:{
     marginVertical:hp(3),
     marginHorizontal:wp(5)
+  },
+
+  download:{
+    flexDirection:"row",
+    gap:wp(1),
+    // marginTop:hp(2),
+    marginHorizontal:wp(2)
+  },
+
+  downloadTextColored:{
+
+    color: Colors.sooprsblue,
+    fontWeight: '500',
+    fontSize: FSize.fs14,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
   }
 });
