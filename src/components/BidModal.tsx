@@ -13,11 +13,11 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
     const [description, setDescription] = useState('');
   
     const handleSubmit = async () => {
+      try {
         // Check if amount is within the budget range
         const [minBudget, maxBudget] = budget.split('-').map(Number); // Assuming budget is in format '0-500'
-      
         const enteredAmount = parseFloat(amount);
-        
+    
         if (enteredAmount < minBudget || enteredAmount > maxBudget) {
           Toast.show({
             type: 'error',
@@ -27,55 +27,56 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
           onClose();
           return; // Exit the function if the amount is invalid
         }
-      
+    
         let lead_id = await AsyncStorage.getItem('uid');
-  
-        // If lead_id has extra quotes, remove them
+    
+        // Remove extra quotes from `lead_id` if present
         if (lead_id) {
-          lead_id = lead_id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+          lead_id = lead_id.replace(/^"|"$/g, '');
         }
-
-        console.log('Lead ID:::::', lead_id);
-
-      
-        const formdata = new FormData();
-        formdata.append('id', lead_id);
-        formdata.append('amount', amount);
-        formdata.append('description', description);
-        formdata.append('lead_id', id);
-      
-        const requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formdata,
-        };
-      
-        fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + mobile_siteConfig.ADD_BID, requestOptions)
-          .then(response => response.json())
-          .then(res => {
-            if (res) {
-              console.log('payload response:::::::::', formdata);
-              console.log('response amount::::::::::', res);
-              Toast.show({
-                type: 'success',
-                position: 'top',
-                text1: res.msg,
-              });
-              onClose();
-            }
-          })
-          .catch(error => {
-            Toast.show({
-              type: 'error',
-              position: 'top',
-              text1: "Failed to submit bid",
-            });
-            console.error('Error fetching bids:', error);
+        console.log('Lead ID:', lead_id);
+    
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append('id', lead_id);
+        formData.append('amount', amount);
+        formData.append('description', description);
+        formData.append('lead_id', id);
+    
+        console.log('FormData payload:::', formData);
+    
+        // Make the API request
+        const response = await fetch('https://sooprs.com/api2/public/index.php/add_bid',
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+    
+        // Handle the response
+        const result = await response.json();
+        console.log('API Response:::', result);
+    
+        if (result.status == 200) {
+          Toast.show({
+            type: 'success',
+            position: 'top',
+            text1: result.msg,
           });
-      };
-      
+          onClose();
+        } else {
+          throw new Error('No response data');
+        }
+      } catch (error) {
+        console.error('Error submitting bid:', error);
+        Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Failed to submit bid',
+        });
+      }
+    };
+    
     return (
       <Modal
         visible={visible}

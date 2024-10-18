@@ -19,6 +19,10 @@ import ManageDetails from './ManageDetails';
 import ManagePassword from './ManagePassword';
 import AllProfessionals from './AllProfessionals';
 import CategoriesList from './CategoriesList';
+import Notifications from './Notifications';
+import Chat from './Chat';
+import IndividualChat from './IndividualChat';
+import ProjectStatus from './ProjectStatus';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -27,6 +31,7 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="ClientHome" component={ClientHome} />
+      <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="ClientProfile" component={ClientProfile} />
       <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
       <Stack.Screen name="ProjectPosting" component={ProjectPosting} />
@@ -37,6 +42,9 @@ const HomeStack = () => {
       <Stack.Screen name="AllProfessionals" component={AllProfessionals} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
       <Stack.Screen name="ManagePassword" component={ManagePassword} />
+      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen name="IndividualChat" component={IndividualChat} />
+      <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
       <Stack.Screen name="Gigs" component={Gigs} />
     </Stack.Navigator>
   );

@@ -78,11 +78,12 @@ const Projects = ({navigation}: {navigation: any}) => {
   };
 
   useEffect(() => {
-    getMyProjects(0); // Load initial projects when screen is focused
+    // console.log('screen working of my bids !')
+    getMyProjects(0); 
   }, [isFocused]);
 
   const loadMoreProjects = () => {
-    const newOffset = offset + 1; // Increment offset for next batch
+    const newOffset = offset + 10; // Increment offset for next batch
     setOffset(newOffset);
     getMyProjects(newOffset); // Fetch the next batch
   };

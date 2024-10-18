@@ -40,7 +40,9 @@ const CInput = ({
 
   return (
     <View style={[styles.inputSection, style]}>
-      <Text style={[styles.label, newlabel && styles.newlabel]}>{title}</Text>
+      {
+        title && <Text style={[styles.label, newlabel && styles.newlabel]}>{title}</Text>
+      }
       <View
         style={[
           styles.textInputSection,

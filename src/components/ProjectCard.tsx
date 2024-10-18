@@ -17,6 +17,8 @@ const ProjectCard = ({
   createdAt,
   isProfessional,
   bidId,
+  Customer_name,
+  customer_id
 }: {
   navigation: any;
   name: any;
@@ -29,6 +31,8 @@ const ProjectCard = ({
   createdAt: any;
   isProfessional: any;
   bidId: any;
+  Customer_name:any;
+  customer_id:any
 }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
 
@@ -55,6 +59,9 @@ const ProjectCard = ({
               category,
               budget,
               createdAt,
+              Customer_name,
+              customer_id,
+              bidId
             })
           : navigation.navigate('ProjectBids', {id: id});
       }}>

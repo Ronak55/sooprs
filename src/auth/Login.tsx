@@ -58,6 +58,10 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
     );
   };
 
+  const signInWithGoogle=()=>{
+    
+  }
+
   const handleOnPress = () => {
     if (!validateEmail(email.trim())) {
       showAlert('Invalid Email', 'Please enter a valid email');
@@ -184,9 +188,7 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
             btntext="Continue with Google"
             bgColor="white"
             textColor="black"
-            onPress={() => {
-              navigation.navigate('Login');
-            }}
+            onPress={signInWithGoogle}
           />
         </View>
       </View>

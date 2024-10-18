@@ -60,7 +60,7 @@ const Home = ({navigation} : {navigation:any}) => {
           <Text style={[styles.homeInfo, styles.profText]}>Your Expertise</Text>
         </View>
         <View style={styles.searchFilter}>
-          <SearchBar placeholderName='Professionals'/>
+          <SearchBar placeholderName='Projects'/>
           <Filter />
         </View>
         <IntroCard

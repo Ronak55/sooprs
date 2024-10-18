@@ -22,7 +22,7 @@ const Header = ({
     <View style={styles.header}>
       <TouchableOpacity
         onPress={() => {
-          isClient ? navigation.navigate('ClientProfile') : navigation.navigate('ProfessionalProfile') 
+       navigation.navigate('Account')
         }}>
         <Image source={img} resizeMode="contain" style={styles.imgStyling} />
       </TouchableOpacity>
@@ -42,7 +42,7 @@ const Header = ({
             <Text style={styles.postbuttonText}>{btnName}</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
           <Image
             source={Images.bellIcon}
             resizeMode="contain"

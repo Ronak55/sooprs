@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 
 const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
-  const {id, name, desc, category, budget, createdAt} = route.params;
+  const {id, name, desc, category, budget, createdAt, Customer_name, customer_id, bidId} = route.params;
   const [isModalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'clientDetails'>(
     'description',
@@ -68,7 +68,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     };
 
     fetchUid().then(fetchBids);
-  }, [isFocused, uid]);
+  }, [isFocused, uid, isModalVisible]);
 
   useEffect(()=>{
 
@@ -126,6 +126,9 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={styles.postedText}>Posted:</Text>
               <Text style={styles.postedDate}> {createdAt}</Text>
             </View>
+            <TouchableOpacity onPress={()=>{navigation.navigate('IndividualChat', {name:Customer_name, userId:uid, leadId:id, bidId:bidId, recieverId:customer_id, id:id})}}>
+            <Image source={Images.chatIcon} style={styles.chat}/>
+            </TouchableOpacity>
             <View style={styles.posted}>
               <Text style={styles.postedText}>Budget:</Text>
               <Text style={styles.postedDate}> ${budget}</Text>
@@ -440,4 +443,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: FSize.fs16,
   },
+
+  chat:{
+    width:wp(5),
+    height:hp(2.5)
+  }
 });

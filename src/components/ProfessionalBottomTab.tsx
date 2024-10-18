@@ -6,7 +6,7 @@ import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import ProfessionalHome from '../ProfessionalScreens/Home/ProfessionalHome';
 import Projects from '../ProfessionalScreens/Projects/Projects';
-import Chat from '../ProfessionalScreens/Chat/Chat';
+import Chat from './Chat';
 import Account from '../ProfessionalScreens/Account/Account';
 import Images from '../assets/image';
 import ProfessionalProfile from '../UserScreens/Profile/ProfessionalProfile';
@@ -24,6 +24,11 @@ import AddPortfolio from './AddPortfolio';
 import ManageExperience from './ManageExperience';
 import ManageResume from './ManageResume';
 import ManageAcademics from './ManageAcademics';
+import AddAcademics from './AddAcademics';
+import Notifications from './Notifications';
+import IndividualChat from './IndividualChat';
+import ProjectStatus from './ProjectStatus';
+import AssignedProjects from '../ProfessionalScreens/Projects/AssignedProjects';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -32,9 +37,12 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="ProfessionalHome" component={ProfessionalHome} />
+      <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
       <Stack.Screen name="Projects" component={Projects} />
       <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen name="IndividualChat" component={IndividualChat} />
+      <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
       <Stack.Screen name="Account" component={Account} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
       <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
@@ -44,6 +52,7 @@ const HomeStack = () => {
       <Stack.Screen name="AddServices" component={AddServices} />
       <Stack.Screen name="AddExperience" component={AddExperience} />
       <Stack.Screen name="AddPortfolio" component={AddPortfolio} />
+      <Stack.Screen name="AddAcademics" component={AddAcademics} />
       <Stack.Screen name="BankDetails" component={BankDetails} />
       <Stack.Screen name="ManageExperience" component={ManageExperience} />
       <Stack.Screen name="ManagePortfolio" component={ManagePortfolio} />
@@ -63,11 +72,11 @@ const getTabBarIcon = (route:any, focused:boolean) =>{
       iconName = Images.homeIcon;
       break;
 
-    case 'Projects':
+    case 'My Bids':
       iconName = Images.projectsIcon;
       break;
 
-    case 'Professionals':
+    case 'Assigned Projects':
       iconName = Images.chatIcon;
       break;
 
@@ -113,8 +122,8 @@ const ProfessionalBottomTab = () => {
         ),
       })}>
       <Bottom.Screen name={"Home"} component={HomeStack} />
-      <Bottom.Screen name="Projects" component={Projects} />
-      {/* <Bottom.Screen name="Chat" component={Chat} /> */}
+      <Bottom.Screen name="My Bids" component={Projects} />
+      <Bottom.Screen name="Assigned Projects" component={AssignedProjects} />
       <Bottom.Screen name="Account" component={Account} />
     </Bottom.Navigator>
   );

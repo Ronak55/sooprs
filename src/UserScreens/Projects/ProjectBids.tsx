@@ -13,15 +13,35 @@ import FSize from '../../assets/commonCSS/FSize';
 import Images from '../../assets/image'; // Your image assets
 import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
   const {id} = route.params;
   const [bids, setBids] = useState([]);
   const [rewardedBids, setRewardedBids] = useState([]);
+  const isFocused = useIsFocused();
+  const [userId, setuserId] = useState(null);
+  const [recieverId, setrecieverId] = useState(null);
+  const [leadId, setleadId] = useState(null);
 
-  const getBids = () => {
+  const [bidId, setbidId] = useState(null);
+
+
+
+  const getBids = async() => {
+
+    let lead_id = await AsyncStorage.getItem('uid');
+    // If lead_id has extra quotes, remove them
+    if (lead_id) {
+      lead_id = lead_id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+    }
+
+    setuserId(lead_id);
+    setleadId(id);
+  console.log('..............', id);
     const formdata = new FormData();
     formdata.append('lead_id', id);
+    
 
     const requestOptions = {
       method: 'POST',
@@ -38,6 +58,8 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
       .then(response => response.json())
       .then(res => {
         if (res.status === 200) {
+
+          console.log('bids details:::::::', res.msg)
           setBids(res.msg); // Set the bids from API response
         }
       })
@@ -82,12 +104,11 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
 
   useEffect(() => {
     getBids();
-  }, []);
+  }, [isFocused]);
 
   // Render each bid as a card
   const renderBidCard = ({ item }) => {
     const isRewarded = rewardedBids.includes(item.id); // Check if this bid is rewarded
-
     return (
       <View style={styles.cardContainer}>
         <View style={styles.cardHeader}>
@@ -97,8 +118,8 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
         <Text style={styles.descriptionText}>{item.cutDesc}</Text>
         <Text style={styles.dateText}>{item.createdDate}</Text>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => {}}>
-            <Image source={Images.accountIcon} style={styles.icon} />
+          <TouchableOpacity onPress={() => {navigation.navigate('IndividualChat', {name:item.professional_name, userId: userId, leadId:leadId, bidId:item.id, recieverId:item.prof_id, id:id})}}>
+            <Image source={Images.chatIcon} style={styles.icon} />
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -216,10 +237,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   icon: {
-    width: wp(5),
-    height: wp(5),
-  },
-  chatIcon: {
     width: wp(6),
     height: wp(6),
   },
