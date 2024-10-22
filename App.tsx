@@ -22,7 +22,6 @@ const Authentication = ()=>{
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-       
       <Stack.Screen name="ProfileSelection" component={ProfileSelection} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="Login" component={Login} />
@@ -42,17 +41,13 @@ return (
     <Stack.Screen name='Splash' component={Splash}/>
     <Stack.Screen name='Onboarding' component={Onboarding}/>
     <Stack.Screen name='Authentication' component={Authentication}/>
-
      {/* Client login */}
      <Stack.Screen name="ClientLoggedIn" component={ClientBottomTab} />
-
      {/* Professional login */}
      <Stack.Screen name='ProfessionalLoggedIn' component={ProfessionalBottomTab}/>
 
   </Stack.Navigator>
-)
-
-}
+)}
 
 const App = () => {
   return (

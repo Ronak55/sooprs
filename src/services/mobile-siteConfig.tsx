@@ -5,7 +5,7 @@ export const mobile_siteConfig = Object.freeze({
     INDEX:'api2/public/index.php/',
     // REGISTER
     REGISTER:'customerRegistration',
-
+    CHAT_SOCKET_URL:"wss://sooprs.com:3000",
     // LOGIN
     LOGIN:'login-user',
     IS_LOGIN: "is_login",
