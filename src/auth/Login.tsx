@@ -80,12 +80,14 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
     //   );
     //   return;
     // }
-
+    
     const payload = {
       email:email,
       password:password,
       is_buyer: profileType === 'Client' ? 1 : 0,
     }
+
+    const isClient =  profileType === 'Client' ? '1' : '0'
 
     postData(payload, mobile_siteConfig.LOGIN)
     .then((response) => {
@@ -105,6 +107,7 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
         storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
         storeDataToAsyncStorage(mobile_siteConfig.NAME, response.slug)
+        storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, isClient)
         // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
       
 

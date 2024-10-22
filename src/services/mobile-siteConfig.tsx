@@ -10,6 +10,7 @@ export const mobile_siteConfig = Object.freeze({
     LOGIN:'login-user',
     IS_LOGIN: "is_login",
     UID:'uid',
+    IS_BUYER:'client',
 
     // Token
     TOKEN:'token',

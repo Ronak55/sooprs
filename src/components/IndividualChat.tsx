@@ -59,7 +59,7 @@ const IndividualChat = ({navigation, route}) => {
   
       ws.current.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        console.log('data from reciever::::::::::::::::', data);
+        // console.log('data from reciever::::::::::::::::', data);
   
         // Handle incoming messages
         if (
@@ -164,7 +164,7 @@ const IndividualChat = ({navigation, route}) => {
           </View>
           <View style={styles.projectStatus}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ProjectStatus', {id:id})}>
+              onPress={() => navigation.navigate('ProjectStatus', {id:id, recieverId:recieverId})}>
               <Image
                 source={Images.projectStatus}
                 style={{width: wp(10), height: hp(5)}}
