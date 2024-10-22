@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import FSize from '../assets/commonCSS/FSize';
 import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
-const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visible: boolean; onClose: () => void }) => {
+const BidModal = ({ id, budget, visible, onClose, setbidDone }: { id:any, budget:any, visible: boolean; onClose: () => void, setbidDone:any }) => {
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
   
@@ -63,6 +63,7 @@ const BidModal = ({ id, budget, visible, onClose }: { id:any, budget:any, visibl
             position: 'top',
             text1: result.msg,
           });
+          setbidDone(true);
           onClose();
         } else {
           throw new Error('No response data');

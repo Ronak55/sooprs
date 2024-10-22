@@ -28,6 +28,7 @@ import DatePicker from 'react-native-date-picker';
 import ButtonNew from './ButtonNew';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import RazorpayCheckout from 'react-native-razorpay';
 
 const {width, height} = Dimensions.get('window');
 
@@ -313,6 +314,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
     useState(false);
   const [selectedMilestoneName, setSelectedMilestoneName] = useState('');
   const [selectedMilestoneDetails, setSelectedMilestoneDetails] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   const openMilestoneDetailsModal = (index, name) => {
     setSelectedMilestoneName(name);
@@ -565,13 +567,76 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
     }
   };
 
-  const MilestoneDetailsModal = ({ isVisible, onClose, milestoneDetails }) => {
+
+  const MilestoneDetailsModal = ({ isVisible, onClose, milestoneDetails, setActiveStep }) => {
     // Assume milestoneDetails contains the milestone data as an array
     if (!milestoneDetails || milestoneDetails.length === 0) return null;
   
     // Extract details from the first milestone (for demonstration purposes)
     const { milestone_name, milestone_deadline_formatted, milestone_amount } = milestoneDetails[0];
+
+    const handlePayment = async(amount)=>{
+
+      const amountInUSD = parseFloat(amount);
+      const conversionRate = 83.97; 
+      const amountInINR = amountInUSD * conversionRate;
+      const amountInPaise = amountInINR * 100; 
   
+      // Initialize FormData
+      const formdata = new FormData();
+      formdata.append('amount', amountInPaise.toString());
+  
+      console.log('formdata:::::::::', formdata);
+  
+      try {
+        const response = await fetch('https://sooprs.com/create_razr_order.php', {
+          method: 'POST',
+          body: formdata,
+        });
+  
+        const res = await response.json();
+  
+        if(res.order_id){
+  
+          console.log('order id::::::::::', res.order_id);
+          setOrderId(res.order_id); 
+  
+          const options = {
+              key: 'rzp_test_eaw8FUWQWt0bHV',  // Replace with your Razorpay Key ID
+              amount: amountInPaise,
+              currency: 'INR',
+              name: 'Gazetinc Technology LLP',
+              description: 'Sooprs',
+              order_id: res.order_id,
+              image:'https://sooprs.com/assets/images/sooprs_logo.png',
+              handler: (paymentResponse) => {
+                // Handle successful payment here
+                console.log('Payment Successful:::::', paymentResponse);
+                setActiveStep(3);
+              },
+              prefill: {
+                email: 'contact@sooprs.com',
+                contact: '8474081159',
+              },
+              theme: {
+                color: '#0077FF',
+              },
+            };
+  
+            RazorpayCheckout.open(options).then((data) => {
+              console.log('Payment data::::', data);
+              setActiveStep(3);
+              
+            }).catch((error) => {
+              console.error('Razorpay error:', error);
+            });
+  
+        }
+      } catch (error) {
+        console.error('Error creating order:', error);
+      }
+
+    }
     return (
       <Modal visible={isVisible} transparent animationType="slide">
         <View style={styles.modalMilestoneContainer}>
@@ -580,7 +645,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
             <Text style={styles.modalText}>Deadline: {milestone_deadline_formatted}</Text>
             <Text style={styles.modalText}>Amount: ${milestone_amount}</Text>
   
-            <TouchableOpacity style={styles.payButton}>
+            <TouchableOpacity style={styles.payButton} onPress={handlePayment(milestone_amount)}>
               <Text style={styles.payButtonText}>Pay Now</Text>
             </TouchableOpacity>
   
@@ -730,6 +795,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
           isVisible={isMilestoneDetailsModalVisible}
           onClose={closeMilestoneDetailsModal}
           milestoneDetails={milestoneDetails}
+          setActiveStep={setActiveStep}
         />
 
         <MilestoneModal

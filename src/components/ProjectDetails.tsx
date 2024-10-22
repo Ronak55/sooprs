@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
+  Modal,
 } from 'react-native';
 import Colors from '../assets/commonCSS/Colors';
 import FSize from '../assets/commonCSS/FSize';
@@ -15,11 +16,23 @@ import React, {useEffect, useState} from 'react';
 import BidModal from './BidModal';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import ButtonNew from './ButtonNew';
 
 const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
-  const {id, name, desc, category, budget, createdAt, Customer_name, customer_id, bidId} = route.params;
+  const {
+    id,
+    name,
+    desc,
+    category,
+    budget,
+    createdAt,
+    Customer_name,
+    customer_id,
+    bidId,
+  } = route.params;
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isContactModalVisible, setContactModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'clientDetails'>(
     'description',
   );
@@ -27,6 +40,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const [loading, setLoading] = useState(true); // Handle loading state
   const [uid, setUid] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [bidDone, setbidDone] = useState(false);
   const isFocused = useIsFocused();
 
   const fetchBids = async () => {
@@ -44,11 +58,13 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
       if (result.msg?.bids) {
         const uniqueBids = removeDuplicateBids(result.msg.bids);
         setBids(uniqueBids); // Store bids in state
-          // Ensure uid is fetched before checking for button state
-      if (uid) {
-        const isDisabled = uniqueBids.some((bid) => bid.professional_id === uid);
-        setIsButtonDisabled(isDisabled); 
-      } 
+        // Ensure uid is fetched before checking for button state
+        if (uid) {
+          const isDisabled = uniqueBids.some(
+            bid => bid.professional_id === uid,
+          );
+          setIsButtonDisabled(isDisabled);
+        }
       }
     } catch (error) {
       console.error('Error fetching bids:', error);
@@ -58,7 +74,6 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   };
 
   useEffect(() => {
-
     const fetchUid = async () => {
       let storedUid = await AsyncStorage.getItem('uid');
       if (storedUid) {
@@ -70,16 +85,47 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     fetchUid().then(fetchBids);
   }, [isFocused, uid, isModalVisible]);
 
-  useEffect(()=>{
-
+  useEffect(() => {
     console.log('button disabled ::::::::', isButtonDisabled);
-
-  }, [isButtonDisabled])
+  }, [isButtonDisabled]);
 
   const removeDuplicateBids = bids => {
     const bidMap = new Map(); // Use Map to ensure uniqueness by professional_id
     bids.forEach(bid => bidMap.set(bid.professional_id, bid));
     return Array.from(bidMap.values()); // Convert back to array
+  };
+
+  const ContactModal = ({visible, onClose}) => {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {/* Cross Icon */}
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Image source={Images.crossIcon} style={styles.closeIcon} />
+            </TouchableOpacity>
+
+            {/* Modal Title */}
+            <Text style={styles.modalTitle}>Contact Details</Text>
+
+            {/* Contact Info */}
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactText}>Phone: +91 92******33</Text>
+            </View>
+
+            {/* Credit Cost Info */}
+            <View style={styles.creditCostInfo}>
+              <Text style={styles.creditCostText}>Credit Cost: 50</Text>
+            </View>
+            <ButtonNew imgSource={undefined} btntext={'Get Contact'} bgColor={Colors.sooprsblue} textColor={Colors.white} onPress={()=>{}}/>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const renderBidCard = ({item}: {item: any}) => (
@@ -97,24 +143,50 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ProfessionalHome');
-          }}>
-          <Image
-            source={Images.backArrow}
-            resizeMode="contain"
-            style={styles.backArrow}
-          />
-        </TouchableOpacity>
-        <Text
-          style={{
-            color: Colors.black,
-            fontWeight: '500',
-            fontSize: FSize.fs16,
-          }}>
-          Project Details
-        </Text>
+        <View style={styles.headerParts}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ProfessionalHome');
+            }}>
+            <Image
+              source={Images.backArrow}
+              resizeMode="contain"
+              style={styles.backArrow}
+            />
+          </TouchableOpacity>
+          <Text
+            style={{
+              color: Colors.black,
+              fontWeight: '500',
+              fontSize: FSize.fs16,
+            }}>
+            Project Details
+          </Text>
+        </View>
+        <View style={styles.rightPart}>
+          {
+            !bidDone ? (
+              <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderColor: Colors.sooprsblue,
+                borderRadius: wp(5),
+                backgroundColor: isButtonDisabled
+                  ? Colors.gray
+                  : Colors.sooprsblue,
+                paddingVertical: hp(1.5),
+                paddingHorizontal: wp(6),
+              }}
+              disabled={isButtonDisabled}>
+              <Text style={styles.bidbtnText}>Bid</Text>
+            </TouchableOpacity>
+            ) : (
+              <Text style={{color:'#40C700', fontSize:FSize.fs18, fontWeight:'700'}}>Bid Placed!</Text>
+            )
+          }
+        </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.projectSection}>
@@ -122,20 +194,61 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             <Text style={styles.title}>{name}</Text>
           </View>
           <View style={styles.projectPosted}>
-            <View style={styles.posted}>
+            {/* <View style={styles.posted}>
               <Text style={styles.postedText}>Posted:</Text>
               <Text style={styles.postedDate}> {createdAt}</Text>
+            </View> */}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => {}} style={styles.catbtn}>
+                <Text style={styles.btnText}>{category}</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={()=>{navigation.navigate('IndividualChat', {name:Customer_name, userId:uid, leadId:id, bidId:bidId, recieverId:customer_id, id:id})}}>
-            <Image source={Images.chatIcon} style={styles.chat}/>
-            </TouchableOpacity>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('IndividualChat', {
+                    name: Customer_name,
+                    userId: uid,
+                    leadId: id,
+                    bidId: bidId,
+                    recieverId: customer_id,
+                    id: id,
+                  });
+                }}>
+                <Image source={Images.chatIcon} style={styles.chat} />
+              </TouchableOpacity>
+            </View>
             <View style={styles.posted}>
               <Text style={styles.postedText}>Budget:</Text>
               <Text style={styles.postedDate}> ${budget}</Text>
             </View>
           </View>
-          <View>
+          <View style={styles.contactSection}>
+            <View style={styles.contactInfo}>
+              <Image source={Images.phoneIcon} style={styles.contactIcon} />
+              <Text style={styles.phoneText}>+91 92******33</Text>
+            </View>
             <TouchableOpacity
+              disabled={bidDone ? false : true}
+              onPress={() => setContactModalVisible(true)}
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingVertical: hp(1.5),
+                paddingHorizontal: wp(5),
+                backgroundColor: bidDone ? '#72C250' : Colors.gray,
+                borderRadius: wp(3),
+              }}>
+              <Text
+                style={{
+                  color: bidDone ? Colors.black : Colors.white,
+                  fontSize: FSize.fs12,
+                  fontWeight: '700',
+                }}>
+                Get Contact
+              </Text>
+            </TouchableOpacity>
+            {/* <TouchableOpacity
               onPress={() => setModalVisible(true)}
               style={{
                 justifyContent: 'center',
@@ -147,17 +260,17 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
                 
               }} disabled={isButtonDisabled}>
               <Text style={styles.btnText}>Bid</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
-        <View style={styles.skillSection}>
+        {/* <View style={styles.skillSection}>
           <Text style={styles.skillText}>Skills</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={() => {}} style={styles.catbtn}>
               <Text style={styles.btnText}>{category}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
         <View style={styles.tabContainer}>
           <TouchableOpacity
             style={[
@@ -237,11 +350,17 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           )}
         </ScrollView>
       </ScrollView>
+        {/* Contact Modal */}
+        <ContactModal
+        visible={isContactModalVisible}
+        onClose={() => setContactModalVisible(false)}
+      />
       <BidModal
         id={id}
         budget={budget}
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
+        setbidDone={setbidDone}
       />
     </View>
   );
@@ -257,10 +376,17 @@ const styles = StyleSheet.create({
   headerSection: {
     marginHorizontal: wp(5),
     marginVertical: hp(1),
-    gap: wp(5),
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
+
+  headerParts: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(2),
+  },
+
   backArrow: {
     width: wp(8),
     height: hp(8),
@@ -302,11 +428,12 @@ const styles = StyleSheet.create({
   catbtn: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: Colors.sooprsblue,
+    borderColor: Colors.black,
+    borderWidth: 1,
     borderRadius: wp(5),
-    backgroundColor: Colors.sooprsblue,
+    backgroundColor: Colors.white,
     paddingVertical: hp(1),
-    width: wp(50),
+    paddingHorizontal: wp(4),
   },
   descbtn: {
     justifyContent: 'center',
@@ -322,10 +449,17 @@ const styles = StyleSheet.create({
     marginRight: wp(2),
   },
   btnText: {
+    color: Colors.black,
+    fontWeight: '500',
+    fontSize: FSize.fs13,
+  },
+
+  bidbtnText: {
     color: Colors.white,
     fontWeight: '500',
     fontSize: FSize.fs13,
   },
+
   skillSection: {
     flexDirection: 'column',
     marginVertical: hp(2),
@@ -444,8 +578,79 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs16,
   },
 
-  chat:{
-    width:wp(5),
-    height:hp(2.5)
-  }
+  chat: {
+    width: wp(5),
+    height: hp(2.5),
+  },
+
+  contactSection: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginHorizontal: wp(2),
+    marginTop: hp(1),
+  },
+
+  contactInfo: {
+    flexDirection: 'row',
+    gap: wp(2),
+    alignItems: 'center',
+  },
+
+  contactIcon: {
+    width: wp(5),
+    height: hp(3),
+  },
+
+  phoneText: {
+    color: Colors.black,
+    fontWeight: '700',
+    fontSize: FSize.fs18,
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: wp(80),
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    padding: 20,
+    gap:hp(2)
+    // alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 15,
+  },
+  closeIcon: {
+    width:wp(3),
+    height:hp(3)
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.sooprsblue,
+    marginBottom: 20,
+  },
+  contactDetail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  contactText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  creditCostInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  creditCostText: {
+    fontSize: 16,
+    color: Colors.sooprsblue,
+  },
 });

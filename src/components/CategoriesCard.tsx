@@ -4,7 +4,7 @@ import { wp, hp } from '../assets/commonCSS/GlobalCSS'
 import Colors from '../assets/commonCSS/Colors'
 import FSize from '../assets/commonCSS/FSize'
 
-const CategoriesCard = ({navigation, img, name, index,  onSelectService,} : {navigation:any, img:any, name:any, index:any, onSelectService: (serviceName: string) => void;}) => {
+const CategoriesCard = ({navigation, img, name, index,  onSelectService} : {navigation:any, img:any, name:any, index:any, onSelectService: (serviceName: string) => void;}) => {
   return (
     <View>
     <TouchableOpacity style={styles.card} onPress={() => {

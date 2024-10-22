@@ -4,6 +4,7 @@ import { hp, wp } from '../../assets/commonCSS/GlobalCSS';
 import ServicesCard from '../../components/ServicesCard';
 
 const Services = ({ route }: { route: { params: { services: string[] } } }) => {
+   
     const services = route.params?.services || []; // Default to empty array if undefined
 
     const renderItem = ({ item }: { item: string }) => <ServicesCard item={item} />;
