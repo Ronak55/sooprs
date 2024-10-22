@@ -34,8 +34,10 @@ import { CommonActions } from '@react-navigation/native';
 const Login = ({navigation, route}: {navigation: any, route:any}) => {
 
   const {profileType} = route.params;
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('2shaaar.clicked@gmail.com');
+  // const [password, setPassword] = useState('@Heartcliff123');
+  const [email, setEmail] = useState('aniketniet@gmail.com');
+  const [password, setPassword] = useState('Pass@123');
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
