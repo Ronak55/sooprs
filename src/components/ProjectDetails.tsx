@@ -18,6 +18,10 @@ import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import ButtonNew from './ButtonNew';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
+import CryptoJS from 'crypto-js'
+
+const encryptionKey = 'Aniket@#@Sooprs#@#123'; 
 
 const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const {
@@ -41,6 +45,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const [uid, setUid] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [bidDone, setbidDone] = useState(false);
+  const [mobile, setMobile] = useState('+91 92******33')
+  const [btnvisible, setbtnVisible] = useState(true);
   const isFocused = useIsFocused();
 
   const fetchBids = async () => {
@@ -95,7 +101,96 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     return Array.from(bidMap.values()); // Convert back to array
   };
 
-  const ContactModal = ({visible, onClose}) => {
+  
+
+  const ContactModal = ({visible, onClose, mobile, setMobile, btnVisible, setbtnVisible}) => {
+
+    const decryptMobileNumber = (encryptedMobile) => {
+      console.log('Encrypted number:', encryptedMobile);
+      
+      try {
+          // Step 1: Split the encrypted mobile string to get the encrypted data and IV
+          const encryptedParts = encryptedMobile.split('::');
+  
+          // Check if the format is correct
+          if (encryptedParts.length !== 2) {
+              throw new Error('Invalid encrypted mobile format');
+          }
+  
+          // Decode the encrypted data from Base64
+          const encryptedData = CryptoJS.enc.Base64.parse(encryptedParts[0]); // Base64 decode encrypted data
+          const iv = CryptoJS.enc.Base64.parse(encryptedParts[1]); // Base64 decode IV
+  
+          // Step 2: Parse the encryption key (convert string to WordArray)
+          const parsedKey = CryptoJS.enc.Utf8.parse(encryptionKey);
+  
+          // Step 3: Decrypt the mobile number using AES-256-CBC
+          const decrypted = CryptoJS.AES.decrypt(
+              { ciphertext: encryptedData }, // Wrap the encrypted data in an object
+              parsedKey,
+              {
+                  iv: iv,
+                  mode: CryptoJS.mode.CBC,
+                  padding: CryptoJS.pad.Pkcs7,
+              }
+          );
+  
+          // Step 4: Convert decrypted data to a string (UTF-8 format)
+          const decryptedMobileNumber = decrypted.toString(CryptoJS.enc.Utf8);
+  
+          // Check if the decrypted mobile number is valid
+          if (!decryptedMobileNumber) {
+              throw new Error('Decryption resulted in an empty string');
+          }
+          return decryptedMobileNumber;
+      } catch (error) {
+          console.error('Decryption failed:', error);
+          return null;
+      }
+  };
+
+    const getContactDetails = async () => {
+      try {
+        setLoading(true); // Start loading spinner
+  
+        // Retrieve the lead_id and token from AsyncStorage
+        // let lead_id = await AsyncStorage.getItem('uid');
+        let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN)
+        
+        let new_token = JSON.parse(token);
+  
+        console.log('tokenn:::::::::::', new_token);
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('id', id);
+
+        // Make the API call
+        const response = await fetch('https://sooprs.com/api2/public/index.php/show-lead-mobile', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${new_token}`, // Send token in the authorization header
+          },
+          body: formData,
+        });
+  
+        // Parse the response
+        const result = await response.json();
+        console.log('Contact details response::::', result);
+  
+        if (result.status === 200) {
+          // Decrypt the mobile number received from the API
+          setMobile(result.encrypted_mobile_number);
+          setbtnVisible(false);
+        }
+  
+  
+      } catch (error) {
+        console.error('Error fetching contact details:', error);
+      } finally {
+        setLoading(false); // Stop loading spinner
+      }
+    };
+
     return (
       <Modal
         animationType="slide"
@@ -114,14 +209,14 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
 
             {/* Contact Info */}
             <View style={styles.contactInfo}>
-              <Text style={styles.contactText}>Phone: +91 92******33</Text>
+              <Text style={styles.contactText}>Phone: {mobile}</Text>
             </View>
 
             {/* Credit Cost Info */}
             <View style={styles.creditCostInfo}>
               <Text style={styles.creditCostText}>Credit Cost: 50</Text>
             </View>
-            <ButtonNew imgSource={undefined} btntext={'Get Contact'} bgColor={Colors.sooprsblue} textColor={Colors.white} onPress={()=>{}}/>
+            <ButtonNew imgSource={undefined} btntext={'Get Contact'} bgColor={!btnVisible ? Colors.gray : Colors.sooprsblue} textColor={Colors.white} onPress={getContactDetails} isDisabled={!btnVisible ? true : false}/>
           </View>
         </View>
       </Modal>
@@ -165,7 +260,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         </View>
         <View style={styles.rightPart}>
           {
-            !bidDone ? (
+            !isButtonDisabled ? (
               <TouchableOpacity
               onPress={() => setModalVisible(true)}
               style={{
@@ -183,7 +278,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={styles.bidbtnText}>Bid</Text>
             </TouchableOpacity>
             ) : (
-              <Text style={{color:'#40C700', fontSize:FSize.fs18, fontWeight:'700'}}>Bid Placed!</Text>
+              <Text style={{color:'#40C700', fontSize:FSize.fs18, fontWeight:'500'}}>Bid Placed!</Text>
             )
           }
         </View>
@@ -229,19 +324,19 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={styles.phoneText}>+91 92******33</Text>
             </View>
             <TouchableOpacity
-              disabled={bidDone ? false : true}
+              disabled={isButtonDisabled ? false : true}
               onPress={() => setContactModalVisible(true)}
               style={{
                 justifyContent: 'center',
                 alignItems: 'center',
                 paddingVertical: hp(1.5),
                 paddingHorizontal: wp(5),
-                backgroundColor: bidDone ? '#72C250' : Colors.gray,
+                backgroundColor: isButtonDisabled ? '#72C250' : Colors.gray,
                 borderRadius: wp(3),
               }}>
               <Text
                 style={{
-                  color: bidDone ? Colors.black : Colors.white,
+                  color: isButtonDisabled ? Colors.black : Colors.white,
                   fontSize: FSize.fs12,
                   fontWeight: '700',
                 }}>
@@ -354,6 +449,10 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         <ContactModal
         visible={isContactModalVisible}
         onClose={() => setContactModalVisible(false)}
+        mobile={mobile}
+        setMobile={setMobile}
+        btnVisible={btnvisible}
+        setbtnVisible={setbtnVisible}
       />
       <BidModal
         id={id}
@@ -623,11 +722,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 10,
-    right: 15,
+    top: 15,
+    right: 20,
   },
   closeIcon: {
-    width:wp(3),
+    width:wp(4),
     height:hp(3)
   },
   modalTitle: {

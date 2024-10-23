@@ -8,16 +8,19 @@ const ButtonNew = ({
   btntext,
   bgColor,
   textColor,
-  onPress
+  onPress,
+  isDisabled
 }: {
   imgSource: any;
   btntext: any;
   bgColor: any;
   textColor: any;
   onPress: () => void;
+  isDisabled:any
 }) => {
   return (
     <TouchableOpacity
+      disabled={isDisabled}
       style={{
         backgroundColor: bgColor,
         borderWidth: 1,
