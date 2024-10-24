@@ -27,7 +27,7 @@ const { height, width } = Dimensions.get('window');
 
 const IndividualChat = ({ navigation, route }) => {
   const scrollEnd = useRef();
-  const { name, userId, leadId, bidId, recieverId, id } = route.params;
+  const { name, userId, leadId, bidId, recieverId, id, project_status } = route.params;
   const [allConversations, setAllConversations] = useState([]);
 
   const [messages, setMessages] = useState([]);
@@ -65,6 +65,7 @@ const IndividualChat = ({ navigation, route }) => {
     console.log('leadid:::::::::::::::', route?.params?.leadId);
     console.log('bidId:::::::::::::::', route?.params?.bidId);
     console.log('recieverId:::::::::::::::', route?.params?.recieverId);
+    console.log('project status:::::::::::::::::::', route?.params?.project_status);
     getAllUserChat(route?.params?.bidId, route?.params?.leadId, route?.params?.userId);
   }, [route?.params]);
 
@@ -187,7 +188,7 @@ const IndividualChat = ({ navigation, route }) => {
           </View>
           <View style={styles.projectStatus}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ProjectStatus', {id:id, recieverId:recieverId})}>
+              onPress={() => navigation.navigate('ProjectStatus', {id:id, recieverId:recieverId, project_status:project_status})}>
               <Image
                 source={Images.projectStatus}
                 style={{ width: wp(10), height: hp(5) }}

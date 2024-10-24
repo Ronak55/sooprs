@@ -20,6 +20,7 @@ import {useIsFocused} from '@react-navigation/native';
 import ButtonNew from './ButtonNew';
 import { mobile_siteConfig } from '../services/mobile-siteConfig';
 import CryptoJS from 'crypto-js'
+import Toast from 'react-native-toast-message';
 
 const encryptionKey = 'Aniket@#@Sooprs#@#123'; 
 
@@ -101,69 +102,24 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     return Array.from(bidMap.values()); // Convert back to array
   };
 
-  
 
-  const ContactModal = ({visible, onClose, mobile, setMobile, btnVisible, setbtnVisible}) => {
-
-    const decryptMobileNumber = (encryptedMobile) => {
-      console.log('Encrypted number:', encryptedMobile);
-      
-      try {
-          // Step 1: Split the encrypted mobile string to get the encrypted data and IV
-          const encryptedParts = encryptedMobile.split('::');
+  const ContactModal = ({ visible, onClose, mobile, setMobile, btnVisible, setbtnVisible }) => {
+    const [loading, setLoading] = useState(false); // Track loading state
   
-          // Check if the format is correct
-          if (encryptedParts.length !== 2) {
-              throw new Error('Invalid encrypted mobile format');
-          }
-  
-          // Decode the encrypted data from Base64
-          const encryptedData = CryptoJS.enc.Base64.parse(encryptedParts[0]); // Base64 decode encrypted data
-          const iv = CryptoJS.enc.Base64.parse(encryptedParts[1]); // Base64 decode IV
-  
-          // Step 2: Parse the encryption key (convert string to WordArray)
-          const parsedKey = CryptoJS.enc.Utf8.parse(encryptionKey);
-  
-          // Step 3: Decrypt the mobile number using AES-256-CBC
-          const decrypted = CryptoJS.AES.decrypt(
-              { ciphertext: encryptedData }, // Wrap the encrypted data in an object
-              parsedKey,
-              {
-                  iv: iv,
-                  mode: CryptoJS.mode.CBC,
-                  padding: CryptoJS.pad.Pkcs7,
-              }
-          );
-  
-          // Step 4: Convert decrypted data to a string (UTF-8 format)
-          const decryptedMobileNumber = decrypted.toString(CryptoJS.enc.Utf8);
-  
-          // Check if the decrypted mobile number is valid
-          if (!decryptedMobileNumber) {
-              throw new Error('Decryption resulted in an empty string');
-          }
-          return decryptedMobileNumber;
-      } catch (error) {
-          console.error('Decryption failed:', error);
-          return null;
-      }
-  };
-
     const getContactDetails = async () => {
-      try {
-        setLoading(true); // Start loading spinner
+      if (loading) return; // Prevent multiple clicks while loading
+      setLoading(true); // Start loading spinner
   
-        // Retrieve the lead_id and token from AsyncStorage
-        // let lead_id = await AsyncStorage.getItem('uid');
-        let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN)
-        
+      try {
+        // Retrieve the token from AsyncStorage
+        let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
         let new_token = JSON.parse(token);
   
         console.log('tokenn:::::::::::', new_token);
         // Prepare form data
         const formData = new FormData();
-        formData.append('id', id);
-
+        formData.append('id', id); // Ensure `id` is defined appropriately
+  
         // Make the API call
         const response = await fetch('https://sooprs.com/api2/public/index.php/show-lead-mobile', {
           method: 'POST',
@@ -180,9 +136,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         if (result.status === 200) {
           // Decrypt the mobile number received from the API
           setMobile(result.encrypted_mobile_number);
-          setbtnVisible(false);
+          setbtnVisible(false); // Hide the button after successful fetch
         }
-  
   
       } catch (error) {
         console.error('Error fetching contact details:', error);
@@ -190,7 +145,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         setLoading(false); // Stop loading spinner
       }
     };
-
+  
     return (
       <Modal
         animationType="slide"
@@ -203,25 +158,49 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Image source={Images.crossIcon} style={styles.closeIcon} />
             </TouchableOpacity>
-
+  
             {/* Modal Title */}
             <Text style={styles.modalTitle}>Contact Details</Text>
-
+  
             {/* Contact Info */}
             <View style={styles.contactInfo}>
               <Text style={styles.contactText}>Phone: {mobile}</Text>
             </View>
-
+  
             {/* Credit Cost Info */}
             <View style={styles.creditCostInfo}>
               <Text style={styles.creditCostText}>Credit Cost: 50</Text>
             </View>
-            <ButtonNew imgSource={undefined} btntext={'Get Contact'} bgColor={!btnVisible ? Colors.gray : Colors.sooprsblue} textColor={Colors.white} onPress={getContactDetails} isDisabled={!btnVisible ? true : false}/>
+  
+            {/* Button */}
+            <ButtonNew
+              imgSource={undefined}
+              btntext={loading ? <ActivityIndicator color={Colors.white} /> : 'Get Contact'}
+              bgColor={!btnVisible ? Colors.gray : Colors.sooprsblue}
+              textColor={Colors.white}
+              onPress={getContactDetails}
+              isDisabled={!btnVisible || loading} // Disable button while loading
+            />
           </View>
         </View>
       </Modal>
     );
   };
+
+  const handleContactPress = () => {
+    if (!isButtonDisabled) {
+      Toast.show({
+        type: 'error', // Type of the toast (could also be 'success', 'info', etc.)
+        text1: 'Error', // Main message
+        text2: 'Please place your bid first', // Secondary message
+        position: 'top', // Position of the toast
+        visibilityTime: 3000, // Duration for which the toast will be visible
+      });
+    } else {
+      setContactModalVisible(true); // Show the modal if the button is not disabled
+    }
+  };
+
 
   const renderBidCard = ({item}: {item: any}) => (
     <View style={styles.bidCard}>
@@ -324,8 +303,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={styles.phoneText}>+91 92******33</Text>
             </View>
             <TouchableOpacity
-              disabled={isButtonDisabled ? false : true}
-              onPress={() => setContactModalVisible(true)}
+              onPress={handleContactPress}
               style={{
                 justifyContent: 'center',
                 alignItems: 'center',

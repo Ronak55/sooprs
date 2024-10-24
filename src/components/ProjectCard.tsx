@@ -4,6 +4,7 @@ import Colors from '../assets/commonCSS/Colors';
 import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProjectCard = ({
   navigation,
@@ -15,10 +16,12 @@ const ProjectCard = ({
   bids,
   index,
   createdAt,
+  isAssigned,
   isProfessional,
   bidId,
   Customer_name,
-  customer_id
+  customer_id,
+  project_status
 }: {
   navigation: any;
   name: any;
@@ -29,10 +32,12 @@ const ProjectCard = ({
   bids: any;
   index: any;
   createdAt: any;
+  isAssigned: any;
   isProfessional: any;
   bidId: any;
-  Customer_name:any;
-  customer_id:any
+  Customer_name: any;
+  customer_id: any;
+  project_status:any;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
 
@@ -48,23 +53,46 @@ const ProjectCard = ({
       : description;
   };
 
+  // Navigate based on isAssigned value
+  const handlePress = async() => {
+
+    let uid = await AsyncStorage.getItem('uid');
+    // If lead_id has extra quotes, remove them
+    if (uid) {
+      uid = uid.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+    }
+    
+    if (isAssigned) {
+      navigation.navigate('IndividualChat', {
+        name: Customer_name,
+        userId: uid,
+        leadId: id,
+        bidId: bidId,
+        recieverId: customer_id,
+        id: id,
+        project_status:project_status
+      });
+    } else {
+      if (isProfessional) {
+        navigation.navigate('ProjectDetails', {
+          id,
+          name,
+          desc,
+          category,
+          budget,
+          createdAt,
+          Customer_name,
+          customer_id,
+          bidId,
+        });
+      } else {
+        navigation.navigate('ProjectBids', {id});
+      }
+    }
+  };
+
   return (
-    <TouchableOpacity
-      onPress={() => {
-        isProfessional
-          ? navigation.navigate('ProjectDetails', {
-              id,
-              name,
-              desc,
-              category,
-              budget,
-              createdAt,
-              Customer_name,
-              customer_id,
-              bidId
-            })
-          : navigation.navigate('ProjectBids', {id: id});
-      }}>
+    <TouchableOpacity onPress={handlePress}>
       <View style={styles.cardContainer}>
         <View style={styles.column}>
           {/* Header section showing project name and favorite icon */}
@@ -76,7 +104,6 @@ const ProjectCard = ({
           </View>
 
           {/* Date section */}
-          
           {createdAt && (
             <View style={styles.dateContainer}>
               <Text style={styles.dateText}>{createdAt}</Text>

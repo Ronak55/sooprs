@@ -29,18 +29,19 @@ import { mobile_siteConfig } from '../services/mobile-siteConfig';
 import { postData } from '../services/mobile-api';
 import Toast from 'react-native-toast-message';
 import { storeDataToAsyncStorage } from '../services/CommonFunction';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useIsFocused } from '@react-navigation/native';
 
 const Login = ({navigation, route}: {navigation: any, route:any}) => {
 
   const {profileType} = route.params;
   // const [email, setEmail] = useState('2shaaar.clicked@gmail.com');
   // const [password, setPassword] = useState('@Heartcliff123');
-  const [email, setEmail] = useState('aniketniet@gmail.com');
-  const [password, setPassword] = useState('Pass@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
+
 
   const showAlert = (title: string, message: string) => {
     setAlertTitle(title);
@@ -64,7 +65,7 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
     
   }
 
-  const handleOnPress = () => {
+  const handleOnPress = async() => {
     if (!validateEmail(email.trim())) {
       showAlert('Invalid Email', 'Please enter a valid email');
       return;
@@ -109,10 +110,8 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
         storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
         storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
         storeDataToAsyncStorage(mobile_siteConfig.NAME, response.slug)
-        storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, isClient)
+        storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, response.is_buyer)
         // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
-      
-
         let resetAction = CommonActions.reset({
           index: 0,
           routes: [

@@ -23,6 +23,7 @@ import Notifications from './Notifications';
 import Chat from './Chat';
 import IndividualChat from './IndividualChat';
 import ProjectStatus from './ProjectStatus';
+import AssignedProjects from '../UserScreens/AssignedProjects/AssignedProjects';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

@@ -38,7 +38,7 @@ const ProfessionalList = ({ navigation }: { navigation: any }) => {
 
   const renderItem = ({ item, index }: { item: any, index:any }) => {
     // Extracting necessary fields from the data
-    const {id, name, image, listing_about } = item.data;
+    const {id, name, image, listing_about, slug} = item.data;
     const avgrating = item.avgrating;
     const services = item.services;
     const skills = item.skills;
@@ -52,6 +52,7 @@ const ProfessionalList = ({ navigation }: { navigation: any }) => {
         name={name}
         services={services}
         skills={skills}
+        slug={slug}
         avgrating={avgrating}
         listing_about={listing_about}
         index={index}

@@ -27,7 +27,7 @@ const ButtonNew = ({
         borderColor: '#0077FF',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal:wp(22),
+        paddingHorizontal:wp(20),
         paddingVertical:hp(1.5),
         // height: hp(5.5),
         borderRadius: wp(2),

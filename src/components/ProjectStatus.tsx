@@ -297,7 +297,7 @@ const MilestoneModal = ({
 };
 
 const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
-  const {id, recieverId} = route.params;
+  const {id, recieverId, project_status} = route.params;
   const [activeStep, setActiveStep] = useState(0); // Track active step
   const [isClient, setisClient] = useState('');
 
@@ -402,7 +402,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
 
       console.log('response reward:::::::::', res);
 
-      if (res.msg === 'Already rewarded') {
+      if (res.msg === 'Already rewarded' || res.msg === 'successfully rewarded') {
         setActiveStep(1); // Set active step to "Requirements"
         if (!isClient) {
           getRequirements();
@@ -418,7 +418,18 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   };
 
   useEffect(() => {
-    fetchRewardStatus();
+    // fetchRewardStatus();
+    if(project_status === '1'){
+      
+      setActiveStep(1);
+      if(!isClient){
+        getRequirements();
+      }
+      setLoading(false);
+    } else{
+      setActiveStep(0);
+      setLoading(false);
+    }
   }, [isFocused, route?.params?.id]);
 
   useEffect(() => {
@@ -516,6 +527,9 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
 
   // Function to handle file selection
   const selectFile = async () => {
+
+    setLoading(true);
+
     try {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
@@ -529,11 +543,14 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       } else {
         console.error('Error selecting file:', err);
       }
+    } finally{
+      setLoading(false);
     }
   };
 
   // Function to upload requirements
   const uploadRequirements = async selectedFile => {
+
     const formdata = new FormData();
     formdata.append('project_id', id);
     formdata.append('description', description);
@@ -564,7 +581,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       }
     } catch (error) {
       console.error('Error uploading requirements:', error);
-    }
+    } 
   };
 
 
@@ -823,11 +840,20 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 numberOfLines={4}
                 textAlignVertical="top"
               />
-              <TouchableOpacity
-                style={styles.uploadButton}
-                onPress={selectFile}>
-                <Text style={styles.uploadButtonText}>Upload File</Text>
-              </TouchableOpacity>
+               <ButtonNew
+                imgSource={undefined}
+                btntext={
+                  loading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    'Upload File'
+                  )
+                }
+                bgColor={Colors.sooprsblue}
+                textColor={Colors.white}
+                onPress={selectFile}
+                isDisabled={loading} // Disable button while loading
+              />
             </>
           )}
         </View>

@@ -67,10 +67,11 @@ const AccountProfile = ({
 
   const confirmLogout = async () => {
     await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
+    await AsyncStorage.removeItem(mobile_siteConfig.IS_BUYER);
     await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'FALSE');
     let reset = CommonActions.reset({
       index: 0,
-      routes: [{name: 'Authentication'}],
+      routes: [{name:'Authentication'}],
     });
     navigation.dispatch(reset);
   };

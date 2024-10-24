@@ -25,7 +25,7 @@ const ProfessionalProfile = ({
   navigation: any;
   route: any;
 }) => {
-  const {id, img, name, services, skills, avgrating, listing_about} = route?.params;
+  const {id, img, name, services, slug, skills, avgrating, listing_about} = route?.params;
 
   const [isClient, setisClient] = useState(false);
 
@@ -35,7 +35,8 @@ const ProfessionalProfile = ({
     console.log('Services in ProfessionalProfile:', services);
     console.log('Skills in ProfessionalProfile:', skills);
     console.log('portfolio get id:::::::', id)
-  }, [services, skills, id]);
+    console.log('professional slug::::::', slug)
+  }, [services, skills, slug, id]);
 
   return (
     <View style={styles.container}>

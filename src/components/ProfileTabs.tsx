@@ -15,22 +15,25 @@ import FSize from '../assets/commonCSS/FSize';
 const Tab = createMaterialTopTabNavigator();
 
 interface TabParams {
+  id: any;
   services?: string[];
   skills?: string[];  
 }
 
-const ProfileTabs = ({ tabs, isClient, id, services, skills }: { tabs: any, id:any, isClient:any, services:string[], skills:string[]}) => {
+const ProfileTabs = ({ tabs, isClient, portfolio, services, skills }: { tabs: any, portfolio:any, isClient:any, services:string[], skills:string[]}) => {
  
   const renderTabScreens = () => {
     console.log('tabs:::::::::::::', tabs);
 
     return tabs.map((tab: any, index: any) => {
       let Component;
-      const initialParams: TabParams = {};
+      const initialParams: TabParams = {
+        id: undefined
+      };
       switch (tab) {
         case 'Portfolio':
           Component = Portfolio;
-          initialParams.services = id
+          initialParams.id = portfolio
           break;
         case 'Services':
           Component = Services;

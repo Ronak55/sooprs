@@ -27,7 +27,7 @@ const CInput = ({
   title: string;
   name: string;
   isPassword: boolean;
-  newlabel:boolean
+  newlabel:boolean;
   style: any;
   value: string;
   setValue: any;
@@ -40,9 +40,7 @@ const CInput = ({
 
   return (
     <View style={[styles.inputSection, style]}>
-      {
-        title && <Text style={[styles.label, newlabel && styles.newlabel]}>{title}</Text>
-      }
+      {title && <Text style={[styles.label, newlabel && styles.newlabel]}>{title}</Text>}
       <View
         style={[
           styles.textInputSection,
@@ -50,7 +48,8 @@ const CInput = ({
         ]}>
         <TextInput
           style={[
-            { textAlignVertical: multiline ? 'top' : 'center', fontSize:FSize.fs13, paddingLeft: wp(1), color: Colors.black},
+            styles.input, // Use the flex to fill the space
+            { textAlignVertical: multiline ? 'top' : 'center', fontSize: FSize.fs15, paddingLeft: wp(1), color: Colors.black },
           ]}
           placeholder={!isFocused ? `${name}` : ''}
           placeholderTextColor="#BCBCBC"
@@ -60,18 +59,19 @@ const CInput = ({
           onBlur={() => setIsFocused(false)}
           secureTextEntry={isPasswordVisible}
           keyboardType={keyboardType === 'default' ? 'default' : keyboardType}
-          multiline={multiline} 
-          numberOfLines={numberOfLines} 
+          multiline={multiline}
+          numberOfLines={numberOfLines}
         />
 
         {isPassword && (
           <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            style={{height: hp(3), width: hp(3)}}>
+            style={styles.passwordIconContainer}>
             <Image
               source={isPasswordVisible ? Images.eye : Images.eyec}
               resizeMode="contain"
-              style={styles.imageStyle}></Image>
+              style={styles.imageStyle}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -87,46 +87,45 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: hp(2),
   },
-
   label: {
     color: Colors.black,
     fontFamily: 'inter',
     fontWeight: '400',
-    fontSize: FSize.fs14,
+    fontSize: FSize.fs16,
     paddingBottom: 5,
   },
-
-  newlabel:{
-    position:'relative',
-    right:wp(32)
+  newlabel: {
+    position: 'relative',
+    right: wp(35),
   },
-
   textInputSection: {
     paddingLeft: wp(1),
     borderWidth: 1,
     borderColor: Colors.gray,
     borderRadius: 8,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    paddingHorizontal:wp(1)
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center', // Ensure alignment
+    paddingHorizontal: wp(1),
   },
-
   input: {
-    width: '100%',
-    padding: hp(1.5),
-    borderWidth: 0,
-    color: 'black',
-    flexWrap: 'wrap',
+    flex: 1, // Make sure the input takes full available width
+    paddingVertical: hp(1.3),
+    color: Colors.black,
   },
-
   inputSectionFocused: {
     borderWidth: 2,
+    borderColor: Colors.black,
   },
-
-  imageStyle:{
-    height:'100%',
-    width:'100%',
-    marginVertical:hp(1.5),
-    tintColor:Colors.black
-  }
+  passwordIconContainer: {
+    height: hp(3),
+    width: hp(3),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageStyle: {
+    height: '100%',
+    width: '100%',
+    tintColor: Colors.black,
+  },
 });
