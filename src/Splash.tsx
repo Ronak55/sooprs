@@ -1,24 +1,33 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Image, Animated } from 'react-native';
 import Images from './assets/image';
-import { hp, wp } from './assets/commonCSS/GlobalCSS'; // Assuming hp and wp are helper functions for height and width percentages
-import FSize from './assets/commonCSS/FSize'; 
+import { hp, wp } from './assets/commonCSS/GlobalCSS';
+import FSize from './assets/commonCSS/FSize';
 import Colors from './assets/commonCSS/Colors';
 
 const Splash = ({ navigation }: { navigation: any }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.navigate('Onboarding'); // Navigate to the Onboarding screen after 3 seconds
-    }, 3000);
+  const fadeAnim = useRef(new Animated.Value(1)).current; // Initial opacity set to 1
 
-    return () => clearTimeout(timer); // Clear the timeout if the component unmounts
-  }, [navigation]);
+  useEffect(() => {
+    // Delay the fade-out animation by 2 seconds, then run a quick fade-out over 1 second
+    const timer = setTimeout(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,          // Target opacity (fade out)
+        duration: 1000,      // Duration for the fade-out effect
+        useNativeDriver: true,
+      }).start(() => {
+        navigation.navigate('Onboarding'); // Navigate after the animation completes
+      });
+    }, 2000); // Delay of 2 seconds before starting the fade-out
+
+    return () => clearTimeout(timer); // Clear timeout if component unmounts
+  }, [navigation, fadeAnim]);
 
   return (
     <View style={styles.container}>
-      <Image
+      <Animated.Image
         source={Images.Sooprsnewlogo}
-        style={styles.logo}
+        style={[styles.logo, { opacity: fadeAnim }]} // Apply opacity to animate
         resizeMode="contain"
       />
     </View>
@@ -32,16 +41,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white', // Set your desired background color
+    backgroundColor: 'white',
   },
   logo: {
-    width: wp(70), 
-    height: hp(20), 
+    width: wp(80), 
+    height: hp(50), 
   },
   splashText: {
     marginTop: hp(3), 
     fontSize: FSize.fs18,
-    color:Colors.black,
+    color: Colors.black,
     fontWeight: 'bold',
   },
 });

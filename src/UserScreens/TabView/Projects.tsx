@@ -1,5 +1,5 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, View, RefreshControl} from 'react-native';
+import React, {useEffect, useState, useCallback} from 'react';
 import Colors from '../../assets/commonCSS/Colors';
 import ProjectCard from '../../components/ProjectCard';
 import {wp} from '../../assets/commonCSS/GlobalCSS';
@@ -8,7 +8,8 @@ import {useIsFocused} from '@react-navigation/native';
 
 const Projects = ({navigation}: {navigation: any}) => {
   const [projectDetails, setProjectDetails] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true); // Loading state for initial load
+  const [refreshing, setRefreshing] = useState(false); // State for pull-to-refresh
   const isFocused = useIsFocused();
 
   const getProjects = async () => {
@@ -27,7 +28,7 @@ const Projects = ({navigation}: {navigation: any}) => {
 
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/get_enquiries_ajax',
-        { method: 'POST', body: formdata }
+        {method: 'POST', body: formdata}
       );
 
       const responseData = await response.json();
@@ -37,18 +38,25 @@ const Projects = ({navigation}: {navigation: any}) => {
         setProjectDetails(responseData.msg);
       } else {
         console.warn('No projects found');
-        setProjectDetails([]); // Ensure empty array
+        setProjectDetails([]); // Ensure empty array if no projects are found
       }
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
       setLoading(false); // Stop loading after data is fetched
+      setRefreshing(false); // Stop refreshing after data is reloaded
     }
   };
 
   useEffect(() => {
     getProjects();
   }, [isFocused]);
+
+  // Refresh handler for pull-to-refresh
+  const onRefresh = useCallback(() => {
+    setRefreshing(true); // Start refreshing
+    getProjects(); // Fetch updated data
+  }, []);
 
   const renderItem = ({item, index}: {item: any; index: any}) => (
     <ProjectCard
@@ -67,11 +75,11 @@ const Projects = ({navigation}: {navigation: any}) => {
 
   // Render UI based on the loading and data state
   const renderContent = () => {
-    if (loading) {
+    if (loading && !refreshing) {
       return <Text style={styles.message}>Loading projects...</Text>;
     }
 
-    if (projectDetails.length === 0) {
+    if (projectDetails.length === 0 && !refreshing) {
       return <Text style={styles.message}>No projects found!</Text>;
     }
 
@@ -81,6 +89,13 @@ const Projects = ({navigation}: {navigation: any}) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh} // Pull-to-refresh handler
+            colors={[Colors.sooprsblue]} // Customize color if needed
+          />
+        }
       />
     );
   };

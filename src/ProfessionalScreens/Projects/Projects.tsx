@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Images from '../../assets/image';
@@ -16,34 +17,30 @@ import {useIsFocused} from '@react-navigation/native';
 import ProjectCard from '../../components/ProjectCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Projects = ({navigation}: {navigation: any}) => {
-  const [bidProjects, setBidProjects] = useState([]); // Correct data type
+const Projects = ({navigation}) => {
+  const [bidProjects, setBidProjects] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
-  const [offset, setOffset] = useState(0); // Track the current offset for pagination
-  const [hasMore, setHasMore] = useState(true); // Check if more data is available
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [offset, setOffset] = useState(0); 
+  const [hasMore, setHasMore] = useState(true); 
 
   const isFocused = useIsFocused();
 
-  const getMyProjects = async (newOffset: number) => {
-    if (isLoading || !hasMore) return; // Prevent multiple calls if already loading or no more data
-    setIsLoading(true); // Start loading
+  const getMyProjects = async (newOffset = 0, refreshing = false) => {
+    if (isLoading && !refreshing) return; 
+    refreshing ? setIsRefreshing(true) : setIsLoading(true);
 
     try {
       let id = await AsyncStorage.getItem('uid');
 
-      // If lead_id has extra quotes, remove them
       if (id) {
-        id = id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+        id = id.replace(/^"|"$/g, ''); 
       }
 
-      console.log('unique id:::::::::::', id);
-
       const formdata = new FormData();
-      formdata.append('offset', newOffset); // Use current offset
-      formdata.append('limit', 10); // Limit results to 10 items
-      formdata.append('my_get_id', id); // Your user ID
-
-      console.log('bid projects contents:::::', formdata);
+      formdata.append('offset', newOffset); 
+      formdata.append('limit', 10); 
+      formdata.append('my_get_id', id); 
 
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/get_my_leads',
@@ -54,18 +51,16 @@ const Projects = ({navigation}: {navigation: any}) => {
         }
       );
       const responseData = await response.json();
-      console.log('Bidded projects response data::::', responseData);
 
       if (responseData.status === 200) {
-        if (responseData.msg.length === 0) {
-          setHasMore(false); // No more data to load
+        if (responseData.msg.length === 0 && !refreshing) {
+          setHasMore(false); 
         } else {
-          // Remove duplicates and only append new projects
           const newProjects = responseData.msg.filter(
             (project) =>
               !bidProjects.some((existingProject) => existingProject.id === project.id)
           );
-          setBidProjects((prevProjects) => [...prevProjects, ...newProjects]);
+          setBidProjects(refreshing ? newProjects : [...bidProjects, ...newProjects]);
         }
       } else if (responseData.status === 400) {
         console.error('An error has occurred!');
@@ -73,23 +68,22 @@ const Projects = ({navigation}: {navigation: any}) => {
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
-      setIsLoading(false); // Stop loading
+      refreshing ? setIsRefreshing(false) : setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // console.log('screen working of my bids !')
     getMyProjects(0); 
   }, [isFocused]);
 
   const loadMoreProjects = () => {
-    const newOffset = offset + 10; // Increment offset for next batch
+    const newOffset = offset + 10;
     setOffset(newOffset);
-    getMyProjects(newOffset); // Fetch the next batch
+    getMyProjects(newOffset); 
   };
 
   const renderFooter = () => {
-    if (isLoading) {
+    if (isLoading && !isRefreshing) {
       return (
         <ActivityIndicator
           size="large"
@@ -112,7 +106,7 @@ const Projects = ({navigation}: {navigation: any}) => {
     return <Text style={styles.noMoreText}>No more projects !</Text>;
   };
 
-  const renderItem = ({item, index}: {item: any; index: any}) => (
+  const renderItem = ({item, index}) => (
     <ProjectCard
       navigation={navigation}
       name={item.project_title}
@@ -131,32 +125,28 @@ const Projects = ({navigation}: {navigation: any}) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ProfessionalHome');
-          }}>
-          <Image
-            source={Images.backArrow}
-            resizeMode="contain"
-            style={styles.backArrow}
-          />
+        <TouchableOpacity onPress={() => navigation.navigate('ProfessionalHome')}>
+          <Image source={Images.backArrow} resizeMode="contain" style={styles.backArrow} />
         </TouchableOpacity>
-        <Text
-          style={{
-            color: Colors.black,
-            fontWeight: '500',
-            fontSize: FSize.fs16,
-          }}>
-          My Projects
-        </Text>
+        <Text style={styles.headerTitle}>My Projects</Text>
       </View>
       <View style={styles.myProjects}>
+        {isRefreshing && (
+          <Text style={styles.loadingText}>Loading My Projects...</Text>
+        )}
         <FlatList
           data={bidProjects}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={renderFooter} // Footer for pagination
+          ListFooterComponent={renderFooter}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => getMyProjects(0, true)}
+              colors={[Colors.sooprsblue]}
+            />
+          }
         />
       </View>
     </View>
@@ -181,8 +171,19 @@ const styles = StyleSheet.create({
     width: wp(8),
     height: hp(8),
   },
+  headerTitle: {
+    color: Colors.black,
+    fontWeight: '500',
+    fontSize: FSize.fs16,
+  },
   myProjects: {
     marginHorizontal: wp(5),
+  },
+  loadingText: {
+    textAlign: 'center',
+    color: Colors.gray,
+    fontSize: FSize.fs14,
+    marginVertical: hp(1),
   },
   showMoreButton: {
     paddingVertical: hp(1),

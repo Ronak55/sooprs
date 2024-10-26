@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   StyleSheet,
@@ -12,8 +12,9 @@ import {
   Modal,
   ScrollView,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
-import { URLSearchParams } from 'url';
+import {parse, URLSearchParams} from 'url';
 import Colors from '../assets/commonCSS/Colors';
 import FSize from '../assets/commonCSS/FSize';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
@@ -59,7 +60,7 @@ const MilestoneInput = ({
       <View style={styles.row}>
         <Text style={styles.label}>Milestone {milestoneNumber}</Text>
         <TouchableOpacity onPress={onDelete} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>✖️</Text>
+               <Image source={Images.cancelIcon} style={styles.cancelIcon}/>
         </TouchableOpacity>
       </View>
       <TextInput
@@ -103,15 +104,15 @@ const MilestoneInput = ({
         </View>
       </View>
       <View style={styles.newinputContainer}>
-          <Text style={styles.label}>Remarks</Text>
-          <TextInput
-            style={[styles.inputStyle, {flex: 1}]}
-            value={remarks}
-            onChangeText={setRemarks}
-            placeholder="Enter Remarks"
-            keyboardType="default"
-          />
-        </View>
+        <Text style={styles.label}>Remarks</Text>
+        <TextInput
+          style={[styles.inputStyle, {flex: 1}]}
+          value={remarks}
+          onChangeText={setRemarks}
+          placeholder="Enter Remarks"
+          keyboardType="default"
+        />
+      </View>
     </View>
   );
 };
@@ -153,12 +154,11 @@ const MilestoneModal = ({
   };
 
   const handleSaveMilestone = async () => {
-
-     // Get user_id from AsyncStorage
-     let user_id = await AsyncStorage.getItem('uid');
-     if (user_id) {
-       user_id = user_id.replace(/^"|"$/g, ''); // Remove extra quotes if any
-     }
+    // Get user_id from AsyncStorage
+    let user_id = await AsyncStorage.getItem('uid');
+    if (user_id) {
+      user_id = user_id.replace(/^"|"$/g, ''); // Remove extra quotes if any
+    }
 
     isLoading(true);
 
@@ -166,13 +166,17 @@ const MilestoneModal = ({
 
     const addField = (key, value) => {
       if (formDataString.length > 0) formDataString += '&';
-      formDataString += encodeURIComponent(key) + '=' + encodeURIComponent(value);
+      formDataString +=
+        encodeURIComponent(key) + '=' + encodeURIComponent(value);
     };
 
     if (milestones.length === 0) {
       addField('formData[0][milestone_name]', milestoneName || '');
       addField('formData[0][amount]', amount || '');
-      addField('formData[0][deadline]', dueDate ? dueDate.toLocaleDateString('en-CA') : '');
+      addField(
+        'formData[0][deadline]',
+        dueDate ? dueDate.toLocaleDateString('en-CA') : '',
+      );
       addField('formData[0][remark]', remarks || '');
       addField('formData[0][user_id]', user_id);
       addField('formData[0][leadId]', id || '');
@@ -180,9 +184,17 @@ const MilestoneModal = ({
       addField('leadId', id || '');
     } else {
       milestones.forEach((milestone, index) => {
-        addField(`formData[${index}][milestone_name]`, milestone.milestoneName || '');
+        addField(
+          `formData[${index}][milestone_name]`,
+          milestone.milestoneName || '',
+        );
         addField(`formData[${index}][amount]`, milestone.amount || '');
-        addField(`formData[${index}][deadline]`, milestone.dueDate ? milestone.dueDate.toLocaleDateString('en-CA') : '');
+        addField(
+          `formData[${index}][deadline]`,
+          milestone.dueDate
+            ? milestone.dueDate.toLocaleDateString('en-CA')
+            : '',
+        );
         addField(`formData[${index}][remark]`, milestone.remarks || '');
         addField(`formData[${index}][user_id]`, user_id);
         addField(`formData[${index}][leadId]`, id || '');
@@ -193,7 +205,6 @@ const MilestoneModal = ({
 
     console.log('Form data to be sent::::', formDataString);
 
-
     try {
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/add_milestone',
@@ -202,7 +213,7 @@ const MilestoneModal = ({
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body:formDataString,
+          body: formDataString,
         },
       );
 
@@ -234,9 +245,9 @@ const MilestoneModal = ({
         type: 'error',
         text1: 'Failed to add milestones. Please try again.',
       });
-    } finally{
+    } finally {
       isLoading(false);
-    }  
+    }
 
     // Reset input fields
     setMilestoneName('');
@@ -321,13 +332,9 @@ const MilestoneModal = ({
           <View style={styles.saveButton}>
             <ButtonNew
               imgSource={undefined}
-               btntext={
-                  loading ? (
-                    <ActivityIndicator color={Colors.white} />
-                  ) : (
-                    'Save'
-                  )
-                }
+              btntext={
+                loading ? <ActivityIndicator color={Colors.white} /> : 'Save'
+              }
               bgColor={Colors.sooprsblue}
               textColor={Colors.white}
               onPress={handleSaveMilestone}
@@ -346,6 +353,8 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   const [isClient, setisClient] = useState('');
 
   const [loading, setLoading] = useState(true); // Loader state
+  const [refreshing, setRefreshing] = useState(false);
+
   const [description, setDescription] = useState(''); // Store description
   const [downloadFile, setDownloadFile] = useState('');
 
@@ -360,11 +369,12 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   const [selectedMilestoneName, setSelectedMilestoneName] = useState('');
   const [selectedMilestoneDetails, setSelectedMilestoneDetails] = useState('');
   const [orderId, setOrderId] = useState('');
+  const [stateinfo, setstateInfo] = useState(null);
 
-  const openMilestoneDetailsModal = (index, name) => {
-    setSelectedMilestoneName(name);
-    setSelectedMilestoneDetails(`Milestone ${index + 1}`);
-    setMilestoneDetailsModalVisible(true);
+  const openMilestoneDetailsModal = index => {
+    const selectedMilestone = milestoneDetails[index];
+    setSelectedMilestoneDetails(selectedMilestone); // Set selected milestone details
+    setMilestoneDetailsModalVisible(true); // Open modal
   };
 
   const closeMilestoneDetailsModal = () => {
@@ -404,10 +414,19 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       console.log('formdata for acceptance::', formdata);
       const res = await response.json();
 
-      if (res.status === 200) {
-        Alert.alert('Success', 'Project accepted successfully!');
+      if (res.status === 200) {   
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: res.msg,
+        });
+        AsyncStorage.setItem(mobile_siteConfig.DELIVERED, res.status)
       } else {
-        Alert.alert('Failed', 'Project acceptance failed, please try again.');
+        Toast.show({
+          type:'info',
+          text1: 'Error',
+          text2: res.msg,
+        });
       }
     } catch (error) {
       console.error('Error accepting project:', error);
@@ -479,57 +498,79 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   //   }
   // }, [isFocused, route?.params?.id]);
 
-  useEffect(() => {
-    const getStateInfo = async () => {
-      const stateInfo = await getDataFromAsyncStorage(
-        mobile_siteConfig.IS_BUYER,
+  const getStateInfo = async () => {
+    const stateInfo = await getDataFromAsyncStorage(
+      mobile_siteConfig.IS_BUYER,
+    );
+    console.log('state infoo new:::::', stateInfo);
+    setstateInfo(stateInfo);
+    if (project_status === '1') {
+      setActiveStep(1);
+      getRequirements();
+      setLoading(false);
+    } else {
+      setActiveStep(0);
+      setLoading(false);
+    }
+    setisClient(stateInfo);
+  };
+
+  const getMilestoneInfo = async () => {
+    const formdata = new FormData();
+    formdata.append('lead_id', id);
+
+    try {
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/get_final_milestones',
+        {
+          method: 'POST',
+          body: formdata,
+        },
       );
-      console.log('state infoo new:::::', stateInfo);
-      if (project_status === '1') {
-        setActiveStep(1);
-        if (stateInfo == 0) {
-          console.log('inside state info professional::');
-          getRequirements();
-        }
-        setLoading(false);
-      } else {
-        setActiveStep(0);
-        setLoading(false);
+      const res = await response.json();
+
+      console.log('Milestones fetched response:', res);
+
+      if (res.msg && Array.isArray(res.msg.milestones)) {
+        const milestones = res.msg.milestones.map(
+          milestone => milestone.milestone_name,
+        );
+        setMilestoneNames(milestones);
+        setmilestoneDetails(res.msg.milestones);
+        setActiveStep(2);
       }
-      setisClient(stateInfo);
-    };
+    } catch (error) {
+      console.error('Error fetching milestones:', error);
+    }
+  };
 
-    // const getDeliveryInfo = async()=>{
-
-    //   const formdata = new FormData();
-
-    //   formdata.append('lead_id', id);
-    //   formdata.append('cust_id', recieverId);
-
-    //   const requestOptions = {
-    //     method: 'POST',
-    //     body: formdata,
-    //   };
+  const fetchAcceptStatus = async () => {
+    try {
+      const isDelivered = await AsyncStorage.getItem(mobile_siteConfig.DELIVERED); // Await the promise
   
-    //   try {
-    //     const response = await fetch(
-    //       'https://sooprs.com/api2/public/index.php/update-lead-delivery',
-    //       requestOptions,
-    //     );
-    //     const res = await response.json();
+      if (isDelivered !== null) {
+        const parseDelivery = JSON.parse(isDelivered);
+        console.log('delivered or not:::::::', parseDelivery);
   
-    //     console.log('response delivery:::::', res);
-  
-    //     if (res.msg === 'Lead already delivered' || res.msg === 'Project marked as delivered successfully!') {
-    //      setActiveStep(3);
-    //     } 
-    //   } catch (error) {
-    //     console.error('Error fetching project delivery info:::::', error);
-    //   }
-    // }
+        if (parseDelivery == 200) {
+          setActiveStep(3);
+        }
+      } else {
+        // Handle the case where there's no value stored
+        console.log('No delivery status found in AsyncStorage.');
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching delivery status from AsyncStorage:', error);
+      return;
+    }
+  };
 
+  
+  useEffect(() => {
     getStateInfo();
-    // getDeliveryInfo();
+    getMilestoneInfo();
+    fetchAcceptStatus();
   }, [isFocused]);
 
   const getRequirements = async () => {
@@ -550,8 +591,9 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
 
       if (Array.isArray(res) && res.length > 0) {
         console.log('get req success !');
-        setDownloadFile(res[0].file);
+        stateinfo == 0 ? setDownloadFile(res[0].file) : setActiveStep(2);
       } else {
+        setActiveStep(1);
         Toast.show({
           type: 'error',
           text1: 'Error',
@@ -678,105 +720,118 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
     }
   };
 
-  // const MilestoneDetailsModal = ({
-  //   isVisible,
-  //   onClose,
-  //   milestoneDetails,
-  //   setActiveStep,
-  // }) => {
-  //   // Assume milestoneDetails contains the milestone data as an array
-  //   if (!milestoneDetails || milestoneDetails.length === 0) return null;
+  const MilestoneDetailsModal = ({
+    isVisible,
+    onClose,
+    selectedMilestoneDetails,
+    setActiveStep,
+  }) => {
+    if (!selectedMilestoneDetails) return null;
 
-  //   // Extract details from the first milestone (for demonstration purposes)
-  //   const {milestone_name, milestone_deadline_formatted, milestone_amount} =
-  //     milestoneDetails[0];
+    const {milestone_name, milestone_deadline_formatted, milestone_amount} =
+      selectedMilestoneDetails;
+    
+    const [loading, setLoading] = useState(false);
 
-  //   const handlePayment = async amount => {
-  //     const amountInUSD = parseFloat(amount);
-  //     const conversionRate = 83.97;
-  //     const amountInINR = amountInUSD * conversionRate;
-  //     const amountInPaise = amountInINR * 100;
+    const handlePayment = async amount => {
 
-  //     // Initialize FormData
-  //     const formdata = new FormData();
-  //     formdata.append('amount', amountInPaise.toString());
+      setLoading(true);
+      const amountInUSD = parseFloat(amount);
+      const conversionRate = 83.97;
+      const amountInINR = amountInUSD * conversionRate;
+      const amountInPaise = amountInINR * 100;
 
-  //     console.log('formdata:::::::::', formdata);
+      // Initialize FormData
+      const formdata = new FormData();
+      formdata.append('amount', amountInPaise.toString());
 
-  //     try {
-  //       const response = await fetch(
-  //         'https://sooprs.com/create_razr_order.php',
-  //         {
-  //           method: 'POST',
-  //           body: formdata,
-  //         },
-  //       );
+      console.log('formdata:::::::::', formdata);
 
-  //       const res = await response.json();
+      try {
+        const response = await fetch(
+          'https://sooprs.com/create_razr_order.php',
+          {
+            method: 'POST',
+            body: formdata,
+          },
+        );
 
-  //       if (res.order_id) {
-  //         console.log('order id::::::::::', res.order_id);
-  //         setOrderId(res.order_id);
+        const res = await response.json();
 
-  //         const options = {
-  //           key: 'rzp_test_eaw8FUWQWt0bHV', // Replace with your Razorpay Key ID
-  //           amount: amountInPaise,
-  //           currency: 'INR',
-  //           name: 'Gazetinc Technology LLP',
-  //           description: 'Sooprs',
-  //           order_id: res.order_id,
-  //           image: 'https://sooprs.com/assets/images/sooprs_logo.png',
-  //           handler: paymentResponse => {
-  //             // Handle successful payment here
-  //             console.log('Payment Successful:::::', paymentResponse);
-  //             setActiveStep(3);
-  //           },
-  //           prefill: {
-  //             email: 'contact@sooprs.com',
-  //             contact: '8474081159',
-  //           },
-  //           theme: {
-  //             color: '#0077FF',
-  //           },
-  //         };
+        if (res.order_id) {
+          console.log('order id::::::::::', res.order_id);
+          setOrderId(res.order_id);
 
-  //         RazorpayCheckout.open(options)
-  //           .then(data => {
-  //             console.log('Payment data::::', data);
-  //             setActiveStep(3);
-  //           })
-  //           .catch(error => {
-  //             console.error('Razorpay error:', error);
-  //           });
-  //       }
-  //     } catch (error) {
-  //       console.error('Error creating order:', error);
-  //     }
-  //   };
-  //   return (
-  //     <Modal visible={isVisible} transparent animationType="slide">
-  //       <View style={styles.modalMilestoneContainer}>
-  //         <View style={styles.modalContent}>
-  //           <Text style={styles.modalTitle}>{milestone_name}</Text>
-  //           <Text style={styles.modalText}>
-  //             Deadline: {milestone_deadline_formatted}
-  //           </Text>
-  //           <Text style={styles.modalText}>Amount: ${milestone_amount}</Text>
+          const options = {
+            key: 'rzp_live_SwPxj3HuCi6h9s', // Replace with your Razorpay Key ID
+            amount: amountInPaise,
+            currency: 'INR',
+            name: 'Gazetinc Technology LLP',
+            description: 'Sooprs',
+            order_id: res.order_id,
+            image: 'https://sooprs.com/assets/images/sooprs_logo.png',
+            handler: paymentResponse => {
+              // Handle successful payment here
+              console.log('Payment Successful:::::', paymentResponse);
+              setActiveStep(3);
+            },
+            prefill: {
+              email: 'contact@sooprs.com',
+              contact: '8474081159',
+            },
+            theme: {
+              color: '#0077FF',
+            },
+          };
 
-  //           <TouchableOpacity
-  //             style={styles.payButton}
-  //             onPress={handlePayment(milestone_amount)}>
-  //             <Text style={styles.payButtonText}>Pay Now</Text>
-  //           </TouchableOpacity>
-
-  //           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-  //             <Text style={styles.closeButtonText}>Close</Text>
-  //           </TouchableOpacity>
-  //         </View>
-  //       </View>
-  //     </Modal>
-  //   );
-  // };
+          RazorpayCheckout.open(options)
+            .then(data => {
+              console.log('Payment data::::', data);
+              setActiveStep(3);
+            })
+            .catch(error => {
+              console.error('Razorpay error:', error);
+            });
+        }
+      } catch (error) {
+        console.error('Error creating order:', error);
+      } finally{
+        setLoading(false);
+      }
+    };
+    return (
+      <Modal visible={isVisible} transparent animationType="slide">
+        <View style={styles.modalMilestoneContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.payRow}>
+              <Text style={styles.modalPaymentTitle}>{milestone_name}</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+               <Image source={Images.cancelIcon} style={styles.cancelIcon}/>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.modalText}>
+              Deadline: {milestone_deadline_formatted}
+            </Text>
+            <Text style={styles.modalText}>Amount: ${milestone_amount}</Text>
+            <ButtonNew
+                imgSource={undefined}
+                btntext={
+                  loading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    'Pay Now'
+                  )
+                }
+                bgColor={Colors.sooprsblue}
+                textColor={Colors.white}
+                onPress={() => handlePayment(milestone_amount)}
+                isDisabled={loading} // Disable button while loading
+              />
+          </View>
+        </View>
+      </Modal>
+    );
+  };
 
   if (loading) {
     return (
@@ -785,6 +840,15 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       </View>
     );
   }
+
+   
+// const onRefresh = useCallback(() => {
+//   setRefreshing(true);
+//   getStateInfo();
+//   getMilestoneInfo();
+//   setRefreshing(false); // Set refreshing to false after fetching
+// }, []);
+
 
   return (
     <KeyboardAwareScrollView style={styles.section}>
@@ -848,10 +912,18 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 <Text style={styles.viewButtonText}>Download</Text>
               </TouchableOpacity>
             ) : null}
-            {isClient === '0' && activeStep === 2 && step === 'Milestones' && (
-              <>
-                <View style={styles.mileRow}>
-                  {milestoneNames.length > 0 ? (
+            {activeStep === 2 && step === 'Milestones' && (
+              <View style={styles.mileRow}>
+                {isClient === '0' ? (
+                  milestoneNames.length === 0 ? (
+                    // "Add" button for client = '0' and no milestones
+                    <TouchableOpacity
+                      style={styles.uploadButton}
+                      onPress={openMilestoneModal}>
+                      <Text style={styles.uploadButtonText}>Add</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    // Milestone list with "Complete" or "Finish" button for client = '0'
                     milestoneNames.map((name, index) => (
                       <View key={index} style={styles.milestoneContainer}>
                         <View
@@ -866,55 +938,70 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                           ]}>
                           • {name}
                         </Text>
-                        {isClient === '0' ? (
-                          // Complete or Finish button for client = '0'
-                          <TouchableOpacity
-                            style={styles.viewButton}
-                            onPress={() => {
-                              if (index < milestoneNames.length - 1) {
-                                const newMilestones = [...milestoneNames];
-                                newMilestones.splice(index, 1); // Remove completed milestone
-                                setMilestoneNames(newMilestones);
-                              } else {
-                                setActiveStep(3); // Final step
-                              }
-                            }}>
-                            <Text style={styles.viewButtonText}>
-                              {index === milestoneNames.length - 1
-                                ? 'Finish'
-                                : 'Complete'}
-                            </Text>
-                          </TouchableOpacity>
-                        ) : (
-                          // View button for client = '1'
-                          <TouchableOpacity
-                            style={styles.viewButton}
-                            onPress={() =>
-                              openMilestoneDetailsModal(index, name)
-                            }>
-                            <Text style={styles.viewButtonText}>View</Text>
-                          </TouchableOpacity>
-                        )}
+                        <TouchableOpacity
+                          style={styles.viewButton}
+                          onPress={() => {
+                            if (index < milestoneNames.length - 1) {
+                              const newMilestones = [...milestoneNames];
+                              newMilestones.splice(index, 1); // Remove completed milestone
+                              setMilestoneNames(newMilestones);
+                            } else {
+                              setActiveStep(3); // Final step
+                            }
+                          }}>
+                          <Text style={styles.viewButtonText}>
+                            {index === milestoneNames.length - 1
+                              ? 'Finish'
+                              : 'Complete'}
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     ))
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.uploadButton}
-                      onPress={openMilestoneModal}>
-                      <Text style={styles.uploadButtonText}>Add</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </>
+                  )
+                ) : milestoneNames.length === 0 ? (
+                  // Message for client = '1' and no milestones
+                  <>
+                    <View
+                      style={styles.dot}
+                    />
+                    <Text style={styles.waitingText}>
+                      waiting for freelancer
+                    </Text>
+                  </>
+                ) : (
+                  // Milestone list with "View" button for client = '1'
+                  milestoneNames.map((name, index) => (
+                    <View key={index} style={styles.milestoneContainer}>
+                      <View
+                        style={[styles.dot, index === 0 && styles.activeDot]}
+                      />
+                      <Text
+                        style={[
+                          styles.milestoneText,
+                          index === 0
+                            ? styles.activeMilestoneText
+                            : styles.defaultMilestoneText,
+                        ]}>
+                        • {name}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.viewButton}
+                        onPress={() => openMilestoneDetailsModal(index)}>
+                        <Text style={styles.viewButtonText}>View</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
+              </View>
             )}
           </View>
         ))}
-        {/* <MilestoneDetailsModal
+        <MilestoneDetailsModal
           isVisible={isMilestoneDetailsModalVisible}
           onClose={closeMilestoneDetailsModal}
-          milestoneDetails={milestoneDetails}
+          selectedMilestoneDetails={selectedMilestoneDetails}
           setActiveStep={setActiveStep}
-        /> */}
+        />
         <MilestoneModal
           isVisible={isMilestoneModalVisible}
           onClose={closeMilestoneModal}
@@ -1000,6 +1087,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center-align circle and line
   },
 
+
   statusRow: {
     flexDirection: 'column',
   },
@@ -1081,6 +1169,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+
+  cancelIcon:{
+    width:wp(5),
+    height:hp(3)
+  },
+
+  waitingText: {
+    fontSize: FSize.fs14,
+    fontWeight: '500',
+    color: Colors.sooprsblue,
+  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1118,6 +1217,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  payRow:{
+    flexDirection: 'row',
+    marginBottom: hp(1),
+    justifyContent: 'space-between',
+  },
   label: {
     fontSize: 14,
     color: '#333',
@@ -1231,28 +1335,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-  modalTitle: {
+  modalPaymentTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: Colors.sooprsblue,
     marginBottom: 10,
-    textAlign: 'center',
   },
   modalText: {
     fontSize: 16,
-    color: '#555',
-    marginBottom: 10,
-    textAlign: 'center',
+    color: Colors.sooprsblue,
+    marginBottom: hp(2),
   },
   payButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: Colors.sooprsblue,
     padding: 12,
     borderRadius: 8,
     marginTop: 20,
     alignItems: 'center',
   },
   payButtonText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
   },

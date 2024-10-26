@@ -68,7 +68,8 @@ leadServicesIcon: require('../assets/Icons/leadservices.png'),
 resumeIcon : require('../assets/Icons/resume.png'),
 imageIcon: require('../assets/Icons/imageIcon.png'),
 projectStatus: require('../assets/Icons/projectStatus.png'),
-splashLogo:require('../assets/Icons/splashLogo.gif')
+splashLogo:require('../assets/Icons/splashLogo.gif'),
+cancelIcon: require('../assets/Icons/cancel.png'),
 
 }
 

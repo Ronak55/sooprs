@@ -20,29 +20,38 @@ const Professionals = ({navigation}: {navigation: any}) => {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState<string | null>(null); // New state for selected service
   const [name, setName] = useState('');
+  const [profilePic, setProfilePic] = useState(null);
   const isFocused = useIsFocused();
 
-  const getName = async () => {
+  const getNameAndImage = async () => {
     try {
       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
+
       const parsedName = JSON.parse(name);
+      const parsedprofilepic = JSON.parse(profilepic);
       if (name !== null) {
         setName(parsedName ?? '');
+      }
+
+      if (parsedprofilepic) {
+        setProfilePic(parsedprofilepic);
       }
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
   };
 
+
   useEffect(() => {
-    getName();
+    getNameAndImage();
   }, [isFocused]);
 
   return (
     <ScrollView style={styles.container}>
       <Header
         navigation={navigation}
-        img={Images.profileImagetwo}
+        img={profilePic}
         name={name || 'User'}
         btnName="Post a project"
         isClient={true}
@@ -57,8 +66,7 @@ const Professionals = ({navigation}: {navigation: any}) => {
         </View>
 
         <View style={styles.searchFilter}>
-          <SearchBar placeholderName="Gigs" />
-          <Filter />
+          <SearchBar placeholderName="Professionals..." />
         </View>
         {/* <IntroCard
           cardText="Discover Top Professionals and Connect"

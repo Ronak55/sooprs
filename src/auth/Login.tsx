@@ -133,13 +133,14 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         } else if (response.status === 400) {
           // Show error message for status 400
           console.log('response token:::::::::::', response);
-
           Toast.show({
             type: 'error',
             text1: 'Error',
             text2: response.msg || 'Login failed. Please try again.',
             position: 'top',
           });
+
+          isLoading(false);
         }
       })
       .catch(error => {

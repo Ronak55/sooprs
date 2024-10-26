@@ -36,19 +36,10 @@ const Header = ({
       />
       <View
         style={{
-          paddingHorizontal: btnName ? wp(3) : wp(35),
+          paddingHorizontal: btnName ? wp(8) : wp(35),
           flexDirection: 'row',
           gap: 15,
         }}>
-        {btnName && (
-          <TouchableOpacity
-            style={styles.postButton}
-            onPress={() => {
-              navigation.navigate('ProjectPosting');
-            }}>
-            <Text style={styles.postbuttonText}>{btnName}</Text>
-          </TouchableOpacity>
-        )}
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Notifications');
@@ -59,6 +50,15 @@ const Header = ({
             style={styles.bellIcon}
           />
         </TouchableOpacity>
+        {btnName && (
+          <TouchableOpacity
+            style={styles.postButton}
+            onPress={() => {
+              navigation.navigate('ProjectPosting');
+            }}>
+            <Text style={styles.postbuttonText}>{btnName}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

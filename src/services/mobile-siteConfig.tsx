@@ -12,6 +12,7 @@ export const mobile_siteConfig = Object.freeze({
     UID:'uid',
     IS_BUYER:'client',
     PROFILE_PIC:'profilepic',
+    DELIVERED:'delivered',
 
     // Token
     TOKEN:'token',

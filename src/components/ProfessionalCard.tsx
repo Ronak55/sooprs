@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     height:hp(23),
     marginBottom:hp(4),
     marginRight:wp(3),
+    paddingBottom:hp(5),
     // alignItems: 'center',
     elevation: 2, // Shadow for Android
     shadowOpacity: 0.1,

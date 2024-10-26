@@ -31,7 +31,12 @@ const CategoriesList = ({ navigation, services, onSelectService }: { navigation:
 
   // Fetch services on component mount
   useEffect(() => {
-    fetchServices();
+
+    const fetchSer = async()=>{
+      await fetchServices();
+    }
+
+    fetchSer();
   }, []);
 
   // Render each category card
