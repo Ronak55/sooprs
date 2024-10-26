@@ -1,26 +1,17 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  StatusBar,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { wp, hp } from '../../assets/commonCSS/GlobalCSS';
-import Colors from '../../assets/commonCSS/Colors';
-import FSize from '../../assets/commonCSS/FSize';
-import Header from '../../components/Header';
-import Images from '../../assets/image';
-import SearchBar from '../../components/SearchBar';
-import Filter from '../../components/Filter';
-import IntroCard from '../../components/IntroCard';
-import AllProjects from '../../components/AllProjects';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native';
-import { mobile_siteConfig } from '../../services/mobile-siteConfig';
-
+import { StyleSheet, Text, View, StatusBar, Image, ScrollView, RefreshControl, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { wp, hp } from '../../assets/commonCSS/GlobalCSS'
+import Colors from '../../assets/commonCSS/Colors'
+import FSize from '../../assets/commonCSS/FSize'
+import Header from '../../components/Header'
+import Images from '../../assets/image'
+import SearchBar from '../../components/SearchBar'
+import Filter from '../../components/Filter'
+import IntroCard from '../../components/IntroCard'
+import AllProjects from '../../components/AllProjects'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useIsFocused } from '@react-navigation/native'
+import { mobile_siteConfig } from '../../services/mobile-siteConfig'
 const Home = ({ navigation }: { navigation: any }) => {
   const [name, setName] = useState('');
   const isFocused = useIsFocused();
@@ -32,14 +23,24 @@ const Home = ({ navigation }: { navigation: any }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [profilePic, setProfilePic] = useState(null); 
 
-  const getName = async () => {
+  const getNameAndImage = async () => {
     try {
       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
+
+      const parsedprofilepic = JSON.parse(profilepic);
+
+      console.log("profile image::::::::::", parsedprofilepic);
+
       const parsedName = JSON.parse(name);
       if (name !== null) {
         setName(parsedName ?? '');
       }
+      if (parsedprofilepic) {
+        setProfilePic(parsedprofilepic);
+      } 
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
@@ -94,7 +95,7 @@ const Home = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     if (isFocused) {
       getProjects(0);
-      getName();
+      getNameAndImage();
     }
   }, [isFocused]);
 
@@ -126,7 +127,7 @@ const Home = ({ navigation }: { navigation: any }) => {
         }>
         <Header
           navigation={navigation}
-          img={Images.profileImagetwo}
+          img={profilePic}
           name={name || 'user'}
           btnName=""
           isClient={false}
@@ -143,7 +144,6 @@ const Home = ({ navigation }: { navigation: any }) => {
           </View>
           <View style={styles.searchFilter}>
             <SearchBar placeholderName="Projects" />
-            <Filter />
           </View>
           <IntroCard
             cardText="Discover projects with ease!"
@@ -155,7 +155,6 @@ const Home = ({ navigation }: { navigation: any }) => {
           {loadingMessage ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={Colors.sooprsblue} />
-              <Text style={styles.loadingText}>{loadingMessage}</Text>
             </View>
           ) : (
             <AllProjects
@@ -172,13 +171,14 @@ const Home = ({ navigation }: { navigation: any }) => {
   );
 };
 
-export default Home;
+export default Home
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+
   section: {
     marginHorizontal: wp(5),
     marginVertical: hp(5),
@@ -188,27 +188,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: FSize.fs19,
   },
+
   textAlign: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  profText: {
-    color: Colors.sooprsblue,
+
+  profText:{
+
+    color:Colors.sooprsblue
   },
+
   searchFilter: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent:'center',
     gap: 5,
   },
+
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: hp(2),
   },
-  loadingText: {
-    marginLeft: wp(2),
-    fontSize: FSize.fs16,
-    color: Colors.black,
-  },
-});
+})

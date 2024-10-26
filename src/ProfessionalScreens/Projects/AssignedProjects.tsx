@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Images from '../../assets/image';
 import FSize from '../../assets/commonCSS/FSize';
@@ -55,8 +62,7 @@ const AssignedProjects = ({navigation}: {navigation: any}) => {
     getAssignedProjects();
   }, [isFocused]);
 
-  
- const renderItem = ({item, index}: {item: any; index: any}) => (
+  const renderItem = ({item, index}: {item: any; index: any}) => (
     <ProjectCard
       navigation={navigation}
       name={item.project_title}
@@ -71,9 +77,11 @@ const AssignedProjects = ({navigation}: {navigation: any}) => {
       bidId={item.myLeadId}
       Customer_name={item.Customer_name}
       customer_id={item.customer_id}
+      isAssigned={true}
+      project_status={item.project_status}
     />
   );
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -125,5 +133,4 @@ const styles = StyleSheet.create({
   myProjects: {
     marginHorizontal: wp(5),
   },
-
 });

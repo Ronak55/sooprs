@@ -26,16 +26,24 @@ import { mobile_siteConfig } from '../../services/mobile-siteConfig';
 const Home = ({navigation} : {navigation:any}) => {
 
   const [name, setName] = useState('');
+  const [profilePic, setProfilePic] = useState(null);
   const isFocused = useIsFocused();
   
 
-  const getName = async()=>{
+  const getNameAndImage = async()=>{
 
     try {
       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
+
       const parsedName = JSON.parse(name)
+      const parsedprofilepic = JSON.parse(profilepic);
       if (name !== null) {
         setName(parsedName ?? '');
+      }
+
+      if(parsedprofilepic){
+        setProfilePic(parsedprofilepic);
       }
     } catch (e) {
       console.log('Error retrieving profile details:', e);
@@ -46,7 +54,7 @@ const Home = ({navigation} : {navigation:any}) => {
 
   useEffect(()=>{
 
-    getName();
+    getNameAndImage();
     
   }, [isFocused])
 
@@ -56,7 +64,7 @@ const Home = ({navigation} : {navigation:any}) => {
     <ScrollView style={styles.container}>
       <Header
         navigation={navigation}
-        img={Images.profileImagetwo}
+        img={profilePic}
         name={name || 'User'}
         btnName="Post a project"
         isClient={true}
@@ -71,7 +79,6 @@ const Home = ({navigation} : {navigation:any}) => {
         </View>
         <View style={styles.searchFilter}>
           <SearchBar placeholderName='Professionals'/>
-          <Filter />
         </View>
         <IntroCard
           cardText="Your One-Stop Solution for Quality and Convenience!"
@@ -121,6 +128,6 @@ const styles = StyleSheet.create({
   searchFilter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    justifyContent:'center'
   },
 });

@@ -7,7 +7,7 @@ import {
   Alert,
   Image,
   StatusBar,
-
+  ActivityIndicator,
 } from 'react-native';
 
 import Images from '../assets/image';
@@ -24,15 +24,14 @@ import ButtonNew from '../components/ButtonNew';
 
 import CustomAlert from '../components/CustomAlert';
 
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { mobile_siteConfig } from '../services/mobile-siteConfig';
-import { postData } from '../services/mobile-api';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {mobile_siteConfig} from '../services/mobile-siteConfig';
+import {postData} from '../services/mobile-api';
 import Toast from 'react-native-toast-message';
-import { storeDataToAsyncStorage } from '../services/CommonFunction';
-import { CommonActions, useIsFocused } from '@react-navigation/native';
+import {storeDataToAsyncStorage} from '../services/CommonFunction';
+import {CommonActions, useIsFocused} from '@react-navigation/native';
 
-const Login = ({navigation, route}: {navigation: any, route:any}) => {
-
+const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const {profileType} = route.params;
   // const [email, setEmail] = useState('2shaaar.clicked@gmail.com');
   // const [password, setPassword] = useState('@Heartcliff123');
@@ -41,7 +40,7 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
-
+  const [loading, isLoading] = useState(false);
 
   const showAlert = (title: string, message: string) => {
     setAlertTitle(title);
@@ -61,11 +60,11 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
     );
   };
 
-  const signInWithGoogle=()=>{
-    
-  }
+  const signInWithGoogle = () => {};
 
-  const handleOnPress = async() => {
+  const handleOnPress = async () => {
+    isLoading(true);
+
     if (!validateEmail(email.trim())) {
       showAlert('Invalid Email', 'Please enter a valid email');
       return;
@@ -83,126 +82,145 @@ const Login = ({navigation, route}: {navigation: any, route:any}) => {
     //   );
     //   return;
     // }
-    
-    const payload = {
-      email:email,
-      password:password,
-      is_buyer: profileType === 'Client' ? 1 : 0,
-    }
 
-    const isClient =  profileType === 'Client' ? '1' : '0'
+    const payload = {
+      email: email,
+      password: password,
+      is_buyer: profileType === 'Client' ? 1 : 0,
+    };
+
+    const isClient = profileType === 'Client' ? '1' : '0';
 
     postData(payload, mobile_siteConfig.LOGIN)
-    .then((response) => {
+      .then(response => {
+        if (response.status === '200' || response.msg === 'Login successful!') {
+          console.log('response token:::::::::::', response);
+          Toast.show({
+            type: 'success',
+            text1: 'Login Successful',
+            text2: 'You have loggedin successfully!',
+            position: 'top',
+          });
 
-      if(response.status==='200' || response.msg==='Login successful!'){
+          storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+          storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id);
+          storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token);
+          storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
+          storeDataToAsyncStorage(mobile_siteConfig.NAME, response.slug);
+          storeDataToAsyncStorage(
+            mobile_siteConfig.IS_BUYER,
+            response.is_buyer,
+          );
+          storeDataToAsyncStorage(
+            mobile_siteConfig.PROFILE_PIC,
+            response.profile_pic,
+          );
+          // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
+          isLoading(false);
 
-        console.log('response token:::::::::::', response)
-        Toast.show({
-          type: 'success',
-          text1: 'Login Successful',
-          text2: 'You have loggedin successfully!',
-          position: 'top',
-        });
+          let resetAction = CommonActions.reset({
+            index: 0,
+            routes: [
+              {
+                name:
+                  profileType === 'Client'
+                    ? 'ClientLoggedIn'
+                    : 'ProfessionalLoggedIn',
+              },
+            ],
+          });
+          navigation.dispatch(resetAction);
+        } else if (response.status === 400) {
+          // Show error message for status 400
+          console.log('response token:::::::::::', response);
 
-        storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, "TRUE");
-        storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id)
-        storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token)
-        storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email)
-        storeDataToAsyncStorage(mobile_siteConfig.NAME, response.slug)
-        storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, response.is_buyer)
-        // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
-        let resetAction = CommonActions.reset({
-          index: 0,
-          routes: [
-            { name: profileType === 'Client' ? 'ClientLoggedIn' : 'ProfessionalLoggedIn' }
-          ],
-        });
-        navigation.dispatch(resetAction);
-      } else if (response.status === 400) {
-        // Show error message for status 400
-        console.log('response token:::::::::::', response)
-
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: response.msg || 'Login failed. Please try again.',
+            position: 'top',
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: response.msg || 'Login failed. Please try again.',
+          text2: 'Something went wrong. Please try again.',
           position: 'top',
         });
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error.message);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2:"Something went wrong. Please try again.",
-        position: 'top',
       });
-    });
   };
 
   return (
     <>
-    <StatusBar barStyle="dark-content" backgroundColor="white" />
-    <KeyboardAwareScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image source={Images.Sooprslogo} style={styles.img} />
-      </View>
-      <View style={styles.section}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Login</Text>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      <KeyboardAwareScrollView style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image source={Images.Sooprslogo} style={styles.img} />
         </View>
-        <View style={styles.inputContainer}>
-          <CInput
-            title="Email address"
-            name="Enter your email address"
-            newlabel={false}
-            style={undefined}
-            setValue={(val: any) => setEmail(val)}
-            value={email}
-            isPassword={false}
-            keyboardType={'default'}
-          />
+        <View style={styles.section}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Login</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <CInput
+              title="Email address"
+              name="Enter your email address"
+              newlabel={false}
+              style={undefined}
+              setValue={(val: any) => setEmail(val)}
+              value={email}
+              isPassword={false}
+              keyboardType={'default'}
+            />
 
-          <CInput
-            title="Password"
-            name="Enter your password"
-            newlabel={false}
-            style={undefined}
-            setValue={(val: React.SetStateAction<string>) => setPassword(val)}
-            value={password}
-            isPassword={true}
-            keyboardType={'default'}
-          />
+            <CInput
+              title="Password"
+              name="Enter your password"
+              newlabel={false}
+              style={undefined}
+              setValue={(val: React.SetStateAction<string>) => setPassword(val)}
+              value={password}
+              isPassword={true}
+              keyboardType={'default'}
+            />
+          </View>
+          <View style={{}}>
+            <ButtonNew
+              imgSource={null}
+              btntext={
+                loading ? <ActivityIndicator color={Colors.white} /> : 'Login'
+              }
+              bgColor={Colors.sooprsblue}
+              textColor={Colors.white}
+              onPress={handleOnPress}
+              isDisabled={loading}
+            />
+            <TouchableOpacity
+              style={styles.forgotPassword}
+              onPress={() => {
+                navigation.navigate('Forgot');
+              }}>
+              <Text style={styles.forgotText}>Forgot Password?</Text>
+            </TouchableOpacity>
+            <ButtonNew
+              imgSource={Images.googleIcon}
+              btntext="Continue with Google"
+              bgColor="white"
+              textColor="black"
+              onPress={signInWithGoogle}
+            />
+          </View>
         </View>
-        <View style={{}}>
-        <ButtonNew
-            imgSource={null}
-            btntext="Login"
-            bgColor="#0077FF"
-            textColor="#FFFFFF"
-            onPress={handleOnPress}
-          />
-          <TouchableOpacity style={styles.forgotPassword} onPress={()=>{navigation.navigate('Forgot')}}>
-               <Text style={styles.forgotText}>Forgot Password?</Text>
-          </TouchableOpacity>
-          <ButtonNew
-            imgSource={Images.googleIcon}
-            btntext="Continue with Google"
-            bgColor="white"
-            textColor="black"
-            onPress={signInWithGoogle}
-          />
-        </View>
-      </View>
-      <CustomAlert
-        isVisible={alertVisible}
-        onClose={() => setAlertVisible(false)}
-        title={alertTitle}
-        message={alertMessage}
-      />
-    </KeyboardAwareScrollView>
+        <CustomAlert
+          isVisible={alertVisible}
+          onClose={() => setAlertVisible(false)}
+          title={alertTitle}
+          message={alertMessage}
+        />
+      </KeyboardAwareScrollView>
     </>
   );
 };
@@ -245,22 +263,19 @@ const styles = StyleSheet.create({
     marginVertical: hp(3),
   },
 
-  inputContainer:{
-    gap:1
+  inputContainer: {
+    gap: 1,
   },
 
-  forgotPassword:{
-
-    alignItems:'center',
-    marginBottom:15
+  forgotPassword: {
+    alignItems: 'center',
+    marginBottom: 15,
   },
 
-  forgotText:{
-
-    fontFamily:'inter',
-    fontWeight:'800',
-    fontSize:wp(3),
-    color:Colors.sooprsblue
+  forgotText: {
+    fontFamily: 'inter',
+    fontWeight: '800',
+    fontSize: wp(3),
+    color: Colors.sooprsblue,
   },
-
 });

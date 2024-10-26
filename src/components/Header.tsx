@@ -10,21 +10,23 @@ const Header = ({
   img,
   name,
   btnName,
-  isClient
+  isClient,
 }: {
   navigation: any;
   img: any;
   name: String;
   btnName: String;
-  isClient:any
+  isClient: any;
 }) => {
   return (
     <View style={styles.header}>
       <TouchableOpacity
         onPress={() => {
-       navigation.navigate('Account')
+          navigation.navigate('Account');
         }}>
-        <Image source={img} resizeMode="contain" style={styles.imgStyling} />
+        <View style={[styles.profileIcon]}>
+          <Image style={styles.Icon} resizeMode="cover" source={img ? {uri:img} : Images.profileImage} />
+        </View>
       </TouchableOpacity>
       <Text style={styles.greetText}>Hello, {name}</Text>
       <Image
@@ -32,7 +34,12 @@ const Header = ({
         resizeMode="contain"
         style={styles.hello}
       />
-      <View style={{paddingHorizontal: btnName ? wp(3) : wp(35), flexDirection: 'row', gap: 15}}>
+      <View
+        style={{
+          paddingHorizontal: btnName ? wp(3) : wp(35),
+          flexDirection: 'row',
+          gap: 15,
+        }}>
         {btnName && (
           <TouchableOpacity
             style={styles.postButton}
@@ -42,7 +49,10 @@ const Header = ({
             <Text style={styles.postbuttonText}>{btnName}</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={()=>{navigation.navigate('Notifications')}}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Notifications');
+          }}>
           <Image
             source={Images.bellIcon}
             resizeMode="contain"
@@ -66,10 +76,29 @@ const styles = StyleSheet.create({
     gap: wp(3),
   },
 
-  imgStyling: {
-    width: wp(12),
-    height: hp(10),
+  
+  profileIcon: {
+    width: wp(10),
+    height: hp(5),
+    borderWidth: 2,
+    borderColor: Colors.sooprsblue,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: wp(5),
+    marginBottom: wp(2),
   },
+  Icon: {
+    width: wp(10),
+    height: hp(5),
+    borderRadius: wp(5),
+  },
+
+  // imgStyling: {
+  //   width: 50,
+  //   height: 50,
+  //   borderRadius: 25,
+  //   overflow: 'hidden',
+  // },
 
   hello: {
     width: wp(6),

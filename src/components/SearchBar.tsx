@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
  searchBar:{
     borderWidth:1,
     borderColor:'#CFCFCF',
-    width:'85%',
+    width:'100%',
     height:hp(5),
     borderRadius:wp(2.5),
     paddingHorizontal:wp(2.5),

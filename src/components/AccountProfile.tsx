@@ -32,37 +32,26 @@ const AccountProfile = ({
   useEffect(() => {
     const loadProfileDetails = async () => {
       try {
-        const storedDetails = await AsyncStorage.getItem('profileDetails');
 
         const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-
-        const parsedName = JSON.parse(name);
-
-        if (storedDetails !== null) {
-          const {role, profileImage} = JSON.parse(storedDetails);
-
-          setName(parsedName);
-          setRole(role);
-          setProfileImage(profileImage);
+        const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
+  
+        const parsedName = JSON.parse(name)
+        const parsedprofilepic = JSON.parse(profilepic);
+        if (name !== null) {
+          setName(parsedName ?? '');
         }
-      } catch (e) {
+  
+        if(parsedprofilepic){
+          setProfileImage({uri:parsedprofilepic});
+        }         
+        }
+      catch (e) {
         console.log('Error retrieving profile details:', e);
       }
     };
 
-    const getImageFromStorage = async () => {
-      try {
-        const imageUrl = await AsyncStorage.getItem('profileImageUrl');
-        if (imageUrl) {
-          console.log('Retrieved image URL:', imageUrl);
-          setProfileImage({uri: imageUrl}); // Use the stored image URL
-        }
-      } catch (error) {
-        console.error('Error retrieving image from AsyncStorage:', error);
-      }
-    };
     loadProfileDetails();
-    getImageFromStorage();
   }, [isFocused]);
 
   const confirmLogout = async () => {
@@ -98,7 +87,7 @@ const AccountProfile = ({
           <Image style={styles.Icon} resizeMode="cover" source={profileImage} />
         </View>
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
-        <Text style={styles.profileRole}>{role ? role : 'Role'}</Text>
+        {/* <Text style={styles.profileRole}>{role ? role : 'Role'}</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.profileSection}>
         <View style={styles.commonSettings}>
@@ -112,7 +101,7 @@ const AccountProfile = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ManageDetails');
+              navigation.navigate('ManageDetails', {name:name, profileImage:profileImage});
             }}>
             <View style={styles.details}>
               <Text style={styles.detailsText}>Manage Details</Text>

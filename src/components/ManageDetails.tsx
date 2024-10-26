@@ -22,8 +22,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
-const ManageDetails = ({navigation}: {navigation: any}) => {
-  const [name, setName] = useState('');
+const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
+
+  const {name, profileImage} = route.params;
+
+  const [newName, setNewName] = useState(name);
   const [role, setRole] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
@@ -35,7 +38,7 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
   const [pincode, setPincode] = useState('');
   const [country, setCountry] = useState('');
   const [countryCode, setCountryCode] = useState('');
-  const [profileImage, setProfileImage] = useState(Images.profileImage);
+  const [newprofileImage, setNewProfileImage] = useState(profileImage);
 
   const isFocused = useIsFocused();
 
@@ -47,14 +50,13 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
           const updatedData = JSON.parse(storedDetails);
 
           // Set all profile details from the updatedData object
-          setName(updatedData.name);
+          setNewName(updatedData.name);
           setEmail(updatedData.email);
           setCity(updatedData.city);
           setMobile(updatedData.mobile);
           setOrganisation(updatedData.organisation); // Add this if 'organisation' is included in stored details
           setShortBio(updatedData.bio);
-          setAbout(updatedData.listing_about); // Update with the correct field name if necessary
-          setProfileImage(updatedData.profileImage); // Include profileImage if it exists
+          setAbout(updatedData.listing_about);
           setRole(updatedData.role); // Include role if it exists
         }
       } catch (e) {
@@ -108,7 +110,7 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
         // Update state with new data
         console.log('updated profile::::::::::', jsonResponse.msg);
         const updatedData = jsonResponse.msg;
-        setName(updatedData.name);
+        setNewName(updatedData.name);
         setEmail(updatedData.email);
         setCity(updatedData.city);
         setMobile(updatedData.mobile);
@@ -201,7 +203,7 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
         const imageName = result.assets[0].fileName; // Get the image name
         const imageType = result.assets[0].type; // Get the image MIME type (e.g., image/jpeg, image/png)
         
-        setProfileImage({uri: imageUri}); // Set the image locally for preview
+        setNewProfileImage({uri: imageUri}); // Set the image locally for preview
     
         // Get the user ID from AsyncStorage
         const id = await AsyncStorage.getItem('uid');
@@ -299,7 +301,7 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
             <Image
               style={styles.Icon}
               resizeMode="cover"
-              source={profileImage}
+              source={newprofileImage}
             />
           </View>
         </TouchableOpacity>
@@ -314,7 +316,7 @@ const ManageDetails = ({navigation}: {navigation: any}) => {
           placeholder="Enter your name"
           placeholderTextColor={Colors.gray}
           value={name}
-          onChangeText={setName}
+          onChangeText={setNewName}
         />
 
         <Text style={styles.label}>Role</Text>

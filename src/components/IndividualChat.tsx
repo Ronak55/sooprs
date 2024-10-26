@@ -26,8 +26,9 @@ const { height, width } = Dimensions.get('window');
 
 
 const IndividualChat = ({ navigation, route }) => {
+
   const scrollEnd = useRef();
-  const { name, userId, leadId, bidId, recieverId, id, project_status } = route.params;
+  const {name, userId, leadId, bidId, recieverId, id, project_status} = route.params;
   const [allConversations, setAllConversations] = useState([]);
 
   const [messages, setMessages] = useState([]);
@@ -183,7 +184,7 @@ const IndividualChat = ({ navigation, route }) => {
             />
             <View style={styles.headerName}>
               <Text style={styles.headerText}>{name}</Text>
-              <Text style={styles.headerStatus}>Online</Text>
+              {/* <Text style={styles.headerStatus}>Online</Text> */}
             </View>
           </View>
           <View style={styles.projectStatus}>
@@ -199,6 +200,7 @@ const IndividualChat = ({ navigation, route }) => {
       </View>
 
       {/* Messages Section */}
+
       <FlatList
         ref={scrollEnd}
         onContentSizeChange={() =>
@@ -333,6 +335,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     marginBottom: hp(1.5),
+    marginLeft:wp(3),
+    marginTop:hp(1)
   },
   receiverAvatar: {
     width: wp(10),
@@ -349,6 +353,7 @@ const styles = StyleSheet.create({
   },
   senderMessage: {
     flexDirection: 'row',
+    marginRight:wp(3),
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     marginBottom: hp(1.5),

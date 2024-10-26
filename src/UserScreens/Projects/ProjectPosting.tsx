@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import {decode} from 'html-entities';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -24,6 +25,7 @@ import CustomDropdown from '../../components/CustomDropdown';
 
 const ProjectPosting = ({navigation}: {navigation: any}) => {
   const [activeCategory, setActiveCategory] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [isCategory, setIsCategory] = useState(true);
   const [isBudget, setIsBudget] = useState(false);
   const [isProject, setIsProject] = useState(false);
@@ -123,6 +125,8 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   };
 
   const handleProjectDesc = async () => {
+
+    setLoading(true);
     // Determine min and max budget based on selectedBudget
     if (selectedBudget) {
       const budgetMap = {
@@ -185,10 +189,14 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       setprojectDescription(projectDescription);
     } catch (error) {
       console.error('Error posting project description:', error);
+    } finally{
+      setLoading(false);
     }
   };
 
   const handleSaveProject = async () => {
+
+    setLoading(true);
     try {
       // Get email from AsyncStorage
       const email = await AsyncStorage.getItem('email');
@@ -237,10 +245,13 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
     } catch (error) {
       // Handle any other errors (e.g., network issues or form data errors)
       console.error('An error occurred in handleSaveProject:', error.message);
+    } finally{
+      setLoading(false);
     }
   };
 
   const handleNextPress = async () => {
+
     // Check if category section is completed
     if (isCategory && (!category || !serviceName || !requirements)) {
       Toast.show({
@@ -519,10 +530,16 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         <View style={styles.nextbtn}>
           <ButtonNew
             imgSource={undefined}
-            btntext="Next"
+            btntext={ loading ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              'Next'
+            )
+}
             bgColor={Colors.sooprsblue}
             textColor={Colors.white}
             onPress={handleNextPress}
+            isDisabled={loading}
           />
         </View>
       </View>

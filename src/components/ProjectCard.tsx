@@ -61,7 +61,8 @@ const ProjectCard = ({
     if (uid) {
       uid = uid.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
     }
-    
+    console.log('isAssigned value:::::::', isAssigned);
+
     if (isAssigned) {
       navigation.navigate('IndividualChat', {
         name: Customer_name,

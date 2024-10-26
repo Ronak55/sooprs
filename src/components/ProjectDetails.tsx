@@ -700,12 +700,15 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 15,
+    top: 10,
     right: 20,
+    padding:10, 
+    zIndex:1
   },
   closeIcon: {
     width:wp(4),
-    height:hp(3)
+    height:hp(3),
+    opacity:0.8
   },
   modalTitle: {
     fontSize: 18,

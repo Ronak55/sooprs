@@ -13,6 +13,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import { URLSearchParams } from 'url';
 import Colors from '../assets/commonCSS/Colors';
 import FSize from '../assets/commonCSS/FSize';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
@@ -46,6 +47,8 @@ const MilestoneInput = ({
   dueDate,
   setDueDate,
   amount,
+  remarks,
+  setRemarks,
   setAmount,
   isDatePickerVisible,
   setIsDatePickerVisible,
@@ -54,12 +57,9 @@ const MilestoneInput = ({
   return (
     <View style={styles.newinputContainer}>
       <View style={styles.row}>
-        <Text style={styles.label}>{milestoneNumber} Milestone</Text>
-        <TouchableOpacity onPress={onDelete}>
-          <Image
-            source={Images.crossIcon} // Update with your icon path
-            style={styles.crossIcon}
-          />
+        <Text style={styles.label}>Milestone {milestoneNumber}</Text>
+        <TouchableOpacity onPress={onDelete} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>✖️</Text>
         </TouchableOpacity>
       </View>
       <TextInput
@@ -102,6 +102,16 @@ const MilestoneInput = ({
           />
         </View>
       </View>
+      <View style={styles.newinputContainer}>
+          <Text style={styles.label}>Remarks</Text>
+          <TextInput
+            style={[styles.inputStyle, {flex: 1}]}
+            value={remarks}
+            onChangeText={setRemarks}
+            placeholder="Enter Remarks"
+            keyboardType="default"
+          />
+        </View>
     </View>
   );
 };
@@ -113,6 +123,7 @@ const MilestoneModal = ({
   id,
   milestoneNames,
   setmilestoneNames,
+  setActiveStep,
 }) => {
   // State to hold multiple milestones
   const [milestones, setMilestones] = useState([]);
@@ -121,17 +132,19 @@ const MilestoneModal = ({
   const [milestoneName, setMilestoneName] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   const [amount, setAmount] = useState('');
+  const [remarks, setRemarks] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [loading, isLoading] = useState(false);
 
   // Function to handle adding a milestone
   const handleAddMilestone = () => {
-    const newMilestone = {milestoneName, dueDate, amount};
-    setMilestones([...milestones, newMilestone]);
-
+    const newMilestone = {milestoneName, dueDate, amount, remarks};
+    setMilestones(prevMilestones => [...prevMilestones, newMilestone]);
     // Reset input fields
     setMilestoneName('');
     setDueDate(new Date());
     setAmount('');
+    setRemarks('');
   };
 
   const handleDeleteMilestone = index => {
@@ -140,31 +153,56 @@ const MilestoneModal = ({
   };
 
   const handleSaveMilestone = async () => {
-    const formData = new FormData();
 
-    // Get user_id from AsyncStorage
-    let user_id = await AsyncStorage.getItem('uid');
-    if (user_id) {
-      user_id = user_id.replace(/^"|"$/g, ''); // Remove extra quotes if any
+     // Get user_id from AsyncStorage
+     let user_id = await AsyncStorage.getItem('uid');
+     if (user_id) {
+       user_id = user_id.replace(/^"|"$/g, ''); // Remove extra quotes if any
+     }
+
+    isLoading(true);
+
+    let formDataString = '';
+
+    const addField = (key, value) => {
+      if (formDataString.length > 0) formDataString += '&';
+      formDataString += encodeURIComponent(key) + '=' + encodeURIComponent(value);
+    };
+
+    if (milestones.length === 0) {
+      addField('formData[0][milestone_name]', milestoneName || '');
+      addField('formData[0][amount]', amount || '');
+      addField('formData[0][deadline]', dueDate ? dueDate.toLocaleDateString('en-CA') : '');
+      addField('formData[0][remark]', remarks || '');
+      addField('formData[0][user_id]', user_id);
+      addField('formData[0][leadId]', id || '');
+      addField('user_id', user_id);
+      addField('leadId', id || '');
+    } else {
+      milestones.forEach((milestone, index) => {
+        addField(`formData[${index}][milestone_name]`, milestone.milestoneName || '');
+        addField(`formData[${index}][amount]`, milestone.amount || '');
+        addField(`formData[${index}][deadline]`, milestone.dueDate ? milestone.dueDate.toLocaleDateString('en-CA') : '');
+        addField(`formData[${index}][remark]`, milestone.remarks || '');
+        addField(`formData[${index}][user_id]`, user_id);
+        addField(`formData[${index}][leadId]`, id || '');
+      });
+      addField('user_id', user_id);
+      addField('leadId', id || '');
     }
 
-    milestones.forEach(milestone => {
-      formData.append('milestone_name', milestone.milestoneName);
-      formData.append('amount', milestone.amount);
-      formData.append('deadline', milestone.dueDate.toISOString()); // Convert to ISO string
-      formData.append('remark', ''); // Empty string as per requirement
-      formData.append('user_id', user_id);
-      formData.append('leadid', id);
-    });
+    console.log('Form data to be sent::::', formDataString);
 
-    console.log('formdata inputs::::::', formData);
 
     try {
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/add_milestone',
         {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body:formDataString,
         },
       );
 
@@ -177,7 +215,7 @@ const MilestoneModal = ({
           text1: 'Success',
           text2: res.msg,
         });
-
+        setActiveStep(3);
         // setmilestoneNames(milestones.map(m => m.milestoneName));
         // Reset milestones after successful save
         setMilestones([]);
@@ -196,12 +234,15 @@ const MilestoneModal = ({
         type: 'error',
         text1: 'Failed to add milestones. Please try again.',
       });
-    }
+    } finally{
+      isLoading(false);
+    }  
 
     // Reset input fields
     setMilestoneName('');
     setDueDate(new Date());
     setAmount('');
+    setRemarks('');
   };
 
   return (
@@ -227,6 +268,7 @@ const MilestoneModal = ({
                 milestoneNumber={index + 1}
                 milestoneName={milestone.milestoneName}
                 dueDate={milestone.dueDate}
+                remarks={milestone.remarks}
                 amount={milestone.amount}
                 setMilestoneName={name => {
                   const updatedMilestones = [...milestones];
@@ -243,6 +285,11 @@ const MilestoneModal = ({
                   updatedMilestones[index].amount = amt;
                   setMilestones(updatedMilestones);
                 }}
+                setRemarks={remark => {
+                  const updatedMilestones = [...milestones];
+                  updatedMilestones[index].remarks = remark;
+                  setMilestones(updatedMilestones);
+                }}
                 isDatePickerVisible={isDatePickerVisible}
                 setIsDatePickerVisible={setIsDatePickerVisible}
                 onDelete={() => handleDeleteMilestone(index)} // Pass delete function
@@ -254,22 +301,12 @@ const MilestoneModal = ({
               milestoneNumber={milestones.length + 1}
               milestoneName={milestoneName}
               dueDate={dueDate}
+              remarks={remarks}
               amount={amount}
-              setMilestoneName={name => {
-                const updatedMilestones = [...milestones];
-                updatedMilestones[index].milestoneName = name;
-                setMilestones(updatedMilestones);
-              }}
-              setDueDate={date => {
-                const updatedMilestones = [...milestones];
-                updatedMilestones[index].dueDate = date;
-                setMilestones(updatedMilestones);
-              }}
-              setAmount={amt => {
-                const updatedMilestones = [...milestones];
-                updatedMilestones[index].amount = amt;
-                setMilestones(updatedMilestones);
-              }}
+              setMilestoneName={setMilestoneName} // No need for an index here
+              setDueDate={setDueDate}
+              setRemarks={setRemarks}
+              setAmount={setAmount}
               isDatePickerVisible={isDatePickerVisible}
               setIsDatePickerVisible={setIsDatePickerVisible}
             />
@@ -284,10 +321,17 @@ const MilestoneModal = ({
           <View style={styles.saveButton}>
             <ButtonNew
               imgSource={undefined}
-              btntext={'Save'}
+               btntext={
+                  loading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    'Save'
+                  )
+                }
               bgColor={Colors.sooprsblue}
               textColor={Colors.white}
               onPress={handleSaveMilestone}
+              isDisabled={loading}
             />
           </View>
         </View>
@@ -308,6 +352,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   const [file, setFile] = useState(null); // Store selected file
   const [milestoneCount, setMilestoneCount] = useState(1);
   const [currentMilestone, setCurrentMilestone] = useState(0);
+  const [uploading, setUploading] = useState(false);
   const [milestoneDetails, setmilestoneDetails] = useState([]);
   const [milestoneNames, setMilestoneNames] = useState([]);
   const [isMilestoneDetailsModalVisible, setMilestoneDetailsModalVisible] =
@@ -374,9 +419,8 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
   const downloadFileHandler = async () => {
     if (downloadFile) {
       try {
-        await Linking.openURL(downloadFile); // Opens the file URL in the browser
-        setActiveStep(2);
-        fetchMilestones();
+        await Linking.openURL(downloadFile);
+        await fetchMilestones();
       } catch (error) {
         Alert.alert('Error', 'Unable to open file.');
       }
@@ -402,7 +446,10 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
 
       console.log('response reward:::::::::', res);
 
-      if (res.msg === 'Already rewarded' || res.msg === 'successfully rewarded') {
+      if (
+        res.msg === 'Already rewarded' ||
+        res.msg === 'successfully rewarded'
+      ) {
         setActiveStep(1); // Set active step to "Requirements"
         if (!isClient) {
           getRequirements();
@@ -417,20 +464,20 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
     }
   };
 
-  useEffect(() => {
-    // fetchRewardStatus();
-    if(project_status === '1'){
-      
-      setActiveStep(1);
-      if(!isClient){
-        getRequirements();
-      }
-      setLoading(false);
-    } else{
-      setActiveStep(0);
-      setLoading(false);
-    }
-  }, [isFocused, route?.params?.id]);
+  // useEffect(() => {
+  //   // fetchRewardStatus();
+  //   if(project_status === '1'){
+
+  //     setActiveStep(1);
+  //     if(!isClient){
+  //       getRequirements();
+  //     }
+  //     setLoading(false);
+  //   } else{
+  //     setActiveStep(0);
+  //     setLoading(false);
+  //   }
+  // }, [isFocused, route?.params?.id]);
 
   useEffect(() => {
     const getStateInfo = async () => {
@@ -438,9 +485,51 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
         mobile_siteConfig.IS_BUYER,
       );
       console.log('state infoo new:::::', stateInfo);
+      if (project_status === '1') {
+        setActiveStep(1);
+        if (stateInfo == 0) {
+          console.log('inside state info professional::');
+          getRequirements();
+        }
+        setLoading(false);
+      } else {
+        setActiveStep(0);
+        setLoading(false);
+      }
       setisClient(stateInfo);
     };
+
+    // const getDeliveryInfo = async()=>{
+
+    //   const formdata = new FormData();
+
+    //   formdata.append('lead_id', id);
+    //   formdata.append('cust_id', recieverId);
+
+    //   const requestOptions = {
+    //     method: 'POST',
+    //     body: formdata,
+    //   };
+  
+    //   try {
+    //     const response = await fetch(
+    //       'https://sooprs.com/api2/public/index.php/update-lead-delivery',
+    //       requestOptions,
+    //     );
+    //     const res = await response.json();
+  
+    //     console.log('response delivery:::::', res);
+  
+    //     if (res.msg === 'Lead already delivered' || res.msg === 'Project marked as delivered successfully!') {
+    //      setActiveStep(3);
+    //     } 
+    //   } catch (error) {
+    //     console.error('Error fetching project delivery info:::::', error);
+    //   }
+    // }
+
     getStateInfo();
+    // getDeliveryInfo();
   }, [isFocused]);
 
   const getRequirements = async () => {
@@ -463,7 +552,11 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
         console.log('get req success !');
         setDownloadFile(res[0].file);
       } else {
-        Alert.alert('Upload Failed', 'Please try again.');
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: res.error,
+        });
       }
     } catch (error) {
       console.error('Error fetching requirements:', error);
@@ -492,7 +585,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
         );
         setMilestoneNames(milestones);
         setmilestoneDetails(res.msg.milestones);
-      
+        setActiveStep(2);
       }
     } catch (error) {
       console.error('Error fetching milestones:', error);
@@ -516,7 +609,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
               text: 'Go to Settings',
               onPress: () => Linking.openSettings(),
             },
-            { text: 'Cancel', style: 'cancel' },
+            {text: 'Cancel', style: 'cancel'},
           ],
         );
       }
@@ -527,7 +620,6 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
 
   // Function to handle file selection
   const selectFile = async () => {
-
     setLoading(true);
 
     try {
@@ -543,13 +635,14 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       } else {
         console.error('Error selecting file:', err);
       }
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
 
   // Function to upload requirements
   const uploadRequirements = async selectedFile => {
+    setUploading(true);
 
     const formdata = new FormData();
     formdata.append('project_id', id);
@@ -567,7 +660,6 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
         'https://sooprs.com/api2/public/index.php/add_requirements',
         {
           method: 'POST',
-          headers: {'Content-Type': 'multipart/form-data'},
           body: formdata,
         },
       );
@@ -581,100 +673,110 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
       }
     } catch (error) {
       console.error('Error uploading requirements:', error);
-    } 
-  };
-
-
-  const MilestoneDetailsModal = ({ isVisible, onClose, milestoneDetails, setActiveStep }) => {
-    // Assume milestoneDetails contains the milestone data as an array
-    if (!milestoneDetails || milestoneDetails.length === 0) return null;
-  
-    // Extract details from the first milestone (for demonstration purposes)
-    const { milestone_name, milestone_deadline_formatted, milestone_amount } = milestoneDetails[0];
-
-    const handlePayment = async(amount)=>{
-
-      const amountInUSD = parseFloat(amount);
-      const conversionRate = 83.97; 
-      const amountInINR = amountInUSD * conversionRate;
-      const amountInPaise = amountInINR * 100; 
-  
-      // Initialize FormData
-      const formdata = new FormData();
-      formdata.append('amount', amountInPaise.toString());
-  
-      console.log('formdata:::::::::', formdata);
-  
-      try {
-        const response = await fetch('https://sooprs.com/create_razr_order.php', {
-          method: 'POST',
-          body: formdata,
-        });
-  
-        const res = await response.json();
-  
-        if(res.order_id){
-  
-          console.log('order id::::::::::', res.order_id);
-          setOrderId(res.order_id); 
-  
-          const options = {
-              key: 'rzp_test_eaw8FUWQWt0bHV',  // Replace with your Razorpay Key ID
-              amount: amountInPaise,
-              currency: 'INR',
-              name: 'Gazetinc Technology LLP',
-              description: 'Sooprs',
-              order_id: res.order_id,
-              image:'https://sooprs.com/assets/images/sooprs_logo.png',
-              handler: (paymentResponse) => {
-                // Handle successful payment here
-                console.log('Payment Successful:::::', paymentResponse);
-                setActiveStep(3);
-              },
-              prefill: {
-                email: 'contact@sooprs.com',
-                contact: '8474081159',
-              },
-              theme: {
-                color: '#0077FF',
-              },
-            };
-  
-            RazorpayCheckout.open(options).then((data) => {
-              console.log('Payment data::::', data);
-              setActiveStep(3);
-              
-            }).catch((error) => {
-              console.error('Razorpay error:', error);
-            });
-  
-        }
-      } catch (error) {
-        console.error('Error creating order:', error);
-      }
-
+    } finally {
+      setUploading(false); // Stop API loader
     }
-    return (
-      <Modal visible={isVisible} transparent animationType="slide">
-        <View style={styles.modalMilestoneContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{milestone_name}</Text>
-            <Text style={styles.modalText}>Deadline: {milestone_deadline_formatted}</Text>
-            <Text style={styles.modalText}>Amount: ${milestone_amount}</Text>
-  
-            <TouchableOpacity style={styles.payButton} onPress={handlePayment(milestone_amount)}>
-              <Text style={styles.payButtonText}>Pay Now</Text>
-            </TouchableOpacity>
-  
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    );
   };
-  
+
+  // const MilestoneDetailsModal = ({
+  //   isVisible,
+  //   onClose,
+  //   milestoneDetails,
+  //   setActiveStep,
+  // }) => {
+  //   // Assume milestoneDetails contains the milestone data as an array
+  //   if (!milestoneDetails || milestoneDetails.length === 0) return null;
+
+  //   // Extract details from the first milestone (for demonstration purposes)
+  //   const {milestone_name, milestone_deadline_formatted, milestone_amount} =
+  //     milestoneDetails[0];
+
+  //   const handlePayment = async amount => {
+  //     const amountInUSD = parseFloat(amount);
+  //     const conversionRate = 83.97;
+  //     const amountInINR = amountInUSD * conversionRate;
+  //     const amountInPaise = amountInINR * 100;
+
+  //     // Initialize FormData
+  //     const formdata = new FormData();
+  //     formdata.append('amount', amountInPaise.toString());
+
+  //     console.log('formdata:::::::::', formdata);
+
+  //     try {
+  //       const response = await fetch(
+  //         'https://sooprs.com/create_razr_order.php',
+  //         {
+  //           method: 'POST',
+  //           body: formdata,
+  //         },
+  //       );
+
+  //       const res = await response.json();
+
+  //       if (res.order_id) {
+  //         console.log('order id::::::::::', res.order_id);
+  //         setOrderId(res.order_id);
+
+  //         const options = {
+  //           key: 'rzp_test_eaw8FUWQWt0bHV', // Replace with your Razorpay Key ID
+  //           amount: amountInPaise,
+  //           currency: 'INR',
+  //           name: 'Gazetinc Technology LLP',
+  //           description: 'Sooprs',
+  //           order_id: res.order_id,
+  //           image: 'https://sooprs.com/assets/images/sooprs_logo.png',
+  //           handler: paymentResponse => {
+  //             // Handle successful payment here
+  //             console.log('Payment Successful:::::', paymentResponse);
+  //             setActiveStep(3);
+  //           },
+  //           prefill: {
+  //             email: 'contact@sooprs.com',
+  //             contact: '8474081159',
+  //           },
+  //           theme: {
+  //             color: '#0077FF',
+  //           },
+  //         };
+
+  //         RazorpayCheckout.open(options)
+  //           .then(data => {
+  //             console.log('Payment data::::', data);
+  //             setActiveStep(3);
+  //           })
+  //           .catch(error => {
+  //             console.error('Razorpay error:', error);
+  //           });
+  //       }
+  //     } catch (error) {
+  //       console.error('Error creating order:', error);
+  //     }
+  //   };
+  //   return (
+  //     <Modal visible={isVisible} transparent animationType="slide">
+  //       <View style={styles.modalMilestoneContainer}>
+  //         <View style={styles.modalContent}>
+  //           <Text style={styles.modalTitle}>{milestone_name}</Text>
+  //           <Text style={styles.modalText}>
+  //             Deadline: {milestone_deadline_formatted}
+  //           </Text>
+  //           <Text style={styles.modalText}>Amount: ${milestone_amount}</Text>
+
+  //           <TouchableOpacity
+  //             style={styles.payButton}
+  //             onPress={handlePayment(milestone_amount)}>
+  //             <Text style={styles.payButtonText}>Pay Now</Text>
+  //           </TouchableOpacity>
+
+  //           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+  //             <Text style={styles.closeButtonText}>Close</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     </Modal>
+  //   );
+  // };
 
   if (loading) {
     return (
@@ -688,8 +790,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
     <KeyboardAwareScrollView style={styles.section}>
       {/* Header Section */}
       <View style={styles.headerSection}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ProfessionalHome')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"
@@ -808,13 +909,12 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
             )}
           </View>
         ))}
-        <MilestoneDetailsModal
+        {/* <MilestoneDetailsModal
           isVisible={isMilestoneDetailsModalVisible}
           onClose={closeMilestoneDetailsModal}
           milestoneDetails={milestoneDetails}
           setActiveStep={setActiveStep}
-        />
-
+        /> */}
         <MilestoneModal
           isVisible={isMilestoneModalVisible}
           onClose={closeMilestoneModal}
@@ -822,6 +922,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
           id={id}
           milestoneNames={milestoneNames}
           setmilestoneNames={setMilestoneNames}
+          setActiveStep={setActiveStep}
         />
       </View>
 
@@ -840,10 +941,10 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 numberOfLines={4}
                 textAlignVertical="top"
               />
-               <ButtonNew
+              <ButtonNew
                 imgSource={undefined}
                 btntext={
-                  loading ? (
+                  loading || uploading ? (
                     <ActivityIndicator color={Colors.white} />
                   ) : (
                     'Upload File'
@@ -852,7 +953,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 bgColor={Colors.sooprsblue}
                 textColor={Colors.white}
                 onPress={selectFile}
-                isDisabled={loading} // Disable button while loading
+                isDisabled={loading || uploading} // Disable button while loading or uploading
               />
             </>
           )}
@@ -941,6 +1042,7 @@ const styles = StyleSheet.create({
 
   newinputContainer: {
     marginTop: hp(2),
+    marginBottom: hp(1),
   },
 
   textInput: {
@@ -1011,7 +1113,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginBottom: hp(2),
+    marginBottom: hp(1),
     width: width / 1.5,
     justifyContent: 'space-between',
   },
@@ -1111,13 +1213,11 @@ const styles = StyleSheet.create({
     height: hp(3),
   },
 
-  modalMilestoneContainer:{
-
+  modalMilestoneContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-
   },
 
   modalContent: {
@@ -1127,7 +1227,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10, // Adds shadow for Android
     shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },

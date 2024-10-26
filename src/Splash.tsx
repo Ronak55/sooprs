@@ -9,7 +9,7 @@ const Splash = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.navigate('Onboarding'); // Navigate to the Onboarding screen after 3 seconds
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timer); // Clear the timeout if the component unmounts
   }, [navigation]);
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF', // Set your desired background color
+    backgroundColor: 'white', // Set your desired background color
   },
   logo: {
     width: wp(70), 
