@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, Image, ScrollView, RefreshControl, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, Image, ScrollView, RefreshControl, ActivityIndicator, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { wp, hp } from '../../assets/commonCSS/GlobalCSS'
 import Colors from '../../assets/commonCSS/Colors'
@@ -12,11 +12,15 @@ import AllProjects from '../../components/AllProjects'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import { mobile_siteConfig } from '../../services/mobile-siteConfig'
+
+const {width} = Dimensions.get('window');
+
 const Home = ({ navigation }: { navigation: any }) => {
   const [name, setName] = useState('');
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [newloading, setNewLoading] = useState(false)
 
   // States to manage project data and API response
   const [projectDetail, setProjectDetail] = useState([]);
@@ -92,6 +96,49 @@ const Home = ({ navigation }: { navigation: any }) => {
     }
   };
 
+  const addNewProjects = async (newOffset: number) => {
+
+    try {
+      const formdata = new FormData();
+      formdata.append('offset', newOffset);
+      formdata.append('limit', 10);
+
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/get_all_leads',
+        {
+          method: 'POST',
+          body: formdata,
+          headers: {},
+        },
+      );
+      const responseData = await response.json();
+
+      if (responseData.status === 200) {
+        if (responseData.msg.length === 0) {
+          setHasMore(false);
+        } else {
+          const newProjects = responseData.msg.filter(
+            (project) =>
+              !projectDetail.some(
+                (existingProject) => existingProject.id === project.id,
+              ),
+          );
+          setProjectDetail((prevProjects) => [
+            ...prevProjects,
+            ...newProjects,
+          ]);
+        }
+      } else if (responseData.status === 400) {
+        console.error('An error has occurred!');
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage(''); // Clear loading message after fetching
+    }
+  };
+
   useEffect(() => {
     if (isFocused) {
       getProjects(0);
@@ -106,10 +153,12 @@ const Home = ({ navigation }: { navigation: any }) => {
     setRefreshing(false); // Set refreshing to false after fetching
   };
 
-  const loadMoreProjects = () => {
+  const loadMoreProjects = async() => {
     const newOffset = offset + 10; // Increment offset
     setOffset(newOffset);
-    getProjects(newOffset);
+    setNewLoading(true);
+    await addNewProjects(newOffset);
+    setNewLoading(false);
   };
 
   return (
@@ -144,6 +193,7 @@ const Home = ({ navigation }: { navigation: any }) => {
           </View>
           <View style={styles.searchFilter}>
             <SearchBar placeholderName="Projects" />
+            <Filter/>
           </View>
           <IntroCard
             cardText="Discover projects with ease!"
@@ -163,6 +213,7 @@ const Home = ({ navigation }: { navigation: any }) => {
               isLoading={isLoading}
               hasMore={hasMore}
               loadMoreProjects={loadMoreProjects}
+              newLoading={newloading}
             />
           )}
         </View>
@@ -203,7 +254,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent:'center',
-    gap: 5,
+    gap: wp(2),
+    marginHorizontal:wp(7),
+    width:width/1.3
   },
 
   loadingContainer: {

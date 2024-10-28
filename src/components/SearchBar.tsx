@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { hp, wp } from '../assets/commonCSS/GlobalCSS'
 import Images from '../assets/image'
 import FSize from '../assets/commonCSS/FSize'
+import Colors from '../assets/commonCSS/Colors'
 
 const SearchBar = ({placeholderName} : {placeholderName:string}) => {
 
@@ -14,7 +15,6 @@ const SearchBar = ({placeholderName} : {placeholderName:string}) => {
       <Image source={Images.searchIcon} resizeMode='contain' style={styles.iconStyle}/>
       <TextInput style={styles.searchInput} placeholder= {`Search ${placeholderName}`}
       value={search} placeholderTextColor="#BABABA" onChangeText={(value)=> setSearch(value)} keyboardType='default'/>
-
     </View>
   )
 }
@@ -43,7 +43,9 @@ const styles = StyleSheet.create({
 
  searchInput:{
      paddingHorizontal:wp(3),
-     fontSize:FSize.fs12
+     fontSize:FSize.fs12,
+     width:'100%',
+     color:Colors.black
  }
 
 })

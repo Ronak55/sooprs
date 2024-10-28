@@ -10,6 +10,7 @@ import React from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS'; // Import hp and wp for responsiveness
 import ProjectCard from './ProjectCard';
+import ButtonNew from './ButtonNew';
 
 const AllProjects = ({
   navigation,
@@ -17,11 +18,13 @@ const AllProjects = ({
   isLoading,
   hasMore,
   loadMoreProjects,
+  newLoading
 }: {
   navigation: any;
   projectDetail: any[];
   isLoading: boolean;
   hasMore: boolean;
+  newLoading:any;
   loadMoreProjects: () => void;
 }) => {
   const renderItem = ({item, index}: {item: any; index: any}) => (
@@ -56,15 +59,24 @@ const AllProjects = ({
 
     if (hasMore) {
       return (
-        <TouchableOpacity
-          style={styles.showMoreButton}
-          onPress={loadMoreProjects}>
-          <Text style={styles.showMoreText}>Show More</Text>
-        </TouchableOpacity>
+        <ButtonNew
+        imgSource={undefined}
+        btntext={
+          newLoading ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
+            'Show More'
+          )
+        }
+        bgColor={Colors.sooprsblue}
+        textColor={Colors.white}
+        onPress={loadMoreProjects}
+        isDisabled={newLoading} // Disable button while loading
+      />
       );
     }
 
-    return <Text style={styles.noMoreText}>No more projects to load</Text>;
+    return <Text style={styles.noMoreText}>No projects found!</Text>;
   };
 
   return (

@@ -16,13 +16,15 @@ import {hp, wp} from '../../assets/commonCSS/GlobalCSS';
 import {useIsFocused} from '@react-navigation/native';
 import ProjectCard from '../../components/ProjectCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ButtonNew from '../../components/ButtonNew';
 
 const Projects = ({navigation}) => {
   const [bidProjects, setBidProjects] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [offset, setOffset] = useState(0); 
-  const [hasMore, setHasMore] = useState(true); 
+  const [hasMore, setHasMore] = useState(true);
+  const [newLoading, setnewLoading] = useState(false)
 
   const isFocused = useIsFocused();
 
@@ -60,7 +62,7 @@ const Projects = ({navigation}) => {
             (project) =>
               !bidProjects.some((existingProject) => existingProject.id === project.id)
           );
-          setBidProjects(refreshing ? newProjects : [...bidProjects, ...newProjects]);
+          setBidProjects([...bidProjects, ...newProjects]);
         }
       } else if (responseData.status === 400) {
         console.error('An error has occurred!');
@@ -72,14 +74,58 @@ const Projects = ({navigation}) => {
     }
   };
 
+  const addMyProjects = async(newOffset:number)=>{
+  
+      try {
+        let id = await AsyncStorage.getItem('uid');
+  
+        if (id) {
+          id = id.replace(/^"|"$/g, ''); 
+        }
+  
+        const formdata = new FormData();
+        formdata.append('offset', newOffset); 
+        formdata.append('limit', 10); 
+        formdata.append('my_get_id', id); 
+  
+        const response = await fetch(
+          'https://sooprs.com/api2/public/index.php/get_my_leads',
+          {
+            method: 'POST',
+            body: formdata,
+            headers: {},
+          }
+        );
+        const responseData = await response.json();
+  
+        if (responseData.status === 200) {
+          if (responseData.msg.length === 0) {
+            setHasMore(false); 
+          } else {
+            const newProjects = responseData.msg.filter(
+              (project) =>
+                !bidProjects.some((existingProject) => existingProject.id === project.id)
+            );
+            setBidProjects([...bidProjects, ...newProjects]);
+          }
+        } else if (responseData.status === 400) {
+          console.error('An error has occurred!');
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } 
+    };
+
   useEffect(() => {
-    getMyProjects(0); 
+    getMyProjects(0, false); 
   }, [isFocused]);
 
-  const loadMoreProjects = () => {
+  const loadMoreProjects = async() => {
     const newOffset = offset + 10;
     setOffset(newOffset);
-    getMyProjects(newOffset); 
+    setnewLoading(true);
+    await addMyProjects(newOffset); 
+    setnewLoading(false)
   };
 
   const renderFooter = () => {
@@ -95,11 +141,22 @@ const Projects = ({navigation}) => {
 
     if (hasMore) {
       return (
-        <TouchableOpacity
-          style={styles.showMoreButton}
-          onPress={loadMoreProjects}>
-          <Text style={styles.showMoreText}>Show More</Text>
-        </TouchableOpacity>
+        <View style={styles.showMoreButton}>
+        <ButtonNew
+                imgSource={undefined}
+                btntext={
+                  newLoading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    'Show More'
+                  )
+                }
+                bgColor={Colors.sooprsblue}
+                textColor={Colors.white}
+                onPress={loadMoreProjects}
+                isDisabled={newLoading} // Disable button while loading
+              />
+          </View>
       );
     }
 
@@ -186,18 +243,9 @@ const styles = StyleSheet.create({
     marginVertical: hp(1),
   },
   showMoreButton: {
-    paddingVertical: hp(1),
-    paddingHorizontal: wp(10),
-    backgroundColor: Colors.sooprsblue,
-    alignItems: 'center',
     marginBottom: hp(15),
-    borderRadius: wp(2),
   },
-  showMoreText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: wp(3.5),
-  },
+
   noMoreText: {
     textAlign: 'center',
     marginBottom: hp(15),

@@ -95,7 +95,7 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
       {refreshing && (
         <Text style={styles.loadingText}>Loading Assigned Projects...</Text>
       )}
-
+     <View style={styles.assigned}>
       <FlatList
         data={assignedProjects}
         renderItem={renderItem}
@@ -104,8 +104,9 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={getAssignedProjects} colors={[Colors.sooprsblue]} />
         }
-        contentContainerStyle={{ paddingBottom: hp(2) }}
+        contentContainerStyle={{ paddingBottom: hp(10) }}
       />
+      </View>
     </View>
   );
 };
@@ -142,4 +143,8 @@ const styles = StyleSheet.create({
   myProjects: {
     marginHorizontal: wp(5),
   },
+
+  assigned:{
+    marginHorizontal: wp(5),
+  }
 });

@@ -159,7 +159,7 @@ const Filter = () => {
                 showsHorizontalScrollIndicator={false}
               />
             </View>
-            <View style={styles.section}>
+            {/* <View style={styles.section}>
             <View style={styles.categorySection}>
               <Text style={styles.sectionTitle}>Skills</Text>
               <TouchableOpacity onPress={()=>{}}>
@@ -198,7 +198,7 @@ const Filter = () => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
               />
-            </View>
+            </View> */}
             </ScrollView>
             <ButtonNew
               imgSource={undefined}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: wp(5),
     borderBottomLeftRadius: wp(5),
     padding: wp(5),
-    height: screenHeight * 0.8,
+    height: screenHeight * 0.35,
     width: screenWidth * 0.9, 
   },
 
