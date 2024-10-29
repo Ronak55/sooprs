@@ -24,38 +24,17 @@ const Header = ({
         onPress={() => {
           navigation.navigate('Account');
         }}>
-        <View style={[styles.profileIcon]}>
-          <Image style={styles.Icon} resizeMode="cover" source={img ? {uri:img} : Images.profileImage} />
-        </View>
+          <Image style={styles.Icon} resizeMode="cover" source={img ? {uri: img} : Images.defaultPicIcon} />
       </TouchableOpacity>
-      <Text style={styles.greetText}>Hello, {name}</Text>
-      <Image
-        source={Images.helloIcon}
-        resizeMode="contain"
-        style={styles.hello}
-      />
-      <View
-        style={{
-          paddingHorizontal: btnName ? wp(8) : wp(35),
-          flexDirection: 'row',
-          gap: 15,
-        }}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Notifications');
-          }}>
-          <Image
-            source={Images.bellIcon}
-            resizeMode="contain"
-            style={styles.bellIcon}
-          />
+      <Text style={styles.greetText}>Hello, {name.split(' ')[0]}</Text>
+      <View style={styles.rightContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+          <Image source={Images.bellIcon} resizeMode="contain" style={styles.bellIcon} />
         </TouchableOpacity>
         {btnName && (
           <TouchableOpacity
             style={styles.postButton}
-            onPress={() => {
-              navigation.navigate('ProjectPosting');
-            }}>
+            onPress={() => navigation.navigate('ProjectPosting')}>
             <Text style={styles.postbuttonText}>{btnName}</Text>
           </TouchableOpacity>
         )}
@@ -73,10 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: wp(5),
     alignItems: 'center',
-    gap: wp(3),
   },
-
-  
   profileIcon: {
     width: wp(10),
     height: hp(5),
@@ -85,32 +61,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: wp(5),
-    marginBottom: wp(2),
+    // marginBottom: wp(2),
   },
   Icon: {
     width: wp(10),
     height: hp(5),
     borderRadius: wp(5),
   },
-
-  // imgStyling: {
-  //   width: 50,
-  //   height: 50,
-  //   borderRadius: 25,
-  //   overflow: 'hidden',
-  // },
-
   hello: {
     width: wp(6),
     height: hp(5),
+    marginLeft: wp(2),
   },
-
   greetText: {
     fontWeight: '500',
     fontSize: FSize.fs14,
     color: Colors.black,
+    marginLeft: wp(2),
   },
-
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto', // Pushes the items to the right
+    gap: wp(4),
+  },
   postButton: {
     backgroundColor: '#F78000',
     width: wp(25),
@@ -119,12 +93,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   postbuttonText: {
     color: Colors.white,
     fontSize: FSize.fs11,
   },
-
   bellIcon: {
     width: wp(4),
     height: hp(4),

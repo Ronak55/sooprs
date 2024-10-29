@@ -90,27 +90,39 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderRadius: wp(10),
     marginHorizontal: wp(5),
-    marginVertical: hp(2),
-    gap:wp(5)
+    marginVertical: hp(1),
+    padding: wp(2),
+    gap: wp(2),
+    
+    // Shadow and elevation
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // For Android
   },
+  
   tab: {
     flex: 1,
-    padding: hp(1.3),
-    borderRadius: wp(4),
+    padding: hp(1.8),
+    borderRadius: wp(6),
     alignItems: 'center',
   },
   activeTab: {
-    backgroundColor: Colors.sooprsblue,
+    backgroundColor:Colors.sooprsblue,
   },
   inactiveTab: {
-    backgroundColor: Colors.black,
+    backgroundColor: '#F2F7FF',
   },
   activeTabText: {
     color: Colors.white,
     fontWeight: '600',
   },
   inactiveTabText: {
-    color: Colors.white,
+    color: '#111111',
+    fontWeight: '600',
   },
 });

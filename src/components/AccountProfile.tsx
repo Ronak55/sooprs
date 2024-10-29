@@ -26,27 +26,28 @@ const AccountProfile = ({
 }) => {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
-  const [profileImage, setProfileImage] = useState(Images.profileImage);
+  const [profileImage, setProfileImage] = useState(null);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     const loadProfileDetails = async () => {
       try {
-
         const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-        const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
-  
-        const parsedName = JSON.parse(name)
+        const profilepic = await AsyncStorage.getItem(
+          mobile_siteConfig.PROFILE_PIC,
+        );
+
+        const parsedName = JSON.parse(name);
         const parsedprofilepic = JSON.parse(profilepic);
         if (name !== null) {
           setName(parsedName ?? '');
         }
-  
-        if(parsedprofilepic){
-          setProfileImage({uri:parsedprofilepic});
-        }         
+
+        if (parsedprofilepic) {
+          console.log('parsed image:::::::::', parsedprofilepic);
+          setProfileImage(parsedprofilepic);
         }
-      catch (e) {
+      } catch (e) {
         console.log('Error retrieving profile details:', e);
       }
     };
@@ -60,7 +61,7 @@ const AccountProfile = ({
     await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'FALSE');
     let reset = CommonActions.reset({
       index: 0,
-      routes: [{name:'Authentication'}],
+      routes: [{name: 'Authentication'}],
     });
     navigation.dispatch(reset);
   };
@@ -83,9 +84,11 @@ const AccountProfile = ({
   return (
     <View style={styles.profile}>
       <View style={styles.profileHeading}>
-        <View style={[styles.profileIcon]}>
-          <Image style={styles.Icon} resizeMode="cover" source={profileImage} />
-        </View>
+        <Image
+          style={styles.Icon}
+          resizeMode="cover"
+          source={profileImage ? {uri: profileImage} : Images.defaultPicIcon}
+        />
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
         {/* <Text style={styles.profileRole}>{role ? role : 'Role'}</Text> */}
       </View>
@@ -101,7 +104,10 @@ const AccountProfile = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ManageDetails', {name:name, profileImage:profileImage});
+              navigation.navigate('ManageDetails', {
+                name: name,
+                profileImage: profileImage,
+              });
             }}>
             <View style={styles.details}>
               <Text style={styles.detailsText}>Manage Details</Text>
@@ -354,19 +360,10 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
 
-  profileIcon: {
-    width: wp(43),
-    height: hp(20),
-    borderWidth: 2,
-    borderColor: Colors.sooprsblue,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: wp(30),
-    marginBottom: wp(2),
-  },
+
   Icon: {
-    width: wp(41),
-    height: hp(19),
+    width: wp(38),
+    height: hp(18),
     borderRadius: wp(30),
   },
 
@@ -391,18 +388,15 @@ const styles = StyleSheet.create({
   logout: {
     marginVertical: hp(2),
     marginHorizontal: wp(17),
-    
   },
-
 
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'red',
-    padding: hp(2),
+    padding: hp(1.7),
     borderRadius: wp(3),
     justifyContent: 'center',
-    
   },
   icon: {
     width: wp(4),

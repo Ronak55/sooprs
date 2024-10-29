@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(10),
     backgroundColor: Colors.sooprsblue,
     alignItems: 'center',
-    marginVertical: hp(2),
+    marginVertical: hp(0.5),
     borderRadius: wp(2),
   },
   showMoreText: {

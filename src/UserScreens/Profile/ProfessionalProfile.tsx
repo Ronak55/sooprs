@@ -41,7 +41,7 @@ const ProfessionalProfile = ({
   return (
     <View style={styles.container}>
       {/* <ScrollView style={styles.profileView}> */}
-       <View style={{justifyContent:'center', alignItems:'center'}}>
+       <View style={{}}>
         <ProfileComponent
           navigation={navigation}
           img={img}

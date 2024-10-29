@@ -59,39 +59,6 @@ const Reviews = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.ratingsInfo}>
-      <View style={styles.ratingOverview}>
-        <Text style={styles.ratingScore}>4/5</Text>
-        <View style={styles.starContainer}>
-          <Text style={styles.filledStar}>★★★★★</Text>
-          <Text style={styles.emptyStar}>★</Text>
-        </View>
-      </View>
-      <View style={styles.progressBars}>
-        {[
-          { star: 5, percent: 0.25 },
-          { star: 4, percent: 0.45 },
-          { star: 3, percent: 0.35 },
-          { star: 2, percent: 0.05 },
-          { star: 1, percent: 0.01 }
-        ].map(({ star, percent }) => (
-          <View key={star} style={styles.progressBarContainer}>
-            <Text style={styles.progressBarLabel}>{star}</Text>
-            <Progress.Bar
-              progress={percent}
-              width={wp(40)}
-              height={hp(1.5)}
-              color="#F4DE25"
-              unfilledColor="#F0F0F0"
-              borderWidth={0}
-              borderRadius={hp(0.25)}
-            />
-            <Text style={styles.progressBarLabel}>{Math.round(percent * 100)}</Text>
-          </View>
-
-        ))}
-        </View>
-      </View>
       <FlatList
         data={reviews}
         renderItem={renderReview}
@@ -110,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: wp(2),
     paddingHorizontal:wp(5),
-    paddingTop:hp(3)
+    paddingTop:hp(1)
   },
   list: {
     paddingBottom: hp(2),

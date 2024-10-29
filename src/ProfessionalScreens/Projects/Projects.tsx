@@ -58,6 +58,7 @@ const Projects = ({navigation}) => {
         if (responseData.msg.length === 0 && !refreshing) {
           setHasMore(false); 
         } else {
+          console.log('bidded projects :::::::::::::', responseData.msg);
           const newProjects = responseData.msg.filter(
             (project) =>
               !bidProjects.some((existingProject) => existingProject.id === project.id)

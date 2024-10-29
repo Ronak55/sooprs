@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     servicesContainer: {
         flex: 1,
         backgroundColor: '#f5f5f5',
-        padding: wp(1),
+        // padding: wp(1),
     },
     list: {
         justifyContent: 'space-between',

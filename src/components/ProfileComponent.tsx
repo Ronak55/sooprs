@@ -32,6 +32,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
   
     return (
         <View style={styles.profileSection}>
+          <View>
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -42,12 +43,12 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
               style={styles.backArrow}
             />
           </TouchableOpacity>
+          </View>
           <View style={styles.profile}>
             {/* <TouchableOpacity onPress={selectImage}> */}
-              <View style={[styles.profileIcon]}>
-                <Image style={styles.Icon} resizeMode="contain" source={{uri:img}} />
-              </View>
+                <Image style={styles.Icon} resizeMode="cover" source={{uri:img}} />
             {/* </TouchableOpacity> */}
+            <View style={styles.profileContainer}>
             <Text style={styles.profileName}>{name}</Text>
             <Text style={styles.profileRole}>{role}</Text>
             <View style={styles.ratings}>
@@ -57,6 +58,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
               resizeMode="contain"
             />
             <Text style={styles.rating}>{rating} / 5</Text>
+            </View>
             </View>
           </View>
         </View>
@@ -68,39 +70,38 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
   const styles = StyleSheet.create({
 
     profileSection: {
-      // marginHorizontal: wp(5),
       marginVertical: hp(1),
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'space-between',
     },
     backArrow: {
       width: wp(8),
       height: hp(8),
+      marginLeft:wp(2)
     },
     profile: {
-      flexDirection: 'column',
+      flexDirection: 'row',
       // justifyContent: 'center',
-      marginRight: wp(10),
-      marginVertical: hp(3),
+      // marginRight: wp(25),
+      // marginTop:hp(8)
+      marginHorizontal:wp(4.5),
+      marginBottom:hp(2),
+      // marginVertical: hp(4),
       alignItems:'center',
-      gap:1
-    },
-    profileIcon: {
-      width: wp(41),
-      height: hp(19),
-      borderWidth: 5,
-      borderColor: '#D4E3FC',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: wp(30),
-      marginBottom:wp(2)
+      gap:wp(5)
     },
     Icon: {
-      width: hp(20),
-      height: hp(19),
+      width: hp(15),
+      height: hp(15),
       borderRadius: wp(50),
   
     },
+
+    profileContainer:{
+       flexDirection:'column',
+       gap:wp(1),
+    },
+
     starIcon: {
       width: wp(3),
       height: hp(3),
@@ -110,7 +111,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
       color: Colors.black,
     },
     profileName: {
-      fontSize: FSize.fs24,
+      fontSize: FSize.fs20,
       fontWeight: '600',
       color:Colors.black
     },
@@ -118,13 +119,13 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
       fontSize: FSize.fs12,
       fontWeight: '500',
       color:Colors.gray,
-      maxWidth:'90%'
+      maxWidth:'80%'
     },
   
     ratings:{
       flexDirection:'row',
       alignItems:'center',
-      justifyContent:'center'
+      justifyContent:'flex-start'
     }
   });
   

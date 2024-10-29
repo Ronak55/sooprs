@@ -87,7 +87,7 @@ const Portfolio = ({route} : {route:any}) => {
           <Image
             source={{uri: item.files}}
             style={styles.image}
-            resizeMode="contain"
+            resizeMode="cover"
           />
         </View>
         <View style={styles.info}>
@@ -129,9 +129,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 10,
     width: wp(43),
-    height: hp(26),
+    height: hp(24),
     marginBottom: hp(4),
-    marginRight: wp(3),
+    marginTop:hp(1),
+    marginHorizontal:wp(1),
+    // marginRight: wp(3),
     elevation: 4,
     shadowOpacity: 0.2,
     shadowRadius: 4,

@@ -44,7 +44,6 @@ const CategoriesList = ({ navigation, services, onSelectService }: { navigation:
     return (
       <CategoriesCard
         navigation={navigation}
-        img={item.service_imgs} // Pass the image
         name={item.service_name} // Pass the service name
         index={index}
         onSelectService={onSelectService}
@@ -54,7 +53,7 @@ const CategoriesList = ({ navigation, services, onSelectService }: { navigation:
 
   return (
     <View style={styles.container}>
-      <View style={styles.CategoriesList}>
+      <View>
         <FlatList
           data={serviceList.slice(0, 10)} // Use services data
           renderItem={renderCategories}
@@ -71,9 +70,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  CategoriesList: {
-    paddingVertical: hp(2),
   },
 });
 

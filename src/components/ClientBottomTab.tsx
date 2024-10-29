@@ -24,6 +24,7 @@ import Chat from './Chat';
 import IndividualChat from './IndividualChat';
 import ProjectStatus from './ProjectStatus';
 import AssignedProjects from '../UserScreens/AssignedProjects/AssignedProjects';
+import BankDetails from './BankDetails';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ const HomeStack = () => {
       <Stack.Screen name="CategoriesList" component={CategoriesList} />
       <Stack.Screen name="AllProfessionals" component={AllProfessionals} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
+      <Stack.Screen name="BankDetails" component={BankDetails} />
       <Stack.Screen name="ManagePassword" component={ManagePassword} />
       <Stack.Screen name="Chat" component={Chat} />
       <Stack.Screen name="IndividualChat" component={IndividualChat} />

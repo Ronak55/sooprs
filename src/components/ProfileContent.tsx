@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 
     profileSection:{
         flexDirection:'column',
-        marginHorizontal:wp(3.2),
+        marginHorizontal:wp(4),
         gap:10
     },
 

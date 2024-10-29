@@ -21,13 +21,13 @@ import ButtonNew from './ButtonNew';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
 const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
 
   const {name, profileImage} = route.params;
 
   const [newName, setNewName] = useState(name);
-  const [role, setRole] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
   const [city, setCity] = useState('');
@@ -57,7 +57,6 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
           setOrganisation(updatedData.organisation); // Add this if 'organisation' is included in stored details
           setShortBio(updatedData.bio);
           setAbout(updatedData.listing_about);
-          setRole(updatedData.role); // Include role if it exists
         }
       } catch (e) {
         console.log('Error retrieving profile details:', e);
@@ -163,32 +162,36 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
     return mobileRegex.test(mobile);
   };
 
-  const requestPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission Required',
-            message: 'App needs access to your storage to select images',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          selectImage();
-        } else {
-          Alert.alert(
-            'Permission Denied',
-            'Storage permission is required to select images',
-          );
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    } else {
-      selectImage(); // For iOS, no permission needed
-    }
-  };
-
+  
+  // const requestPermission = async () => {
+  //   if (Platform.OS === 'android') {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+  //         {
+  //           title: 'Storage Permission Required',
+  //           message: 'This app needs access to your storage to select images.',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonNegative: 'Cancel',
+  //           buttonPositive: 'OK',
+  //         },
+  //       );
+  
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         selectImage(); // Call selectImage if permission is granted
+  //       } else {
+  //         Alert.alert(
+  //           'Permission Denied',
+  //           'Storage permission is required to select images',
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   } else {
+  //     selectImage(); // For iOS, no permission needed
+  //   }
+  // };
   // Function to launch image picker and handle image selection
   const selectImage = async () => {
     const result = await launchImageLibrary({
@@ -203,7 +206,7 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
         const imageName = result.assets[0].fileName; // Get the image name
         const imageType = result.assets[0].type; // Get the image MIME type (e.g., image/jpeg, image/png)
         
-        setNewProfileImage({uri: imageUri}); // Set the image locally for preview
+        setNewProfileImage(imageUri); // Set the image locally for preview
     
         // Get the user ID from AsyncStorage
         const id = await AsyncStorage.getItem('uid');
@@ -233,9 +236,6 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
           const response = await fetch('https://sooprs.com/api2/public/index.php/upload_picture', {
             method: 'POST',
             body: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data', // Required for file uploads
-            },
           });
     
           const responseData = await response.json();
@@ -246,7 +246,7 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
             const imageUrl = responseData.msg.image;
     
             // Store the image URL in AsyncStorage
-            await AsyncStorage.setItem('profileImageUrl', imageUrl);
+            await AsyncStorage.setItem(mobile_siteConfig.PROFILE_PIC, imageUrl);
     
             Toast.show({
               type: 'success',
@@ -296,17 +296,16 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
       </View>
 
       <View style={styles.profileHeading}>
-        <TouchableOpacity onPress={requestPermission}>
+        <TouchableOpacity onPress={selectImage}>
           <View style={styles.profileIcon}>
             <Image
               style={styles.Icon}
               resizeMode="cover"
-              source={newprofileImage}
+              source={newprofileImage ? {uri:newprofileImage} : Images.defaultPicIcon}
             />
           </View>
         </TouchableOpacity>
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
-        <Text style={styles.profileRole}>{role ? role : 'Role'}</Text>
       </View>
       {/* Form Fields */}
       <View style={styles.formContainer}>
@@ -318,16 +317,6 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
           value={name}
           onChangeText={setNewName}
         />
-
-        <Text style={styles.label}>Role</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your role"
-          placeholderTextColor={Colors.gray}
-          value={role}
-          onChangeText={setRole}
-        />
-
         <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
@@ -462,8 +451,8 @@ const styles = StyleSheet.create({
     marginVertical: hp(2),
   },
   profileIcon: {
-    width: wp(43),
-    height: hp(20),
+    width: wp(32),
+    height: hp(14),
     borderWidth: 2,
     borderColor: Colors.sooprsblue,
     justifyContent: 'center',
@@ -473,20 +462,14 @@ const styles = StyleSheet.create({
   },
 
   Icon: {
-    width: wp(41),
-    height: hp(19),
+    width: wp(32),
+    height: hp(14),
     borderRadius: wp(30),
   },
   profileName: {
     fontSize: FSize.fs24,
     fontWeight: '600',
     color: Colors.black,
-  },
-  profileRole: {
-    fontSize: FSize.fs12,
-    fontWeight: '500',
-    color: Colors.gray,
-    maxWidth: '90%',
   },
   formContainer: {
     paddingHorizontal: wp(5),

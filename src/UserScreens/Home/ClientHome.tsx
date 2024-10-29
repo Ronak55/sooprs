@@ -142,14 +142,6 @@ const Home = ({ navigation }: { navigation: any }) => {
           ) : (
             <ProfessionalList professionals={professionals} navigation={navigation} />
           )}
-          <HomeSectionTitle
-            navigation={navigation}
-            titleOne="Checkout"
-            titleTwo="GIGS"
-            btntxt="See all"
-            onPress="Gigs"
-          />
-          <GigsList />
         </View>
       </ScrollView>
     </>
@@ -166,7 +158,7 @@ const styles = StyleSheet.create({
 
   section: {
     marginHorizontal: wp(5),
-    marginVertical: hp(5),
+    marginVertical: hp(2),
   },
   homeInfo: {
     color: Colors.black,

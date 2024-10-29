@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
        
         backgroundColor: "#407BFF1A",
         marginHorizontal:wp(5),
-        marginTop:hp(5),
+        marginTop:hp(2),
         borderColor: Colors.sooprsblue,
         width:wp(40),
         height:hp(6),

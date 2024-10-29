@@ -1,10 +1,19 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Dimensions,
+} from 'react-native';
 import Colors from '../assets/commonCSS/Colors';
 import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const {width} = Dimensions.get('window');
 
 const ProjectCard = ({
   navigation,
@@ -21,7 +30,7 @@ const ProjectCard = ({
   bidId,
   Customer_name,
   customer_id,
-  project_status
+  project_status,
 }: {
   navigation: any;
   name: any;
@@ -37,7 +46,7 @@ const ProjectCard = ({
   bidId: any;
   Customer_name: any;
   customer_id: any;
-  project_status:any;
+  project_status: any;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
 
@@ -54,8 +63,7 @@ const ProjectCard = ({
   };
 
   // Navigate based on isAssigned value
-  const handlePress = async() => {
-
+  const handlePress = async () => {
     let uid = await AsyncStorage.getItem('uid');
     // If lead_id has extra quotes, remove them
     if (uid) {
@@ -71,7 +79,7 @@ const ProjectCard = ({
         bidId: bidId,
         recieverId: customer_id,
         id: id,
-        project_status:project_status
+        project_status: project_status,
       });
     } else {
       if (isProfessional) {
@@ -99,21 +107,13 @@ const ProjectCard = ({
           {/* Header section showing project name and favorite icon */}
           <View style={styles.header}>
             <Text style={styles.nameText}>{name}</Text>
-            <TouchableOpacity onPress={() => {}}>
+            {/* <TouchableOpacity onPress={() => {}}>
               <Image source={Images.favoriteIcon} style={styles.favoriteIcon} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
-
-          {/* Date section */}
-          {createdAt && (
-            <View style={styles.dateContainer}>
-              <Text style={styles.dateText}>{createdAt}</Text>
-            </View>
-          )}
 
           {/* Skills and description section */}
           <View style={styles.skillsContainer}>
-            <Text style={styles.skillsText}>Service</Text>
             <View style={styles.categoryBadge}>
               <Text style={styles.categoryText}>{category}</Text>
             </View>
@@ -133,16 +133,18 @@ const ProjectCard = ({
 
           {/* Footer section showing budget and bids */}
           <View style={styles.footer}>
+            {/* Date section */}
+            {createdAt && (
+              <View style={styles.dateContainer}>
+                <Text style={styles.dateText}>
+                  {' '}
+                  {new Date(createdAt).toLocaleDateString('en-GB')}
+                </Text>
+              </View>
+            )}
             <View style={styles.budgetContainer}>
               <Text style={styles.budgetLabel}>Budget: </Text>
               <Text style={styles.budgetValue}>{budget}</Text>
-            </View>
-            <View style={styles.bidsContainer}>
-              <Text style={styles.bidsLabel}>
-                {' '}
-                {bidId ? 'Bid ID:' : 'Bids:'}
-              </Text>
-              <Text style={styles.bidsValue}>{bidId || bids}</Text>
             </View>
           </View>
         </View>
@@ -159,8 +161,9 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGrey,
     borderRadius: wp(3),
     paddingVertical: hp(2),
-    paddingHorizontal: wp(5),
-    marginVertical: hp(2),
+    paddingHorizontal: wp(4),
+    marginVertical: hp(0.5),
+    marginHorizontal:hp(0.3),
   },
   column: {
     flexDirection: 'column',
@@ -168,12 +171,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start', // Align items to the top to allow wrapping
-    paddingVertical: hp(1), // Optional: Adds vertical padding to the header
+    alignItems: 'center',
+    marginBottom:hp(1),
+    paddingVertical:hp(1),
+    paddingHorizontal: wp(2), // Adjust padding as needed
   },
   nameText: {
     color: Colors.black,
-    fontSize: FSize.fs16,
+    fontSize: FSize.fs18,
     fontWeight: '500',
     maxWidth: '90%',
   },
@@ -195,7 +200,7 @@ const styles = StyleSheet.create({
   skillsContainer: {
     flexDirection: 'column',
     gap: hp(1),
-    marginTop: hp(2),
+    // marginTop: hp(1),
   },
   skillsText: {
     color: Colors.sooprsblue,
@@ -203,19 +208,19 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs13,
   },
   categoryBadge: {
-    borderColor: Colors.sooprsblue,
+    borderColor: '#F8F8F8',
     borderRadius: wp(5),
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.sooprsblue,
-    paddingHorizontal: wp(2),
+    backgroundColor: '#F2F7FF',
+    paddingHorizontal: wp(1),
     paddingVertical: wp(2),
-    width: wp(45),
+    width: wp(40),
   },
   categoryText: {
-    color: Colors.white,
+    color: '#444444',
     fontWeight: '500',
-    fontSize: FSize.fs12,
+    fontSize: FSize.fs10,
   },
   descText: {
     marginTop: hp(1),
@@ -230,14 +235,14 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs13,
   },
   footer: {
-    marginTop: hp(2),
+    marginTop: hp(0.5),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   budgetContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   budgetLabel: {
     color: Colors.sooprsblue,
@@ -249,11 +254,11 @@ const styles = StyleSheet.create({
   },
   bidsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    gap: wp(1),
   },
   bidsLabel: {
-    color: Colors.sooprsblue,
+    color: Colors.gray,
     fontSize: FSize.fs13,
   },
   bidsValue: {

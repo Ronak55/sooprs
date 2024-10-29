@@ -28,6 +28,7 @@ const Home = ({ navigation }: { navigation: any }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [profilePic, setProfilePic] = useState(null); 
+  const [filteredProjects, setFilteredProjects] = useState([]);
 
   const getNameAndImage = async () => {
     try {
@@ -74,6 +75,9 @@ const Home = ({ navigation }: { navigation: any }) => {
         if (responseData.msg.length === 0) {
           setHasMore(false);
         } else {
+
+          console.log('all projects response::::::::::', responseData.msg);
+          
           const newProjects = responseData.msg.filter(
             (project) =>
               !projectDetail.some(
@@ -193,21 +197,27 @@ const Home = ({ navigation }: { navigation: any }) => {
           </View>
           <View style={styles.searchFilter}>
             <SearchBar placeholderName="Projects" />
-            <Filter/>
+            <Filter setFilteredProjects={setFilteredProjects}/>
           </View>
-          <IntroCard
+          {/* <IntroCard
             cardText="Discover projects with ease!"
             showBtn={true}
             img={Images.introLogo}
             bgColor={['#0077FF', '#D6E9FF']}
             cardbgColor="#D4E3FC24"
-          />
+          /> */}
           {loadingMessage ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={Colors.sooprsblue} />
             </View>
           ) : (
-            <AllProjects
+            filteredProjects.length > 0 ? (
+              <AllProjects
+              navigation={navigation}
+              projectDetail={filteredProjects}
+            />
+            ) : (
+              <AllProjects
               navigation={navigation}
               projectDetail={projectDetail}
               isLoading={isLoading}
@@ -215,6 +225,7 @@ const Home = ({ navigation }: { navigation: any }) => {
               loadMoreProjects={loadMoreProjects}
               newLoading={newloading}
             />
+            )
           )}
         </View>
       </ScrollView>

@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, { useState } from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
@@ -15,8 +15,12 @@ const BankDetails = ({navigation}: {navigation: any}) => {
     const [bankName, setBankName] = useState('');
     const [accNumber, setAccountNumber] = useState('');
     const [bankIFSC, setBankIFSC] = useState('');
+    const [loading, isLoading] = useState(false);
 
     const handleOnPress = async () => {
+
+        isLoading(true);
+
         try {
           // Fetch the user id from AsyncStorage
           const id = await AsyncStorage.getItem('uid');
@@ -73,6 +77,8 @@ const BankDetails = ({navigation}: {navigation: any}) => {
             text1: 'Error',
             text2: 'Something went wrong. Please try again.',
           });
+        } finally{
+          isLoading(false);
         }
       };
     
@@ -123,7 +129,13 @@ const BankDetails = ({navigation}: {navigation: any}) => {
             />
             <ButtonNew
               imgSource={null}
-              btntext="Add Details"
+              btntext={
+                loading ? (
+                  <ActivityIndicator color={Colors.white} />
+                ) : (
+                  'Add Details'
+                )
+              }
               bgColor="#0077FF"
               textColor="#FFFFFF"
               onPress={handleOnPress}

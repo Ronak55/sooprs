@@ -75,13 +75,6 @@ const Professionals = ({navigation}: {navigation: any}) => {
           bgColor={['#B24BB2', '#D4E3FC24']}
           cardbgColor="#D4E3FC24"
         /> */}
-        <HomeSectionTitle
-          navigation={navigation}
-          titleOne="Categories"
-          titleTwo=""
-          btntxt="See all"
-          onPress=""
-        />
         <CategoriesList
           navigation={navigation}
           services={services}

@@ -18,11 +18,11 @@ import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import ButtonNew from './ButtonNew';
-import { mobile_siteConfig } from '../services/mobile-siteConfig';
-import CryptoJS from 'crypto-js'
+import {mobile_siteConfig} from '../services/mobile-siteConfig';
+import CryptoJS from 'crypto-js';
 import Toast from 'react-native-toast-message';
 
-const encryptionKey = 'Aniket@#@Sooprs#@#123'; 
+const encryptionKey = 'Aniket@#@Sooprs#@#123';
 
 const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const {
@@ -35,6 +35,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     Customer_name,
     customer_id,
     bidId,
+    project_status,
   } = route.params;
   const [isModalVisible, setModalVisible] = useState(false);
   const [isContactModalVisible, setContactModalVisible] = useState(false);
@@ -46,7 +47,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const [uid, setUid] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [bidDone, setbidDone] = useState(false);
-  const [mobile, setMobile] = useState('+91 92******33')
+  const [mobile, setMobile] = useState('+91 92******33');
   const [btnvisible, setbtnVisible] = useState(true);
   const isFocused = useIsFocused();
 
@@ -90,6 +91,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     };
 
     fetchUid().then(fetchBids);
+
+    console.log('project status::::::::::::::', project_status);
   }, [isFocused, uid, isModalVisible]);
 
   useEffect(() => {
@@ -102,50 +105,58 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     return Array.from(bidMap.values()); // Convert back to array
   };
 
-
-  const ContactModal = ({ visible, onClose, mobile, setMobile, btnVisible, setbtnVisible }) => {
+  const ContactModal = ({
+    visible,
+    onClose,
+    mobile,
+    setMobile,
+    btnVisible,
+    setbtnVisible,
+  }) => {
     const [loading, setLoading] = useState(false); // Track loading state
-  
+
     const getContactDetails = async () => {
       if (loading) return; // Prevent multiple clicks while loading
       setLoading(true); // Start loading spinner
-  
+
       try {
         // Retrieve the token from AsyncStorage
         let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
         let new_token = JSON.parse(token);
-  
+
         console.log('tokenn:::::::::::', new_token);
         // Prepare form data
         const formData = new FormData();
         formData.append('id', id); // Ensure `id` is defined appropriately
-  
+
         // Make the API call
-        const response = await fetch('https://sooprs.com/api2/public/index.php/show-lead-mobile', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${new_token}`, // Send token in the authorization header
+        const response = await fetch(
+          'https://sooprs.com/api2/public/index.php/show-lead-mobile',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${new_token}`, // Send token in the authorization header
+            },
+            body: formData,
           },
-          body: formData,
-        });
-  
+        );
+
         // Parse the response
         const result = await response.json();
         console.log('Contact details response::::', result);
-  
+
         if (result.status === 200) {
           // Decrypt the mobile number received from the API
           setMobile(result.encrypted_mobile_number);
           setbtnVisible(false); // Hide the button after successful fetch
         }
-  
       } catch (error) {
         console.error('Error fetching contact details:', error);
       } finally {
         setLoading(false); // Stop loading spinner
       }
     };
-  
+
     return (
       <Modal
         animationType="slide"
@@ -158,24 +169,30 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Image source={Images.crossIcon} style={styles.closeIcon} />
             </TouchableOpacity>
-  
+
             {/* Modal Title */}
             <Text style={styles.modalTitle}>Contact Details</Text>
-  
+
             {/* Contact Info */}
             <View style={styles.contactInfo}>
               <Text style={styles.contactText}>Phone: {mobile}</Text>
             </View>
-  
+
             {/* Credit Cost Info */}
             <View style={styles.creditCostInfo}>
               <Text style={styles.creditCostText}>Credit Cost: 50</Text>
             </View>
-  
+
             {/* Button */}
             <ButtonNew
               imgSource={undefined}
-              btntext={loading ? <ActivityIndicator color={Colors.white} /> : 'Get Contact'}
+              btntext={
+                loading ? (
+                  <ActivityIndicator color={Colors.white} />
+                ) : (
+                  'Get Contact'
+                )
+              }
               bgColor={!btnVisible ? Colors.gray : Colors.sooprsblue}
               textColor={Colors.white}
               onPress={getContactDetails}
@@ -200,7 +217,6 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
       setContactModalVisible(true); // Show the modal if the button is not disabled
     }
   };
-
 
   const renderBidCard = ({item}: {item: any}) => (
     <View style={styles.bidCard}>
@@ -238,9 +254,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           </Text>
         </View>
         <View style={styles.rightPart}>
-          {
-            !isButtonDisabled ? (
-              <TouchableOpacity
+          {!isButtonDisabled ? (
+            <TouchableOpacity
               onPress={() => setModalVisible(true)}
               style={{
                 justifyContent: 'center',
@@ -256,10 +271,16 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               disabled={isButtonDisabled}>
               <Text style={styles.bidbtnText}>Bid</Text>
             </TouchableOpacity>
-            ) : (
-              <Text style={{color:'#40C700', fontSize:FSize.fs18, fontWeight:'500'}}>Bid Placed!</Text>
-            )
-          }
+          ) : (
+            <Text
+              style={{
+                color: '#40C700',
+                fontSize: FSize.fs18,
+                fontWeight: '500',
+              }}>
+              Bid Placed!
+            </Text>
+          )}
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -272,25 +293,25 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={styles.postedText}>Posted:</Text>
               <Text style={styles.postedDate}> {createdAt}</Text>
             </View> */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={() => {}} style={styles.catbtn}>
-                <Text style={styles.btnText}>{category}</Text>
-              </TouchableOpacity>
+             <View style={styles.categoryBadge}>
+              <Text style={styles.categoryText}>{category}</Text>
             </View>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('IndividualChat', {
-                    name: Customer_name,
-                    userId: uid,
-                    leadId: id,
-                    bidId: bidId,
-                    recieverId: customer_id,
-                    id: id,
-                  });
-                }}>
-                <Image source={Images.chatIcon} style={styles.chat} />
-              </TouchableOpacity>
+              {project_status && (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('IndividualChat', {
+                      name: Customer_name,
+                      userId: uid,
+                      leadId: id,
+                      bidId: bidId,
+                      recieverId: customer_id,
+                      id: id,
+                    });
+                  }}>
+                  <Image source={Images.chatIcon} style={styles.chat} />
+                </TouchableOpacity>
+              )}
             </View>
             <View style={styles.posted}>
               <Text style={styles.postedText}>Budget:</Text>
@@ -344,22 +365,30 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             </TouchableOpacity>
           </View>
         </View> */}
-        <View style={styles.tabContainer}>
+        <View style={styles.tabsContainer}>
           <TouchableOpacity
             style={[
               styles.tabButton,
-              activeTab === 'description' && styles.activeTab,
+              activeTab === 'description'
+                ? styles.activeTab
+                : styles.inactiveTab,
             ]}
             onPress={() => setActiveTab('description')}>
-            <Text style={styles.tabText}>Description</Text>
+            <Text style={activeTab === 'description' ? styles.activeTabText : styles.inactiveTabText}>
+              Description
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.tabButton,
-              activeTab === 'clientDetails' && styles.activeTab,
+              activeTab === 'clientDetails'
+                ? styles.activeTab
+                : styles.inactiveTab,
             ]}
             onPress={() => setActiveTab('clientDetails')}>
-            <Text style={styles.tabText}>Client Details</Text>
+            <Text style={activeTab === 'clientDetails' ? styles.activeTabText : styles.inactiveTabText}>
+              Client Details
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -423,8 +452,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           )}
         </ScrollView>
       </ScrollView>
-        {/* Contact Modal */}
-        <ContactModal
+      {/* Contact Modal */}
+      <ContactModal
         visible={isContactModalVisible}
         onClose={() => setContactModalVisible(false)}
         mobile={mobile}
@@ -472,7 +501,7 @@ const styles = StyleSheet.create({
     paddingBottom: hp(5), // Add extra space at the bottom for better scrolling
   },
   projectSection: {
-    marginVertical: hp(2),
+    marginVertical: hp(1),
     marginHorizontal: wp(5),
   },
   projectTitle: {
@@ -502,15 +531,20 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs12,
     fontWeight: '500',
   },
-  catbtn: {
+  categoryBadge: {
+    borderColor: '#F8F8F8',
+    borderRadius: wp(5),
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: Colors.black,
-    borderWidth: 1,
-    borderRadius: wp(5),
-    backgroundColor: Colors.white,
-    paddingVertical: hp(1),
-    paddingHorizontal: wp(4),
+    backgroundColor: '#F2F7FF',
+    paddingHorizontal: wp(1),
+    paddingVertical: wp(2),
+    width: wp(40),
+  },
+  categoryText: {
+    color: '#444444',
+    fontWeight: '500',
+    fontSize: FSize.fs10,
   },
   descbtn: {
     justifyContent: 'center',
@@ -561,27 +595,47 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs14,
   },
 
-  tabContainer: {
+  
+  tabsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: hp(2),
+    justifyContent: 'space-between',
+    borderRadius: wp(10),
+    marginHorizontal: wp(3),
+    marginVertical: hp(1),
+    padding: wp(2),
+    gap: wp(2),
+    
+    // Shadow and elevation
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // For Android
   },
+
   tabButton: {
     flex: 1,
-    paddingVertical: hp(1.5),
-    backgroundColor: Colors.black,
-    borderRadius: wp(5),
-    marginHorizontal: wp(2),
+    padding: hp(1.8),
+    borderRadius: wp(6),
     alignItems: 'center',
   },
+
   activeTab: {
-    backgroundColor: Colors.sooprsblue,
+    backgroundColor:Colors.sooprsblue,
   },
-  tabText: {
+  inactiveTab: {
+    backgroundColor: '#F2F7FF',
+  },
+  activeTabText: {
     color: Colors.white,
-    fontWeight: '500',
-    fontSize: FSize.fs14,
+    fontWeight: '600',
   },
+  inactiveTabText: {
+    color: '#111111',
+    fontWeight: '600',
+  },
+
 
   indiSection: {
     flexDirection: 'row',
@@ -695,20 +749,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 20,
-    gap:hp(2)
+    gap: hp(2),
     // alignItems: 'center',
   },
   closeButton: {
     position: 'absolute',
     top: 10,
     right: 20,
-    padding:10, 
-    zIndex:1
+    padding: 10,
+    zIndex: 1,
   },
   closeIcon: {
-    width:wp(4),
-    height:hp(3),
-    opacity:0.8
+    width: wp(4),
+    height: hp(3),
+    opacity: 0.8,
   },
   modalTitle: {
     fontSize: 18,
