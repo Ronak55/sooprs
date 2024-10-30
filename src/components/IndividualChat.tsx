@@ -186,7 +186,7 @@ const IndividualChat = ({ navigation, route }) => {
           <View style={styles.header}>
             <Image
               source={cust_image ? {uri:cust_image} : Images.Clientlogo}
-              style={{ width: wp(10), height: hp(5) }}
+              style={{ width: wp(10), height: hp(5), borderRadius:wp(5)}}
             />
             <View style={styles.headerName}>
               <Text style={styles.headerText}>{name}</Text>

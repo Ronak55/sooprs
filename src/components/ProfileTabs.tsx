@@ -19,7 +19,6 @@ interface TabParams {
   services?: string[];
   skills?: string[];
 }
-
 const ProfileTabs = ({
   tabs,
   isClient,
@@ -34,9 +33,10 @@ const ProfileTabs = ({
   skills: string[];
 }) => {
   const renderTabScreens = () => {
-    console.log('tabs:::::::::::::', tabs);
+    // Filter out "Reviews" from tabs array
+    const filteredTabs = tabs.filter((tab: string) => tab !== 'Reviews');
 
-    return tabs.map((tab: any, index: any) => {
+    return filteredTabs.map((tab: any, index: any) => {
       let Component;
       const initialParams: TabParams = {
         id: undefined,
@@ -54,9 +54,6 @@ const ProfileTabs = ({
           Component = Skills;
           initialParams.skills = skills;
           break;
-        case 'Reviews':
-          Component = Reviews;
-          break;
         case 'Company Info':
           Component = CompanyInfo;
           break;
@@ -71,8 +68,6 @@ const ProfileTabs = ({
           );
       }
 
-      console.log('Rendering Tab:', tab, 'with params:', initialParams);
-
       return (
         <Tab.Screen
           key={index}
@@ -86,8 +81,8 @@ const ProfileTabs = ({
 
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarLabel: ({focused}) => (
+      screenOptions={({ route }) => ({
+        tabBarLabel: ({ focused }) => (
           <Text
             style={{
               color: focused ? Colors.white : Colors.black,
@@ -100,32 +95,35 @@ const ProfileTabs = ({
         tabBarStyle: {
           marginTop: wp(6),
           marginVertical: hp(1),
-          paddingLeft:wp(1),
-          marginHorizontal: wp(1),
+          // paddingRight: wp(2),
+          marginHorizontal: wp(3),
           borderRadius: wp(6),
-          paddingVertical:hp(0.5),
+          paddingVertical: hp(0.5),
           backgroundColor: '#fff',
           shadowColor: '#000',
-          shadowOffset: {width: 0, height: 3},
+          shadowOffset: { width: 0, height: 3 },
           shadowOpacity: 0.2,
           shadowRadius: 4,
           elevation: 5, // For Android
         },
         tabBarItemStyle: {
-          width: isClient ? wp(34) : wp(24),
+          width: isClient ? wp(34) : wp(32),
         },
         tabBarIndicatorStyle: {
           backgroundColor: Colors.sooprsblue,
-          paddingVertical:hp(2.5),
-          marginVertical:hp(0.6),
+          height: hp(5), // Reducing height to keep it contained
+          width: wp(25), // Adjusting width to keep the indicator within bounds
           borderRadius: wp(10),
-          marginLeft:wp(1),
+          alignSelf:'center',
+          marginLeft: wp(3),
+          marginBottom:hp(0.5)
         },
       })}>
       {renderTabScreens()}
     </Tab.Navigator>
   );
 };
+
 
 const styles = StyleSheet.create({
   tabLabel: {

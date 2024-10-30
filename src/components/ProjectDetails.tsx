@@ -219,13 +219,22 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+
   const renderBidCard = ({item}: {item: any}) => (
     <View style={styles.bidCard}>
-      <Image source={{uri: item.proImage}} style={styles.profileImage} />
+      <Image source={item.proImage ? {uri: item.proImage} : Images.defaultPicIcon} style={styles.profileImage} />
       <View style={styles.bidContent}>
         <Text style={styles.bidderName}>{item.pro}</Text>
         <Text style={styles.bidDescription}>{item.description}</Text>
-        <Text style={styles.createdAt}>{item.created_at}</Text>
+        <Text style={styles.createdAt}>{formatDate(item.created_at)}</Text>
       </View>
       <Text style={styles.bidAmount}>${item.amount}</Text>
     </View>
