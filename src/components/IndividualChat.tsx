@@ -28,13 +28,14 @@ const { height, width } = Dimensions.get('window');
 const IndividualChat = ({ navigation, route }) => {
 
   const scrollEnd = useRef();
-  const {name, userId, leadId, bidId, recieverId, id, project_status} = route.params;
+  const {name, cust_image, userId, leadId, bidId, recieverId, id, project_status} = route.params;
   const [allConversations, setAllConversations] = useState([]);
 
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [file, setFile] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
+  const [senderImage, setsenderImage] = useState('');
 
   const getAllUserChat = async (bidId, leadId, userId) => {
     try {
@@ -50,7 +51,11 @@ const IndividualChat = ({ navigation, route }) => {
         },
       );
       const res = await response.json();
-      // console.log('getAllUserChat', res);
+      console.log('getAllUserChat::::::::::::::', res);
+      if (res.length > 0) {
+        setsenderImage(res[0].pro_details.image);
+      }
+      console.log('sender image::::::::::::::', res[0].pro_details.image);
       setAllConversations(res);
       return
     } catch (error) {
@@ -67,6 +72,7 @@ const IndividualChat = ({ navigation, route }) => {
     console.log('bidId:::::::::::::::', route?.params?.bidId);
     console.log('recieverId:::::::::::::::', route?.params?.recieverId);
     console.log('project status:::::::::::::::::::', route?.params?.project_status);
+    console.log('customer image:::::::::::::::::', route?.params?.cust_image);
     getAllUserChat(route?.params?.bidId, route?.params?.leadId, route?.params?.userId);
   }, [route?.params]);
 
@@ -179,8 +185,8 @@ const IndividualChat = ({ navigation, route }) => {
         <View style={styles.headerPart}>
           <View style={styles.header}>
             <Image
-              source={Images.Clientlogo}
-              style={{ width: wp(12), height: hp(6) }}
+              source={cust_image ? {uri:cust_image} : Images.Clientlogo}
+              style={{ width: wp(10), height: hp(5) }}
             />
             <View style={styles.headerName}>
               <Text style={styles.headerText}>{name}</Text>
@@ -231,7 +237,7 @@ const IndividualChat = ({ navigation, route }) => {
                         height: '100%',
                         width: '100%'
                       }}
-                      source={item?.pro_details?.image !== undefined ? { uri: item?.pro_details?.image } : Images.professionalslogo}
+                      source={senderImage !== '' ? {uri:senderImage} : Images.professionalslogo}
                     />
                   </View>
                 </View>
@@ -242,7 +248,7 @@ const IndividualChat = ({ navigation, route }) => {
               <View key={index}>
                 <View style={styles.receiverMessage}>
                   <Image
-                    source={item?.pro_details?.image !== undefined ? { uri: item?.pro_details?.image } : Images.professionalslogo}
+                    source={senderImage !== '' ? {uri:senderImage} : Images.professionalslogo}
                     style={styles.receiverAvatar}
                   />
                   <View style={styles.receiverBubble}>

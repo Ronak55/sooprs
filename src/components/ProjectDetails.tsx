@@ -33,6 +33,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     budget,
     createdAt,
     Customer_name,
+    cust_image,
     customer_id,
     bidId,
     project_status,

@@ -21,10 +21,9 @@ import ButtonNew from './ButtonNew';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-import { mobile_siteConfig } from '../services/mobile-siteConfig';
+import {mobile_siteConfig} from '../services/mobile-siteConfig';
 
-const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
-
+const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const {name, profileImage} = route.params;
 
   const [newName, setNewName] = useState(name);
@@ -39,6 +38,7 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
   const [country, setCountry] = useState('');
   const [countryCode, setCountryCode] = useState('');
   const [newprofileImage, setNewProfileImage] = useState(profileImage);
+  const [usertype, setuserType] = useState(null);
 
   const isFocused = useIsFocused();
 
@@ -46,6 +46,10 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
     const loadProfileDetails = async () => {
       try {
         const storedDetails = await AsyncStorage.getItem('profileDetails');
+        const user = await AsyncStorage.getItem(mobile_siteConfig.IS_BUYER);
+        const parseUser = JSON.parse(user);
+        setuserType(parseUser);
+
         if (storedDetails !== null) {
           const updatedData = JSON.parse(storedDetails);
 
@@ -88,11 +92,12 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
       formData.append('area_code', pincode);
       formData.append('country', countryCode); // Assuming you're using country code
       formData.append('mobile', mobile);
-      formData.append('organisation', organisation);
-      formData.append('bio', shortBio);
-      formData.append('about', about);
-
-    //   await AsyncStorage.setItem('profileDetails', profileImage);
+      if(usertype == 0){
+        formData.append('organisation', organisation);
+        formData.append('bio', shortBio);
+        formData.append('about', about);  
+      }
+      //   await AsyncStorage.setItem('profileDetails', profileImage);
       // Make the POST request
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/update_profile_professional',
@@ -113,10 +118,11 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
         setEmail(updatedData.email);
         setCity(updatedData.city);
         setMobile(updatedData.mobile);
-        setOrganisation(updatedData.organisation);
-        setShortBio(updatedData.bio);
-        setAbout(updatedData.listing_about); // Update with the correct field name if necessary
-
+        if(usertype == 0){
+          setOrganisation(updatedData.organisation);
+          setShortBio(updatedData.bio);
+          setAbout(updatedData.listing_about); // Update with the correct field name if necessary
+        }
         // Save the updated profile details in AsyncStorage
         await AsyncStorage.setItem(
           'profileDetails',
@@ -162,7 +168,6 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
     return mobileRegex.test(mobile);
   };
 
-  
   // const requestPermission = async () => {
   //   if (Platform.OS === 'android') {
   //     try {
@@ -176,7 +181,7 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
   //           buttonPositive: 'OK',
   //         },
   //       );
-  
+
   //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
   //         selectImage(); // Call selectImage if permission is granted
   //       } else {
@@ -202,84 +207,86 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
     });
 
     if (result?.assets?.length) {
-        const imageUri = result.assets[0].uri;
-        const imageName = result.assets[0].fileName; // Get the image name
-        const imageType = result.assets[0].type; // Get the image MIME type (e.g., image/jpeg, image/png)
-        
-        setNewProfileImage(imageUri); // Set the image locally for preview
-    
-        // Get the user ID from AsyncStorage
-        const id = await AsyncStorage.getItem('uid');
-        const cleanedId = id ? id.replace(/^"|"$/g, '') : null; // Remove quotes if any
-    
-        if (!cleanedId) {
-          console.error('User ID not found.');
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'User ID not found.',
-          });
-          return;
-        }
-    
-        // Prepare the image for upload using FormData
-        const formData = new FormData();
-        formData.append('image', {
-          uri: imageUri,
-          name: imageName || 'profile_picture', // Use actual file name if available
-          type: imageType || 'image/jpeg', // Use actual MIME type, default to JPEG if not available
-        });
-        formData.append('id', cleanedId); // Append the user ID
-        formData.append('table', 'join_professionals'); // Append the table name
-    
-        try {
-          const response = await fetch('https://sooprs.com/api2/public/index.php/upload_picture', {
-            method: 'POST',
-            body: formData,
-          });
-    
-          const responseData = await response.json();
-          console.log('Image upload response:', responseData);
-    
-          // Check for success status and store the image URL
-          if (responseData.status === 200 && responseData.msg?.image) {
-            const imageUrl = responseData.msg.image;
-    
-            // Store the image URL in AsyncStorage
-            await AsyncStorage.setItem(mobile_siteConfig.PROFILE_PIC, imageUrl);
-    
-            Toast.show({
-              type: 'success',
-              text1: 'Success',
-              text2: 'Image uploaded successfully!',
-            });
-    
-            console.log('Image URL saved to AsyncStorage:', imageUrl);
-          } else {
-            console.error('Image upload failed:', responseData);
-            Toast.show({
-              type: 'error',
-              text1: 'Error',
-              text2: 'Image upload failed.',
-            });
-          }
-        } catch (error) {
-          console.error('Error uploading image:', error);
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'An error occurred while uploading the image.',
-          });
-        }
-      } else {
-        console.error('No image selected.');
+      const imageUri = result.assets[0].uri;
+      const imageName = result.assets[0].fileName; // Get the image name
+      const imageType = result.assets[0].type; // Get the image MIME type (e.g., image/jpeg, image/png)
+
+      setNewProfileImage(imageUri); // Set the image locally for preview
+
+      // Get the user ID from AsyncStorage
+      const id = await AsyncStorage.getItem('uid');
+      const cleanedId = id ? id.replace(/^"|"$/g, '') : null; // Remove quotes if any
+
+      if (!cleanedId) {
+        console.error('User ID not found.');
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'No image selected.',
+          text2: 'User ID not found.',
         });
+        return;
       }
 
+      // Prepare the image for upload using FormData
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        name: imageName || 'profile_picture', // Use actual file name if available
+        type: imageType || 'image/jpeg', // Use actual MIME type, default to JPEG if not available
+      });
+      formData.append('id', cleanedId); // Append the user ID
+      formData.append('table', 'join_professionals'); // Append the table name
+
+      try {
+        const response = await fetch(
+          'https://sooprs.com/api2/public/index.php/upload_picture',
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
+
+        const responseData = await response.json();
+        console.log('Image upload response:', responseData);
+
+        // Check for success status and store the image URL
+        if (responseData.status === 200 && responseData.msg?.image) {
+          const imageUrl = responseData.msg.image;
+
+          // Store the image URL in AsyncStorage
+          await AsyncStorage.setItem(mobile_siteConfig.PROFILE_PIC, imageUrl);
+
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Image uploaded successfully!',
+          });
+
+          console.log('Image URL saved to AsyncStorage:', imageUrl);
+        } else {
+          console.error('Image upload failed:', responseData);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Image upload failed.',
+          });
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'An error occurred while uploading the image.',
+        });
+      }
+    } else {
+      console.error('No image selected.');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'No image selected.',
+      });
+    }
   };
 
   return (
@@ -301,7 +308,9 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
             <Image
               style={styles.Icon}
               resizeMode="cover"
-              source={newprofileImage ? {uri:newprofileImage} : Images.defaultPicIcon}
+              source={
+                newprofileImage ? {uri: newprofileImage} : Images.defaultPicIcon
+              }
             />
           </View>
         </TouchableOpacity>
@@ -377,36 +386,39 @@ const ManageDetails = ({navigation, route}: {navigation: any, route:any}) => {
           selectedCountryCode={countryCode}
           onSelect={handleCountrySelect}
         />
+        {usertype == 0 && (
+          <>
+            <Text style={styles.label}>Organisation</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your organisation"
+              placeholderTextColor={Colors.gray}
+              value={organisation}
+              onChangeText={setOrganisation}
+            />
+            <Text style={styles.label}>Short Bio</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder="Enter a short bio..."
+              placeholderTextColor={Colors.gray}
+              multiline={true}
+              textAlignVertical="top"
+              value={shortBio}
+              onChangeText={setShortBio}
+            />
 
-        <Text style={styles.label}>Organisation</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your organisation"
-          placeholderTextColor={Colors.gray}
-          value={organisation}
-          onChangeText={setOrganisation}
-        />
-        <Text style={styles.label}>Short Bio</Text>
-        <TextInput
-          style={[styles.input, styles.multilineInput]}
-          placeholder="Enter a short bio..."
-          placeholderTextColor={Colors.gray}
-          multiline={true}
-          textAlignVertical="top"
-          value={shortBio}
-          onChangeText={setShortBio}
-        />
-
-        <Text style={styles.label}>About</Text>
-        <TextInput
-          style={[styles.input, styles.multilineInput]}
-          placeholder="Tell us more about yourself..."
-          placeholderTextColor={Colors.gray}
-          multiline={true}
-          textAlignVertical="top"
-          value={about}
-          onChangeText={setAbout}
-        />
+            <Text style={styles.label}>About</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder="Tell us more about yourself..."
+              placeholderTextColor={Colors.gray}
+              multiline={true}
+              textAlignVertical="top"
+              value={about}
+              onChangeText={setAbout}
+            />
+          </>
+        )}
       </View>
       <View style={styles.saveButton}>
         <ButtonNew
@@ -478,7 +490,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
     fontSize: FSize.fs15,
     fontWeight: '600',
-    marginBottom: hp(1),
+    marginBottom: hp(1.5),
   },
   input: {
     borderWidth: 1,
@@ -507,6 +519,7 @@ const styles = StyleSheet.create({
   },
 
   saveButton: {
+    marginTop:hp(2),
     marginHorizontal: wp(5),
   },
 });

@@ -77,7 +77,7 @@ const Home = ({ navigation }: { navigation: any }) => {
         } else {
 
           console.log('all projects response::::::::::', responseData.msg);
-          
+
           const newProjects = responseData.msg.filter(
             (project) =>
               !projectDetail.some(
@@ -197,7 +197,7 @@ const Home = ({ navigation }: { navigation: any }) => {
           </View>
           <View style={styles.searchFilter}>
             <SearchBar placeholderName="Projects" />
-            <Filter setFilteredProjects={setFilteredProjects}/>
+            {/* <Filter setFilteredProjects={setFilteredProjects}/> */}
           </View>
           {/* <IntroCard
             cardText="Discover projects with ease!"
@@ -266,8 +266,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent:'center',
     gap: wp(2),
-    marginHorizontal:wp(7),
-    width:width/1.3
+    marginHorizontal:wp(1),
+    // width:width/1.3
   },
 
   loadingContainer: {

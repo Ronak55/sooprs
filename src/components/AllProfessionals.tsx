@@ -77,12 +77,13 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
     const avgrating = item.avgrating;
     const services = item.services;
     const skills = item.skills;
+    const newImage = image ? image : "default-image-url"
 
     return (
       <ProfessionalCard
         navigation={navigation}
         id={id}
-        img={image}
+        img={newImage}
         name={name}
         services={services}
         skills={skills}

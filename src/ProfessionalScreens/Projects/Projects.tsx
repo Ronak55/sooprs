@@ -244,7 +244,8 @@ const styles = StyleSheet.create({
     marginVertical: hp(1),
   },
   showMoreButton: {
-    marginBottom: hp(15),
+    marginTop:hp(2),
+    marginBottom: hp(10),
   },
 
   noMoreText: {

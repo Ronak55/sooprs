@@ -1,5 +1,5 @@
 import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
@@ -16,6 +16,37 @@ const BankDetails = ({navigation}: {navigation: any}) => {
     const [accNumber, setAccountNumber] = useState('');
     const [bankIFSC, setBankIFSC] = useState('');
     const [loading, isLoading] = useState(false);
+
+    useEffect(()=>{
+      
+      const getBankDetails = async()=>{
+
+        let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
+        let new_token = JSON.parse(token);
+
+        const response = await fetch('https://sooprs.com/api2/public/index.php/get-bank-details-new', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${new_token}`, 
+          },
+        });
+
+        const res = await response.json();
+
+        if(res){
+          setBankName(res.bank_name)
+          setAccountNumber(res.account_no)
+          setBankIFSC(res.ifsc);
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: res.msg || 'Error fetching bank details.',
+          });
+        }
+      }
+      getBankDetails();
+    }, [])
 
     const handleOnPress = async () => {
 
@@ -93,7 +124,7 @@ const BankDetails = ({navigation}: {navigation: any}) => {
             style={styles.backArrow}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add Your Bank Details</Text>
+        <Text style={styles.headerTitle}>Manage Your Bank Details</Text>
       </View>
         <View style={styles.title}>
           <View style={styles.inputContainer}>

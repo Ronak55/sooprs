@@ -46,7 +46,7 @@ const ProfileComponent = ({navigation, img, name, role, rating} : {navigation:an
           </View>
           <View style={styles.profile}>
             {/* <TouchableOpacity onPress={selectImage}> */}
-                <Image style={styles.Icon} resizeMode="cover" source={{uri:img}} />
+                <Image style={styles.Icon} resizeMode="cover" source={img !== 'default-image-url' ? {uri:img} : Images.defaultPicIcon} />
             {/* </TouchableOpacity> */}
             <View style={styles.profileContainer}>
             <Text style={styles.profileName}>{name}</Text>

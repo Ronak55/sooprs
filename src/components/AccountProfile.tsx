@@ -146,7 +146,7 @@ const AccountProfile = ({
               navigation.navigate('BankDetails');
             }}>
             <View style={styles.details}>
-              <Text style={styles.detailsText}>Add Bank details</Text>
+              <Text style={styles.detailsText}>Manage Bank details</Text>
               <Image
                 style={styles.rightArrowIcon}
                 resizeMode="cover"

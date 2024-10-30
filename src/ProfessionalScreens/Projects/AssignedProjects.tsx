@@ -44,6 +44,7 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
       const responseData = await response.json();
 
       if (responseData.status === 200) {
+        console.log('assigned projects response:::::::::', responseData.msg);
         setAssignedProjects(responseData.msg);
       } else if (responseData.status === 400) {
         console.error('An error has occurred!');
@@ -73,6 +74,7 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
       isProfessional={true}
       bidId={item.myLeadId}
       Customer_name={item.Customer_name}
+      Customer_image={item.Customer_image}
       customer_id={item.customer_id}
       isAssigned={true}
       project_status={item.project_status}

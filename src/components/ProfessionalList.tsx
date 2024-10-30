@@ -44,7 +44,7 @@ const ProfessionalList = ({professionals, navigation }: { professionals:any, nav
     const avgrating = item.avgrating;
     const services = item.services;
     const skills = item.skills;
-    const img = image;
+    const img = image ? image : 'default-image-url'; // Provide a fallback if no image is available
 
     return (
       <ProfessionalCard
@@ -82,6 +82,6 @@ const styles = StyleSheet.create({
   ProfessionalList: {
     marginTop: hp(2),
     width: '100%',
-    height: hp(24),
+    height: hp(30),
   },
 });

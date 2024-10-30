@@ -29,6 +29,7 @@ const ProjectCard = ({
   isProfessional,
   bidId,
   Customer_name,
+  Customer_image,
   customer_id,
   project_status,
 }: {
@@ -45,6 +46,7 @@ const ProjectCard = ({
   isProfessional: any;
   bidId: any;
   Customer_name: any;
+  Customer_image:any,
   customer_id: any;
   project_status: any;
 }) => {
@@ -74,6 +76,7 @@ const ProjectCard = ({
     if (isAssigned) {
       navigation.navigate('IndividualChat', {
         name: Customer_name,
+        cust_image: Customer_image,
         userId: uid,
         leadId: id,
         bidId: bidId,
@@ -90,6 +93,7 @@ const ProjectCard = ({
           category,
           budget,
           createdAt,
+          cust_image: Customer_image,
           Customer_name,
           customer_id,
           bidId,

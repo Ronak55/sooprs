@@ -93,7 +93,6 @@ const Portfolio = ({route} : {route:any}) => {
         <View style={styles.info}>
           <Text style={styles.name}>{item.title}</Text>
           <Text style={styles.role}>{item.description}</Text>
-
           {/* Link section with TouchableOpacity */}
           <TouchableOpacity onPress={() => handleLinkPress(item.link)}>
             <Text style={styles.link}>Visit Portfolio</Text>
@@ -161,8 +160,8 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   role: {
-    fontSize: FSize.fs12,
-    color: Colors.gray,
+    fontSize: FSize.fs10,
+    color: Colors.black,
   },
   link: {
     fontSize: FSize.fs12,

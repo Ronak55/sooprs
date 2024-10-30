@@ -80,7 +80,7 @@ const Professionals = ({navigation}: {navigation: any}) => {
           services={services}
           onSelectService={setSelectedService}
         />
-        <AllProfessionals navigation={navigation}  selectedService={selectedService}/>
+        <AllProfessionals navigation={navigation} selectedService={selectedService}/>
       </View>
     </ScrollView>
   );
