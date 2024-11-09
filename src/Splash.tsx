@@ -9,7 +9,6 @@ const Splash = ({ navigation }: { navigation: any }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current; // Initial opacity set to 1
 
   useEffect(() => {
-    // Delay the fade-out animation by 2 seconds, then run a quick fade-out over 1 second
     const timer = setTimeout(() => {
       Animated.timing(fadeAnim, {
         toValue: 0,          // Target opacity (fade out)

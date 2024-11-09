@@ -34,9 +34,11 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
         const newProfessionals = res.msg.filter(pro => 
           !professionals.some(existing => existing.id === pro.id)
         ); 
+        console.log('new professional :::::::::::::', newProfessionals);
 
         if (newProfessionals.length > 0) {
           setProfessionals(prev => [...prev, ...newProfessionals]);
+          setShowMore(true);
         } else {
           setShowMore(false);
         }
@@ -69,7 +71,7 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
   }, [offset]);
 
   const loadMoreProfessionals = () => {
-    setOffset(prevOffset => prevOffset + 1);
+    setOffset(prevOffset => prevOffset + 10);
   };
 
   const renderItem = ({ item }: { item: any }) => {

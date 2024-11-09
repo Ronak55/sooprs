@@ -18,9 +18,9 @@ const IntroCard = ({cardText, showBtn, img, bgColor, cardbgColor} :{cardText:str
             <Text style={styles.cardText}>
                 {cardText}
             </Text>
-           {showBtn && <TouchableOpacity style={styles.btn}>
+           {/* {showBtn && <TouchableOpacity style={styles.btn}>
                 <Text style={styles.btnText}>Explore</Text>
-            </TouchableOpacity>} 
+            </TouchableOpacity>}  */}
         </View>
 
         <View style={styles.imgSection}>
