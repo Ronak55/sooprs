@@ -32,7 +32,7 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
       if (res.status === 200 && res.msg.length > 0) {
         console.log('all professionals :::::::::', res.msg);
         const newProfessionals = res.msg.filter(pro => 
-          !professionals.some(existing => existing.id === pro.id)
+          !professionals.some(existing => existing.data.id === pro.data.id)
         ); 
         console.log('new professional :::::::::::::', newProfessionals);
 

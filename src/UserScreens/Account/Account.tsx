@@ -1,12 +1,43 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Images from '../../assets/image';
 import FSize from '../../assets/commonCSS/FSize';
 import Colors from '../../assets/commonCSS/Colors';
 import { hp, wp } from '../../assets/commonCSS/GlobalCSS';
 import AccountProfile from '../../components/AccountProfile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mobile_siteConfig } from '../../services/mobile-siteConfig';
+import { useIsFocused } from '@react-navigation/native';
 
 const Account = ({navigation} : {navigation:any}) => {
+
+  const [name, setName] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+  const isFocused = useIsFocused();
+  
+  useEffect(() => {
+    const loadProfileDetails = async () => {
+      try {
+        const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+        const profilepic = await AsyncStorage.getItem(
+          mobile_siteConfig.PROFILE_PIC,
+        );
+
+        console.log('profilepic account::::::::;', profilepic);
+        setProfileImage(profilepic);
+        const parsedName = JSON.parse(name);
+        if (name !== null) {
+          setName(parsedName ?? '');
+        }
+
+      } catch (e) {
+        console.log('Error retrieving profile details:', e);
+      }
+    };
+
+    loadProfileDetails();
+  }, [isFocused]);
+
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
@@ -29,7 +60,7 @@ const Account = ({navigation} : {navigation:any}) => {
           Edit Profile
         </Text>
       </View>
-      <AccountProfile navigation={navigation} isClient={true}/>
+      <AccountProfile navigation={navigation} isClient={true} name={name} profileImage={profileImage}/>
     </View>
   );
 };

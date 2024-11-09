@@ -250,9 +250,8 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
         console.log('Image upload response:', responseData);
 
         // Check for success status and store the image URL
-        if (responseData.status === 200 && responseData.msg?.image) {
+        if (responseData?.status === 200 && responseData?.msg?.image) {
           const imageUrl = responseData.msg.image;
-
           // Store the image URL in AsyncStorage
           await AsyncStorage.setItem(mobile_siteConfig.PROFILE_PIC, imageUrl);
 
@@ -304,7 +303,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
 
       <View style={styles.profileHeading}>
         <TouchableOpacity onPress={selectImage}>
-          <View style={styles.profileIcon}>
+          {/* <View style={styles.profileIcon}> */}
             <Image
               style={styles.Icon}
               resizeMode="cover"
@@ -312,7 +311,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
                 newprofileImage ? {uri: newprofileImage} : Images.defaultPicIcon
               }
             />
-          </View>
+          {/* </View> */}
         </TouchableOpacity>
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
       </View>

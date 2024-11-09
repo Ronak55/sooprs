@@ -8,22 +8,26 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import Colors from '../assets/commonCSS/Colors';
 import { wp, hp } from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
 
+
 const CountriesDropdown = ({
   selectedCountry,
   selectedCountryCode,
   onSelect,
 }: {
-  selectedCountry: string; 
-  selectedCountryCode: string; 
-  onSelect: (country: string, countryCode: string) => void; 
+  selectedCountry: string;
+  selectedCountryCode: string;
+  onSelect: (country: string, countryCode: string) => void;
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // To handle dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [filteredCountries, setFilteredCountries] = useState(countriesData);
 
   // Toggle dropdown visibility
   const toggleDropdown = () => {
@@ -34,6 +38,25 @@ const CountriesDropdown = ({
   const handleCountrySelect = (country: string, code: string) => {
     onSelect(country, code); // Call parent function to update state with country and code
     setIsDropdownOpen(false); // Close dropdown
+    setSearchText(''); // Clear search input
+    setFilteredCountries(countriesData); // Reset filtered countries
+  };
+
+  // Handle search input change
+  const handleSearchChange = (text: string) => {
+    setSearchText(text);
+
+    // Filter countries based on the search text
+    const filteredData = countriesData.filter((country) =>
+      country.name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredCountries(filteredData);
+  };
+
+  // Clear search box
+  const clearSearch = () => {
+    setSearchText('');
+    setFilteredCountries(countriesData); // Reset to original countries list
   };
 
   return (
@@ -52,21 +75,36 @@ const CountriesDropdown = ({
       {/* Dropdown content */}
       {isDropdownOpen && (
         <View style={styles.dropdownContent}>
-          <ScrollView nestedScrollEnabled style={styles.scrollView}>
-            <FlatList
-              data={countriesData}
-              keyExtractor={(item) => item.code} // Use country code as key
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCountrySelect(item.name, item.code)} // Pass both name and code
-                >
-                  <Text style={styles.dropdownItemText}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-              nestedScrollEnabled
+          {/* Search box */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              value={searchText}
+              onChangeText={handleSearchChange}
+              placeholder="Search Country..."
+              placeholderTextColor={Colors.gray}
             />
-          </ScrollView>
+            {searchText.length > 0 && (
+              <TouchableOpacity onPress={clearSearch}>
+                <Image source={Images.crossIcon} style={styles.clearIcon} />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Country list */}
+          <FlatList
+            data={filteredCountries}
+            keyExtractor={(item) => item.code} // Use country code as key
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => handleCountrySelect(item.name, item.code)} // Pass both name and code
+              >
+                <Text style={styles.dropdownItemText}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+            nestedScrollEnabled
+          />
         </View>
       )}
     </View>
@@ -115,5 +153,28 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     maxHeight: hp(25), // Ensures it doesn't exceed a certain height
+  },
+
+  
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: wp(1),
+    paddingVertical: hp(0.5),
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  searchInput: {
+    flex: 1,
+    height: hp(4.5),
+    paddingHorizontal: wp(2),
+    fontSize: FSize.fs14,
+    color:Colors.black
+  },
+  clearIcon: {
+    width: 15,
+    height: 15,
+    // marginLeft: 8,
+    marginRight:wp(2)
   },
 });

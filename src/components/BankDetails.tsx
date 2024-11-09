@@ -41,7 +41,7 @@ const BankDetails = ({navigation}: {navigation: any}) => {
           Toast.show({
             type: 'error',
             text1: 'Error',
-            text2: res.msg || 'Error fetching bank details.',
+            text2: res || 'Error fetching bank details.',
           });
         }
       }

@@ -20,40 +20,44 @@ import ButtonNew from './ButtonNew';
 const AccountProfile = ({
   navigation,
   isClient,
+  name, 
+  profileImage
 }: {
   navigation: any;
   isClient: any;
+  name:any;
+  profileImage:any;
 }) => {
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('');
-  const [profileImage, setProfileImage] = useState(null);
-  const isFocused = useIsFocused();
+  // const [name, setName] = useState('');
+  // const [role, setRole] = useState('');
+  // const [profileImage, setProfileImage] = useState(null);
+  // const isFocused = useIsFocused();
 
-  useEffect(() => {
-    const loadProfileDetails = async () => {
-      try {
-        const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-        const profilepic = await AsyncStorage.getItem(
-          mobile_siteConfig.PROFILE_PIC,
-        );
+  // useEffect(() => {
+  //   const loadProfileDetails = async () => {
+  //     try {
+  //       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+  //       const profilepic = await AsyncStorage.getItem(
+  //         mobile_siteConfig.PROFILE_PIC,
+  //       );
 
-        const parsedName = JSON.parse(name);
-        const parsedprofilepic = JSON.parse(profilepic);
-        if (name !== null) {
-          setName(parsedName ?? '');
-        }
+  //       const parsedName = JSON.parse(name);
+  //       const parsedprofilepic = JSON.parse(profilepic);
+  //       if (name !== null) {
+  //         setName(parsedName ?? '');
+  //       }
 
-        if (parsedprofilepic) {
-          console.log('parsed image:::::::::', parsedprofilepic);
-          setProfileImage(parsedprofilepic);
-        }
-      } catch (e) {
-        console.log('Error retrieving profile details:', e);
-      }
-    };
+  //       if (parsedprofilepic) {
+  //         console.log('parsed image:::::::::', parsedprofilepic);
+  //         setProfileImage(parsedprofilepic);
+  //       }
+  //     } catch (e) {
+  //       console.log('Error retrieving profile details:', e);
+  //     }
+  //   };
 
-    loadProfileDetails();
-  }, [isFocused]);
+  //   loadProfileDetails();
+  // }, [isFocused]);
 
   const confirmLogout = async () => {
     await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
