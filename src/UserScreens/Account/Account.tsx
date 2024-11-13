@@ -23,8 +23,10 @@ const Account = ({navigation} : {navigation:any}) => {
           mobile_siteConfig.PROFILE_PIC,
         );
 
-        console.log('profilepic account::::::::;', profilepic);
-        setProfileImage(profilepic);
+        // console.log('profilepic account::::::::;', profilepic);
+        const parsedprofilePic = JSON.parse(profilepic);
+        console.log('profilepic parse account::::::::;', parsedprofilePic);
+        setProfileImage(parsedprofilePic);
         const parsedName = JSON.parse(name);
         if (name !== null) {
           setName(parsedName ?? '');

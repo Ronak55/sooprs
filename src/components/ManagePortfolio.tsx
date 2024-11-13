@@ -6,6 +6,7 @@ import {
     View,
     FlatList,
     Linking,
+    ScrollView,
   } from 'react-native';
   import React, {useState, useEffect} from 'react';
   import Colors from '../assets/commonCSS/Colors';
@@ -17,50 +18,57 @@ import {
   import Toast from 'react-native-toast-message';
   import { useIsFocused } from '@react-navigation/native';
   
-  const ManagePortfolio = ({navigation}: {navigation: any}) => {
+  const ManagePortfolio = ({navigation, route}: {navigation: any}) => {
+
+    const {portfolioDetails} = route.params;
     const [portfolioData, setPortfolioData] = useState<any[]>([]);
     const isFocused = useIsFocused();
   
     useEffect(() => {
-      fetchPortfolioData();
-    }, [isFocused]);
+      
+      console.log('portfolio details::::::::::', portfolioDetails)
+
+      setPortfolioData(portfolioDetails);
+
+    }, [route?.params?.portfolioDetails]);
   
-    const fetchPortfolioData = async () => {
-      let lead_id = await AsyncStorage.getItem('uid');
-      if (lead_id) {
-        lead_id = lead_id.replace(/^"|"$/g, '');
-      }
+    // const fetchPortfolioData = async () => {
+    //   let lead_id = await AsyncStorage.getItem('uid');
+    //   if (lead_id) {
+    //     lead_id = lead_id.replace(/^"|"$/g, '');
+    //   }
   
-      const formData = new FormData();
-      formData.append('user_id', lead_id);
+    //   const formData = new FormData();
+    //   formData.append('user_id', lead_id);
   
-      try {
-        const response = await fetch(
-          'https://sooprs.com/api2/public/index.php/manage_portfolio',
-          {
-            method: 'POST',
-            body: formData,
-          },
-        );
+    //   try {
+    //     const response = await fetch(
+    //       'https://sooprs.com/api2/public/index.php/manage_portfolio',
+    //       {
+    //         method: 'POST',
+    //         body: formData,
+    //       },
+    //     );
   
-        const res = await response.json();
+    //     const res = await response.json();
   
-        if (res.status === 200) {
-          setPortfolioData(res.msg);
-        } else if (res.status === 400) {
-          Toast.show({
-            type: 'error',
-            text1: res.msg,
-          });
-        }
-      } catch (error) {
-        console.log('Error fetching portfolio:', error);
-        Toast.show({
-          type: 'error',
-          text1: 'Something went wrong!',
-        });
-      }
-    };
+    //     if (res.status === 200) {
+    //       console.log('portfolio data fetched:::::::::::', res.msg)
+    //       setPortfolioData(res.msg);
+    //     } else if (res.status === 400) {
+    //       Toast.show({
+    //         type: 'error',
+    //         text1: res.msg,
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.log('Error fetching portfolio:', error);
+    //     Toast.show({
+    //       type: 'error',
+    //       text1: 'Something went wrong!',
+    //     });
+    //   }
+    // };
   
     const handleLinkPress = (url: string) => {
       if (url) {
@@ -74,11 +82,12 @@ import {
     };
   
     const renderPortfolioItem = ({item}: {item: any}) => {
+
       return (
         <TouchableOpacity style={styles.card} onPress={() => {}}>
           <View style={styles.imgBack}>
             <Image
-              source={{uri: item.files}}
+              source={{uri: `https://sooprs.com/assets/portfolio-images/${item.files}`}}
               style={styles.image}
               resizeMode="contain"
             />
@@ -97,7 +106,7 @@ import {
     };
   
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.headerSection}>
           <TouchableOpacity onPress={() => navigation.navigate('Account')}>
             <Image
@@ -114,6 +123,7 @@ import {
           keyExtractor={item => item.id}
           numColumns={2}
           contentContainerStyle={styles.portfolioList}
+          nestedScrollEnabled
         />
         <View style={styles.title}>
           <ButtonNew
@@ -124,7 +134,7 @@ import {
             onPress={() => navigation.navigate('AddPortfolio')}
           />
         </View>
-      </View>
+      </ScrollView>
     );
   };
   

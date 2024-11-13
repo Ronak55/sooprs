@@ -16,7 +16,7 @@ import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 
 import Colors from '../assets/commonCSS/Colors';
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import CInput from '../components/CInput';
 
@@ -30,6 +30,11 @@ import {postData} from '../services/mobile-api';
 import Toast from 'react-native-toast-message';
 import {storeDataToAsyncStorage} from '../services/CommonFunction';
 import {CommonActions, useIsFocused} from '@react-navigation/native';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const {profileType} = route.params;
@@ -42,6 +47,13 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [loading, isLoading] = useState(false);
 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '221184294127-4tlrho79se0dtk5s3f6u646vp4tsnf6p.apps.googleusercontent.com',
+    });
+  }, []);
+  
   const showAlert = (title: string, message: string) => {
     setAlertTitle(title);
     setAlertMessage(message);
@@ -60,7 +72,57 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     );
   };
 
-  const signInWithGoogle = () => {};
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userinfo:::::::::', userInfo);
+      // const { email, name } = userInfo?.data?.user;
+
+      // if (email && name) {
+      //   const request = {
+      //     email,
+      //     name,
+      //     type: 'google.com',
+      //   };
+
+      //   console.log('user info google:::::::::', request);
+
+      //   postData(request, mobile_siteConfig.SOCIAL_LOGIN).then(async (res) => {
+      //     if (res) {
+      //       await AsyncStorage.setItem(mobile_siteConfig.MOB_ACCESS_TOKEN_KEY, res?.token);
+      //       await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'TRUE');
+      //       Alert.alert(
+      //         'Sign-In Successful',
+      //         `Hello, ${name}`,
+      //         [
+      //           { text: 'OK', onPress: () => navigation.navigate('LoggedIn') }
+      //         ]
+      //       );
+      //     } else {
+      //       Alert.alert('Error', 'Login failed');
+      //     }
+      //   });
+
+      //   await AsyncStorage.setItem('googleUserInfo', JSON.stringify({ email, name }));
+      // }
+    } catch (error) {
+      console.log('Sign-In Error:', error.message);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Sign-In Cancelled', 'User cancelled the login flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Sign-In In Progress', 'Operation is already in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert(
+          'Play Services Not Available',
+          'Play Services are not available or outdated',
+        );
+      } else {
+        console.log('error google:::::::::', error);
+        Alert.alert('Sign-In Error', 'An error occurred during sign-in');
+      }
+    }
+  };
 
   const handleOnPress = async () => {
     isLoading(true);
@@ -92,7 +154,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     const isClient = profileType === 'Client' ? '1' : '0';
 
     postData(payload, mobile_siteConfig.LOGIN)
-      .then(response => {
+      .then((response: any) => {
         if (response.status === '200' || response.msg === 'Login successful!') {
           console.log('response token:::::::::::', response);
           Toast.show({
@@ -135,7 +197,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           console.log('response token:::::::::::', response);
           Toast.show({
             type: 'error',
-            text1: 'Error',
+            text1: 'Incorrect Password',
             text2: response.msg || 'Login failed. Please try again.',
             position: 'top',
           });

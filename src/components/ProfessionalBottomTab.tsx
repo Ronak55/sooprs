@@ -46,6 +46,7 @@ const HomeStack = () => {
       <Stack.Screen name="Account" component={Account} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
       <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
+      <Stack.Screen name="AssignedProjects" component={AssignedProjects} />
       <Stack.Screen name="ManagePassword" component={ManagePassword} />
       <Stack.Screen name="AddCredits" component={AddCredits} />
       <Stack.Screen name="AddSkills" component={AddSkills} />

@@ -10,32 +10,46 @@ import {
   Platform,
   Alert,
   FlatList,
+  ImageBackground,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import FSize from '../assets/commonCSS/FSize';
 import Colors from '../assets/commonCSS/Colors';
 import Images from '../assets/image';
-import { hp, wp } from '../assets/commonCSS/GlobalCSS';
+import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import CInput from './CInput';
 import ButtonNew from './ButtonNew';
-import { KeyboardAvoidingView } from 'react-native';
-import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import {KeyboardAvoidingView} from 'react-native';
 import moment from 'moment';
+import 'moment-timezone';
 
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 
-
-const IndividualChat = ({ navigation, route }) => {
-
+const IndividualChat = ({navigation, route}) => {
   const scrollEnd = useRef();
-  const {name, cust_image, userId, leadId, bidId, recieverId, id, project_status} = route.params;
+  const {
+    name,
+    cust_image,
+    userId,
+    leadId,
+    bidId,
+    recieverId,
+    id,
+    project_status,
+  } = route.params;
   const [allConversations, setAllConversations] = useState([]);
-
+  const [receiverName, setReceiverName] = useState('');
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [file, setFile] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [senderImage, setsenderImage] = useState('');
+  const [receiverImage, setReceiverImage] = useState('');
+  const [visibleTimeIndex, setVisibleTimeIndex] = useState(null);
+  const toggleTimeVisibility = index => {
+    // Toggle visibility for the clicked message
+    setVisibleTimeIndex(visibleTimeIndex === index ? null : index);
+  };
 
   const getAllUserChat = async (bidId, leadId, userId) => {
     try {
@@ -43,8 +57,9 @@ const IndividualChat = ({ navigation, route }) => {
       formData.append('last_segment', bidId); // Append lead_id
       formData.append('lead_id', leadId);
       formData.append('user_id', userId);
-      // console.log('getAllUserChat::::::', formData)
-      const response = await fetch('https://sooprs.com/api2/public/index.php/get-chat-history',
+      // console.log('recieverId::::::', recieverId)
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/get-chat-history',
         {
           method: 'POST',
           body: formData,
@@ -52,18 +67,29 @@ const IndividualChat = ({ navigation, route }) => {
       );
       const res = await response.json();
       console.log('getAllUserChat::::::::::::::', res);
+
       if (res.length > 0) {
-        setsenderImage(res[0].pro_details.image);
+        // Loop through the conversation to identify sender and receiver
+        res.forEach(message => {
+          if (message?.pro_details?.id === userId) {
+            // Current user is the sender
+            console.log('sender image::::::::', message.pro_details.image);
+            setsenderImage(message.pro_details.image);
+          } else {
+            // Other user is the receiver
+            console.log('receiver image::::::::', message.pro_details.image);
+            setReceiverImage(message.pro_details.image);
+            setReceiverName(message.pro_details.name);
+          }
+        });
       }
-      console.log('sender image::::::::::::::', res[0].pro_details.image);
       setAllConversations(res);
-      return
+      return;
     } catch (error) {
-      console.error(error);
+      console.error('new error chat::::::', error);
       return;
     }
-
-  }
+  };
 
   useEffect(() => {
     console.log('name:::::::::::::::', route?.params?.name);
@@ -71,63 +97,76 @@ const IndividualChat = ({ navigation, route }) => {
     console.log('leadid:::::::::::::::', route?.params?.leadId);
     console.log('bidId:::::::::::::::', route?.params?.bidId);
     console.log('recieverId:::::::::::::::', route?.params?.recieverId);
-    console.log('project status:::::::::::::::::::', route?.params?.project_status);
+    console.log(
+      'project status:::::::::::::::::::',
+      route?.params?.project_status,
+    );
     console.log('customer image:::::::::::::::::', route?.params?.cust_image);
-    getAllUserChat(route?.params?.bidId, route?.params?.leadId, route?.params?.userId);
+    getAllUserChat(
+      route?.params?.bidId,
+      route?.params?.leadId,
+      route?.params?.userId,
+    );
   }, [route?.params]);
 
-
-  var ws = React.useRef(new WebSocket(`wss://sooprs.com:3000/?user_id=${userId}`)).current;
+  var ws = React.useRef(
+    new WebSocket(`wss://sooprs.com:3000/?user_id=${userId}`),
+  ).current;
 
   React.useEffect(() => {
     ws.onopen = () => {
-      console.log('Connected to the server')
+      console.log('Connected to the server');
     };
-    ws.onclose = (e) => {
-      console.log('Disconnected. Check internet or server.')
+    ws.onclose = e => {
+      console.log('Disconnected. Check internet or server.');
     };
-    ws.onerror = (e) => {
+    ws.onerror = e => {
       console.log(e.message);
     };
-    ws.onmessage = (e) => {
-      var mesg = JSON.parse(e.data)
-      console.log("message received", mesg);
-      if (mesg?.message !== undefined && mesg.receiverId !== undefined && mesg?.userId !== undefined) {
-        setAllConversations((prevConversations) => [...prevConversations, mesg]);
+    ws.onmessage = e => {
+      var mesg = JSON.parse(e.data);
+      console.log('message received', mesg);
+      if (
+        mesg?.message !== undefined &&
+        mesg.receiverId !== undefined &&
+        mesg?.userId !== undefined
+      ) {
+        setAllConversations(prevConversations => [...prevConversations, mesg]);
       }
     };
-  }, [])
+  }, []);
 
-  const sendAck = (datax) => {
+  const sendAck = datax => {
     if (ws.readyState === WebSocket.OPEN) {
-      console.log("sending message ot the web socket..", datax)
+      console.log('sending message ot the web socket..', datax);
       ws.send(JSON.stringify(datax));
     } else {
-      console.error('WebSocket is not open. Current readyState:', ws.readyState);
+      console.error(
+        'WebSocket is not open. Current readyState:',
+        ws.readyState,
+      );
     }
   };
   useEffect(() => {
     const acknowledgmentData = {
       message: inputMessage,
       file,
-      type: "acknowledgment",
+      type: 'acknowledgment',
       lead_id: Number(leadId), // The ID of the message received
       bid_id: Number(bidId), // The ID of the bid
       receiverId: Number(recieverId), // Fixed spelling: 'receiverId'
-      status: "received", // Status or any custom acknowledgment message
-      timestamp: new Date().toISOString() // Proper string format for timestamp
+      status: 'received', // Status or any custom acknowledgment message
+      timestamp: new Date().toISOString(), // Proper string format for timestamp
     };
-    console.log("acknowledgmentData>>>>", acknowledgmentData)
+    console.log('acknowledgmentData>>>>', acknowledgmentData);
     // Ensure that WebSocket is ready before sending data
     if (ws.readyState === WebSocket.OPEN) {
-      console.log("sending message to web socket>>>")
+      console.log('sending message to web socket>>>');
       sendAck(acknowledgmentData);
     } else {
       console.error('WebSocket is not ready yet, state is:', ws.readyState);
     }
-
   }, [allConversations]);
-
 
   const sendMessage = () => {
     if (inputMessage.trim()) {
@@ -139,14 +178,17 @@ const IndividualChat = ({ navigation, route }) => {
         lead_id: Number(leadId), // Convert leadId to a number
         bid_id: Number(bidId), // Convert bidId to a number
         created_at: new Date(),
-        // pro_details: {
-        //   "id": userId
-        // }
+        pro_details: {
+          "id": userId
+        }
       };
       // Send message through WebSocket
       console.log('🚀 Sending message:::', messageData);
       ws.send(JSON.stringify(messageData)); // Send through the WebSocket reference
-      setAllConversations((prevConversations) => [...prevConversations, messageData]);
+      setAllConversations(prevConversations => [
+        ...prevConversations,
+        messageData,
+      ]);
       // appendMessage(inputMessage, 'sender', file);
       setInputMessage('');
       setFile(null);
@@ -175,7 +217,7 @@ const IndividualChat = ({ navigation, route }) => {
     >
       {/* Header Section */}
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('Projects')}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"
@@ -185,20 +227,28 @@ const IndividualChat = ({ navigation, route }) => {
         <View style={styles.headerPart}>
           <View style={styles.header}>
             <Image
-              source={cust_image ? {uri:cust_image} : Images.Clientlogo}
-              style={{ width: wp(10), height: hp(5), borderRadius:wp(5)}}
+              source={receiverImage ? {uri: receiverImage} : Images.Clientlogo}
+              style={{width: wp(10), height: hp(5), borderRadius: wp(5)}}
             />
             <View style={styles.headerName}>
-              <Text style={styles.headerText}>{name}</Text>
+              <Text style={styles.headerText}>
+                {name ? name : receiverName}
+              </Text>
               {/* <Text style={styles.headerStatus}>Online</Text> */}
             </View>
           </View>
           <View style={styles.projectStatus}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ProjectStatus', {id:id, recieverId:recieverId, project_status:project_status})}>
+              onPress={() =>
+                navigation.navigate('ProjectStatus', {
+                  id: id,
+                  recieverId: recieverId,
+                  project_status: project_status,
+                })
+              }>
               <Image
                 source={Images.projectStatus}
-                style={{ width: wp(10), height: hp(5) }}
+                style={{width: wp(10), height: hp(5)}}
               />
             </TouchableOpacity>
           </View>
@@ -210,56 +260,101 @@ const IndividualChat = ({ navigation, route }) => {
       <FlatList
         ref={scrollEnd}
         onContentSizeChange={() =>
-          scrollEnd.current.scrollToEnd({ animated: true })
+          scrollEnd.current.scrollToEnd({animated: true})
         }
         data={allConversations}
-        // keyExtractor={(item) => String(item.id)}
-        renderItem={({ item, index }) => {
-          if (item?.pro_details?.id === userId || Number(item?.userId) === Number(userId)) {
-            return (
-              <View key={index}>
-                <View style={styles.senderMessage}>
-                  <View style={styles.senderBubble}>
-                    <Text style={styles.messageText}>{item?.message}</Text>
-                    {item?.created_at &&
-                      <Text style={styles.messageTime}>{moment(item?.created_at).fromNow()}</Text>
-                    }
-                  </View>
+        renderItem={({item, index}) => {
+          const isLastMessageFromUser =
+            index === allConversations.length - 1 ||
+            allConversations[index + 1]?.pro_details?.id !==
+              item.pro_details?.id;
 
-                  <View style={{
-                    height: hp(5),
-                    width: hp(5),
-                    borderRadius: hp(2.5),
-                    overflow: 'hidden',
-                  }}>
-                    <Image
+          if (
+            item?.pro_details?.id === userId ||
+            Number(item?.userId) === Number(userId)
+          ) {
+            return (
+              <View key={index} style={styles.newMessage}>
+                <TouchableOpacity onPress={() => toggleTimeVisibility(index)}>
+                  <View style={styles.senderMessage}>
+                    <View style={styles.senderBubble}>
+                      <Text style={styles.messageText}>{item?.message}</Text>
+                    </View>
+                    <View
                       style={{
-                        height: '100%',
-                        width: '100%'
-                      }}
-                      source={senderImage !== '' ? {uri:senderImage} : Images.professionalslogo}
-                    />
+                        height: hp(4),
+                        width: hp(4),
+                        borderRadius: hp(2.5),
+                        overflow: 'hidden',
+                      }}>
+                      {isLastMessageFromUser && (
+                        <Image
+                          style={{
+                            height: '100%',
+                            width: '100%',
+                          }}
+                          source={
+                            senderImage !== ''
+                              ? {uri: senderImage}
+                              : Images.professionalslogo
+                          }
+                        />
+                      )}
+                    </View>
                   </View>
+                </TouchableOpacity>
+                <View style={styles.senderNewTime}>
+                  {visibleTimeIndex === index && item?.created_at && (
+                    <Text style={styles.messageTime}>
+                      {moment
+                        .utc(item?.created_at)
+                        .tz('Asia/Kolkata')
+                        .format('h:mm A')}
+                    </Text>
+                  )}
                 </View>
               </View>
-            )
+            );
           } else {
             return (
-              <View key={index}>
-                <View style={styles.receiverMessage}>
-                  <Image
-                    source={senderImage !== '' ? {uri:senderImage} : Images.professionalslogo}
-                    style={styles.receiverAvatar}
-                  />
-                  <View style={styles.receiverBubble}>
-                    <Text style={styles.messageText}>{item?.message}</Text>
-                    {item?.created_at &&
-                      <Text style={styles.messageTime}>{moment(item?.created_at).fromNow()}</Text>
-                    }
+              <View key={index} style={styles.newMessage}>
+                <TouchableOpacity onPress={() => toggleTimeVisibility(index)}>
+                  <View style={styles.receiverMessage}>
+                    <View
+                      style={{
+                        height: hp(4),
+                        width: hp(4),
+                        borderRadius: hp(2.5),
+                        overflow: 'hidden',
+                      }}>
+                      {isLastMessageFromUser && (
+                        <Image
+                          source={
+                            receiverImage !== ''
+                              ? {uri: receiverImage}
+                              : Images.professionalslogo
+                          }
+                          style={styles.receiverAvatar}
+                        />
+                      )}
+                    </View>
+                    <View style={styles.receiverBubble}>
+                      <Text style={styles.messageText}>{item?.message}</Text>
+                    </View>
                   </View>
+                </TouchableOpacity>
+                <View style={styles.receiverNewTime}>
+                  {visibleTimeIndex === index && item?.created_at && (
+                    <Text style={styles.messageTime}>
+                      {moment
+                        .utc(item?.created_at)
+                        .tz('Asia/Kolkata')
+                        .format('h:mm A')}
+                    </Text>
+                  )}
                 </View>
               </View>
-            )
+            );
           }
         }}
       />
@@ -271,13 +366,14 @@ const IndividualChat = ({ navigation, route }) => {
           name={'Type here...'}
           isPassword={false}
           newlabel={false}
-          style={undefined}
+          style={{}}
+          customInputStyle={{borderRadius:wp(5), borderColor:"#D9D9D9"}}
           value={inputMessage}
           setValue={setInputMessage}
           keyboardType={''}
         />
         <TouchableOpacity onPress={sendMessage} style={styles.sendBtn}>
-          <Text style={styles.sendText}>Send</Text>
+          <Image source={Images.sendIcon} style={styles.sendImg} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -292,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   headerSection: {
-    marginHorizontal: wp(5),
+    marginHorizontal: wp(3),
     marginVertical: hp(1),
     gap: wp(5),
     flexDirection: 'row',
@@ -329,7 +425,7 @@ const styles = StyleSheet.create({
 
   projectStatus: {
     position: 'absolute',
-    left: wp(65),
+    left: wp(67.5),
   },
 
   messagesContainer: {
@@ -340,9 +436,9 @@ const styles = StyleSheet.create({
   receiverMessage: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginBottom: hp(1.5),
-    marginLeft:wp(3),
-    marginTop:hp(1)
+    // marginBottom: hp(0.5),
+    marginLeft: wp(3),
+    marginTop: hp(1),
   },
   receiverAvatar: {
     width: wp(10),
@@ -359,15 +455,15 @@ const styles = StyleSheet.create({
   },
   senderMessage: {
     flexDirection: 'row',
-    marginRight:wp(3),
+    marginRight: wp(3),
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginBottom: hp(1.5),
+    // marginBottom: hp(0.5),
   },
   senderBubble: {
     maxWidth: '75%',
-    backgroundColor: Colors.white,
-    padding: wp(3),
+    backgroundColor: '#EFF6FF',
+    padding: wp(2.5),
     borderRadius: 15,
     marginRight: wp(2),
     elevation: 2,
@@ -379,33 +475,57 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 14,
-    color: Colors.black,
+    color: '#999999',
   },
   messageTime: {
-    fontSize: 12,
+    fontSize: FSize.fs10,
     color: Colors.gray,
     textAlign: 'right',
     marginTop: hp(0.5),
   },
+
+  senderNewTime: {
+    alignItems: 'center',
+    marginLeft: wp(50),
+    marginBottom: hp(1.2),
+  },
+
+  receiverNewTime: {
+    alignItems: 'flex-start',
+    marginLeft: wp(15),
+    // marginBottom:hp(1.2)
+  },
+
+  newMessage: {
+    flexDirection: 'column',
+    marginHorizontal: wp(3),
+  },
+
   sendMessage: {
     flexDirection: 'row',
     //   alignItems: 'center',
-    paddingHorizontal: wp(5),
+    // paddingHorizontal: wp(7),
+    gap: wp(1),
+    marginHorizontal: wp(5),
     backgroundColor: Colors.white,
+    // justifyContent:'center',
+    // alignItems:'center',
     width: width / 1.3,
   },
   sendBtn: {
-    borderRadius: wp(2),
-    height: hp(5.5),
-    paddingHorizontal: wp(6),
-    backgroundColor: Colors.sooprsblue,
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    // marginTop: hp(0.5),
     alignItems: 'center',
-    marginLeft: wp(2),
+    marginLeft: wp(1),
   },
   sendText: {
     color: Colors.white,
     fontWeight: '500',
     fontSize: FSize.fs16,
+  },
+
+  sendImg: {
+    width: wp(11),
+    height: hp(5.5),
   },
 });

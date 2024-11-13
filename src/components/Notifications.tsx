@@ -37,6 +37,21 @@ const Notifications = ({ navigation }) => {
     fetchNotifications();
   }, [isFocused]);
 
+  const handleNotifs = (id, type) => {
+    const numericType = Number(type); 
+    console.log('lead id notifs::::::::', id)
+    switch (numericType) {
+      case 1:
+        navigation.navigate('ProjectBids', {id});
+        break;
+      case 2:
+        navigation.navigate('AssignedProjects')
+      default:
+        return;
+    }
+  };
+  
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -46,10 +61,10 @@ const Notifications = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={()=>handleNotifs(item.lead_id, item.notification_type)}>
       <Text style={styles.messageText}>{item.msg}</Text>
       <Text style={styles.dateText}>{formatDate(item.created_at)}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -124,5 +139,6 @@ const styles = StyleSheet.create({
     color: Colors.gray,
     fontSize: FSize.fs12,
     textAlign: 'right',
+    marginTop:hp(1)
   },
 });

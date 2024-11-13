@@ -18,6 +18,7 @@ const CInput = ({
   isPassword,
   newlabel,
   style,
+  customInputStyle,
   value,
   setValue,
   keyboardType,
@@ -29,6 +30,7 @@ const CInput = ({
   isPassword: boolean;
   newlabel:boolean;
   style: any;
+  customInputStyle:any;
   value: string;
   setValue: any;
   keyboardType: string;
@@ -44,6 +46,7 @@ const CInput = ({
       <View
         style={[
           styles.textInputSection,
+          customInputStyle,
           isFocused && styles.inputSectionFocused,
         ]}>
         <TextInput
@@ -92,14 +95,14 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
     fontWeight: '400',
     fontSize: FSize.fs16,
-    paddingBottom: 5,
+    paddingBottom: 2,
   },
   newlabel: {
     position: 'relative',
     right: wp(35),
   },
   textInputSection: {
-    paddingLeft: wp(1),
+    paddingLeft: wp(2),
     borderWidth: 1,
     borderColor: Colors.gray,
     borderRadius: 8,
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1, // Make sure the input takes full available width
-    paddingVertical: hp(1.3),
+    paddingVertical: hp(0.9),
     color: Colors.black,
   },
   inputSectionFocused: {

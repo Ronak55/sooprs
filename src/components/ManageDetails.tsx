@@ -22,46 +22,51 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {mobile_siteConfig} from '../services/mobile-siteConfig';
+import countriesData from '../countries.json';
 
 const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
-  const {name, profileImage} = route.params;
+
+  // console.log("Route Params:::::::::", route.params);
+  const {
+    name,
+    profileImage,
+    email,
+    mobile,
+    city,
+    address,
+    pincode,
+    country,
+    organisation,
+    linkedin,
+    about,
+  } = route.params;
 
   const [newName, setNewName] = useState(name);
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [city, setCity] = useState('');
-  const [shortBio, setShortBio] = useState('');
-  const [about, setAbout] = useState('');
-  const [address, setAddress] = useState('');
-  const [organisation, setOrganisation] = useState('');
-  const [pincode, setPincode] = useState('');
-  const [country, setCountry] = useState('');
-  const [countryCode, setCountryCode] = useState('');
-  const [newprofileImage, setNewProfileImage] = useState(profileImage);
-  const [usertype, setuserType] = useState(null);
+  const [newProfileImage, setNewProfileImage] = useState(profileImage);
+  const [emailState, setEmail] = useState(email);
+  const [mobileState, setMobile] = useState(mobile);
+  const [cityState, setCity] = useState(city);
+  const [addressState, setAddress] = useState(address);
+  const [pincodeState, setPincode] = useState(pincode);
+  const [countryState, setCountry] = useState('');
+  const [organisationState, setOrganisation] = useState(organisation);
+  const [linkedInState, setLinkedIn] = useState(linkedin);
+  const [aboutState, setAbout] = useState(about);
+  const [countryCode, setCountryCode] = useState(country);
+  const [pincodeError, setPincodeError] = useState('');
+  const [linkedInError, setLinkedInError] = useState('');
+  const [usertype, setUserType] = useState(null);
+
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
     const loadProfileDetails = async () => {
       try {
-        const storedDetails = await AsyncStorage.getItem('profileDetails');
         const user = await AsyncStorage.getItem(mobile_siteConfig.IS_BUYER);
         const parseUser = JSON.parse(user);
-        setuserType(parseUser);
+        setUserType(parseUser);
 
-        if (storedDetails !== null) {
-          const updatedData = JSON.parse(storedDetails);
-
-          // Set all profile details from the updatedData object
-          setNewName(updatedData.name);
-          setEmail(updatedData.email);
-          setCity(updatedData.city);
-          setMobile(updatedData.mobile);
-          setOrganisation(updatedData.organisation); // Add this if 'organisation' is included in stored details
-          setShortBio(updatedData.bio);
-          setAbout(updatedData.listing_about);
-        }
       } catch (e) {
         console.log('Error retrieving profile details:', e);
       }
@@ -69,6 +74,21 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
 
     loadProfileDetails();
   }, [isFocused]);
+
+    // Country code to country name mapping from countriesData
+    const countryCodeMapping = countriesData.reduce((acc, country) => {
+      acc[country.code] = country.name;
+      return acc;
+    }, {});
+  
+    // Set country name based on country code on initial load
+    useEffect(() => {
+      if (countryCodeMapping[countryCode]) {
+        setCountry(countryCodeMapping[countryCode]);
+      } else {
+        setCountry('Unknown Country');
+      }
+    }, [countryCode]);
 
   const handleCountrySelect = (selectedCountry, selectedCountryCode) => {
     setCountry(selectedCountry);
@@ -85,20 +105,21 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
       // Create FormData object
       const formData = new FormData();
       formData.append('id', cleanedId);
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('city', city);
-      formData.append('address', address);
-      formData.append('area_code', pincode);
+      formData.append('name', newName);
+      formData.append('email', emailState);
+      formData.append('city', cityState);
+      formData.append('address', addressState);
+      formData.append('area_code', pincodeState);
       formData.append('country', countryCode); // Assuming you're using country code
-      formData.append('mobile', mobile);
-      if(usertype == 0){
-        formData.append('organisation', organisation);
-        formData.append('bio', shortBio);
-        formData.append('about', about);  
+      formData.append('mobile', mobileState);
+      if (usertype == 0) {
+        formData.append('organisation', organisationState);
+        formData.append('linkedin', linkedInState);
+        formData.append('about', aboutState);
       }
       //   await AsyncStorage.setItem('profileDetails', profileImage);
       // Make the POST request
+      console.log('save profile details ::::::', formData)
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/update_profile_professional',
         {
@@ -110,7 +131,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
       const jsonResponse = await response.json();
 
       // Check for successful response
-      if (jsonResponse.status === 200) {
+      if (jsonResponse.status == 200) {
         // Update state with new data
         console.log('updated profile::::::::::', jsonResponse.msg);
         const updatedData = jsonResponse.msg;
@@ -118,9 +139,10 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
         setEmail(updatedData.email);
         setCity(updatedData.city);
         setMobile(updatedData.mobile);
-        if(usertype == 0){
+        if (usertype == 0) {
           setOrganisation(updatedData.organisation);
-          setShortBio(updatedData.bio);
+          // setShortBio(updatedData.bio);
+          setLinkedIn(updatedData.linkedin)
           setAbout(updatedData.listing_about); // Update with the correct field name if necessary
         }
         // Save the updated profile details in AsyncStorage
@@ -166,6 +188,26 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const isValidMobile = (mobile: string) => {
     const mobileRegex = /^[0-9]{10}$/;
     return mobileRegex.test(mobile);
+  };
+
+  const validatePincode = value => {
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+    if (!pincodeRegex.test(value)) {
+      setPincodeError('Invalid Pincode');
+    } else {
+      setPincodeError('');
+    }
+    setPincode(value);
+  };
+
+  const validateLinkedIn = value => {
+    const linkedInRegex = /^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/;
+    if (!linkedInRegex.test(value)) {
+      setLinkedInError('Invalid LinkedIn ID');
+    } else {
+      setLinkedInError('');
+    }
+    setLinkedIn(value);
   };
 
   // const requestPermission = async () => {
@@ -253,7 +295,10 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
         if (responseData?.status === 200 && responseData?.msg?.image) {
           const imageUrl = responseData.msg.image;
           // Store the image URL in AsyncStorage
-          await AsyncStorage.setItem(mobile_siteConfig.PROFILE_PIC, imageUrl);
+          await AsyncStorage.setItem(
+            mobile_siteConfig.PROFILE_PIC,
+            JSON.stringify(imageUrl),
+          );
 
           Toast.show({
             type: 'success',
@@ -304,13 +349,13 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
       <View style={styles.profileHeading}>
         <TouchableOpacity onPress={selectImage}>
           {/* <View style={styles.profileIcon}> */}
-            <Image
-              style={styles.Icon}
-              resizeMode="cover"
-              source={
-                newprofileImage ? {uri: newprofileImage} : Images.defaultPicIcon
-              }
-            />
+          <Image
+            style={styles.Icon}
+            resizeMode="cover"
+            source={
+              newProfileImage ? {uri: newProfileImage} : Images.defaultPicIcon
+            }
+          />
           {/* </View> */}
         </TouchableOpacity>
         <Text style={styles.profileName}>{name ? name : 'User'}</Text>
@@ -322,7 +367,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           style={styles.input}
           placeholder="Enter your name"
           placeholderTextColor={Colors.gray}
-          value={name}
+          value={newName}
           onChangeText={setNewName}
         />
         <Text style={styles.label}>Email</Text>
@@ -331,10 +376,10 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           placeholder="Enter your email"
           placeholderTextColor={Colors.gray}
           keyboardType="email-address"
-          value={email}
+          value={emailState}
           onChangeText={setEmail}
         />
-        {!isValidEmail(email) && email.length > 0 && (
+        {!isValidEmail(emailState) && emailState.length > 0 && (
           <Text style={styles.errorText}>Invalid email format</Text>
         )}
 
@@ -344,10 +389,10 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           placeholder="Enter your mobile number"
           placeholderTextColor={Colors.gray}
           keyboardType="number-pad"
-          value={mobile}
+          value={mobileState}
           onChangeText={setMobile}
         />
-        {!isValidMobile(mobile) && mobile.length > 0 && (
+        {!isValidMobile(mobileState) && mobileState.length > 0 && (
           <Text style={styles.errorText}>Invalid mobile number</Text>
         )}
 
@@ -356,7 +401,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           style={styles.input}
           placeholder="Enter your city"
           placeholderTextColor={Colors.gray}
-          value={city}
+          value={cityState}
           onChangeText={setCity}
         />
         <Text style={styles.label}>Address</Text>
@@ -366,7 +411,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           placeholderTextColor={Colors.gray}
           multiline={true}
           textAlignVertical="top"
-          value={address}
+          value={addressState}
           onChangeText={setAddress}
         />
         <Text style={styles.label}>Pincode</Text>
@@ -375,13 +420,16 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           placeholder="Enter your pincode"
           placeholderTextColor={Colors.gray}
           keyboardType="number-pad"
-          value={pincode}
-          onChangeText={setPincode}
+          value={pincodeState}
+          onChangeText={validatePincode}
         />
+        {pincodeError ? (
+          <Text style={styles.errorText}>{pincodeError}</Text>
+        ) : null}
         <Text style={styles.label}>Country</Text>
         {/* Custom Dropdown for country selection */}
         <CountriesDropdown
-          selectedCountry={country}
+          selectedCountry={countryState}
           selectedCountryCode={countryCode}
           onSelect={handleCountrySelect}
         />
@@ -392,20 +440,18 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
               style={styles.input}
               placeholder="Enter your organisation"
               placeholderTextColor={Colors.gray}
-              value={organisation}
+              value={organisationState}
               onChangeText={setOrganisation}
             />
-            <Text style={styles.label}>Short Bio</Text>
+            <Text style={styles.label}>LinkedIn ID</Text>
             <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Enter a short bio..."
+              style={styles.input}
+              placeholder="Enter your linkedIn ID"
               placeholderTextColor={Colors.gray}
-              multiline={true}
-              textAlignVertical="top"
-              value={shortBio}
-              onChangeText={setShortBio}
+              value={linkedInState}
+              onChangeText={validateLinkedIn}
             />
-
+             {linkedInError ? <Text style={styles.errorText}>{linkedInError}</Text> : null}
             <Text style={styles.label}>About</Text>
             <TextInput
               style={[styles.input, styles.multilineInput]}
@@ -413,7 +459,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
               placeholderTextColor={Colors.gray}
               multiline={true}
               textAlignVertical="top"
-              value={about}
+              value={aboutState}
               onChangeText={setAbout}
             />
           </>
@@ -518,7 +564,7 @@ const styles = StyleSheet.create({
   },
 
   saveButton: {
-    marginTop:hp(2),
+    marginTop: hp(2),
     marginHorizontal: wp(5),
   },
 });

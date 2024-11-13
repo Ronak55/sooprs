@@ -50,7 +50,7 @@ const Home = ({ navigation }: { navigation: any }) => {
       const response = await fetch('https://sooprs.com/api2/public/index.php/get_professionals_ajax', requestOptions);
       const res = await response.json();
       if (res.status === 200) {
-        console.log('professional data:::::', res.msg);
+        // console.log('professional data:::::', res.msg);
         setProfessionals(res.msg); // Update the state with fetched data
       } else {
         console.error('Failed to fetch professionals:', res.message);
@@ -68,14 +68,12 @@ const Home = ({ navigation }: { navigation: any }) => {
       const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
 
       const parsedName = JSON.parse(name);
+      console.log('name of the client:::::::::;', name)
       const parsedprofilepic = JSON.parse(profilepic);
       if (name !== null) {
         setName(parsedName ?? '');
       }
-
-      if (parsedprofilepic) {
         setProfilePic(parsedprofilepic);
-      }
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
@@ -120,9 +118,9 @@ const Home = ({ navigation }: { navigation: any }) => {
             <Text style={styles.homeInfo}> super </Text>
             <Text style={[styles.homeInfo, styles.profText]}>quick!</Text>
           </View>
-          <View style={styles.searchFilter}>
+          {/* <View style={styles.searchFilter}>
             <SearchBar placeholderName="Professionals" />
-          </View>
+          </View> */}
           <IntroCard
             cardText="Your One-Stop Solution for Quality and Convenience!"
             showBtn={true}
@@ -169,6 +167,7 @@ const styles = StyleSheet.create({
   textAlign: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginBottom:hp(3)
   },
 
   profText: {

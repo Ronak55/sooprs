@@ -4,7 +4,7 @@ import ProfessionalCard from './ProfessionalCard';
 import { hp, wp } from '../assets/commonCSS/GlobalCSS';
 import Colors from '../assets/commonCSS/Colors'; // Assuming you have a Colors file
 
-const AllProfessionals = ({ navigation, selectedService }: { navigation: any, selectedService:any }) => {
+const AllProfessionals = ({ navigation, selectedService, searched}: { navigation: any, selectedService:any, searched:any}) => {
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [filteredProfessionals, setFilteredProfessionals] = useState<any[]>([]); 
   const [offset, setOffset] = useState(0); 
@@ -51,6 +51,12 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
       setIsLoading(false);
     }
   };
+
+  useEffect(()=>{
+
+    console.log('searched professional:::::', searched);
+
+  }, [])
 
   useEffect(() => {
     if (selectedService) {
@@ -99,7 +105,7 @@ const AllProfessionals = ({ navigation, selectedService }: { navigation: any, se
   return (
     <View style={styles.container}>
       <FlatList
-        data={filteredProfessionals}
+        data={searched.length > 0 ? searched : filteredProfessionals}
         renderItem={renderItem}
         keyExtractor={(item) => item.data.id.toString()} // Use a unique key for each item
         numColumns={2}

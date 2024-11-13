@@ -115,27 +115,36 @@ export async function getData(urlPath: string) {
   });
 }
 
-export async function getDataWithToken(data: any, urlPath: string) {
-  console.log('=== getDataWithToken URL ===', mobile_siteConfig.BASE_URL + urlPath);
-  let token = await AsyncStorage.getItem(
-    mobile_siteConfig.MOB_ACCESS_TOKEN_KEY
-  );
+export async function getDataWithToken(urlPath: string) {
+  const url = mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath;
+  console.log('=== getDataWithToken URL ===', url);
+
+  let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
+  console.log('tokennnn::::::::;;', token);
   try {
-    const res = await fetch(mobile_siteConfig.BASE_URL + urlPath, {
+    const res = await fetch(url, {
       method: "GET",
-      mode: "cors",
-      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
-        Origin: "localhost",
-        Authorization: "Bearer " + token,
+        Authorization: "Bearer "+ JSON.parse(token),
       },
     });
-    return await res;
+
+    // Check if the response status is OK
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    // Parse JSON data
+    const data = await res.json();
+    return data;
+
   } catch (err) {
-    console.log("failed to fetch");
+    console.log("Error fetching data with token:", err);
+    return null;
   }
 }
+
 
 export async function patchData(data: any, urlPath: string) {
   try {

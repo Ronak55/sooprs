@@ -16,48 +16,88 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CommonActions, useIsFocused} from '@react-navigation/native';
 import {mobile_siteConfig} from '../services/mobile-siteConfig';
 import ButtonNew from './ButtonNew';
+import {getDataWithToken} from '../services/mobile-api';
+import BankDetails from './BankDetails';
 
 const AccountProfile = ({
   navigation,
   isClient,
-  name, 
-  profileImage
+  name,
+  profileImage,
 }: {
   navigation: any;
   isClient: any;
-  name:any;
-  profileImage:any;
+  name: any;
+  profileImage: any;
 }) => {
-  // const [name, setName] = useState('');
-  // const [role, setRole] = useState('');
-  // const [profileImage, setProfileImage] = useState(null);
-  // const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    mobile: '',
+    city: '',
+    address: '',
+    pincode: '',
+    country: '',
+    organisation: '',
+    linkedin: '',
+    about: '',
+    profileImage: '',
+    portfolioDetails:'',
+    bankDetails:''
+  });
 
-  // useEffect(() => {
-  //   const loadProfileDetails = async () => {
-  //     try {
-  //       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-  //       const profilepic = await AsyncStorage.getItem(
-  //         mobile_siteConfig.PROFILE_PIC,
-  //       );
+  const [servicesList, setServices] = useState([]);
+  const [resume, setResume] = useState("");
+  const [experience, setExperience] = useState({});
+  const [skillsList, setSkills] = useState("");
+  const [academicDetails, setAcademicDetails] = useState({})
 
-  //       const parsedName = JSON.parse(name);
-  //       const parsedprofilepic = JSON.parse(profilepic);
-  //       if (name !== null) {
-  //         setName(parsedName ?? '');
-  //       }
 
-  //       if (parsedprofilepic) {
-  //         console.log('parsed image:::::::::', parsedprofilepic);
-  //         setProfileImage(parsedprofilepic);
-  //       }
-  //     } catch (e) {
-  //       console.log('Error retrieving profile details:', e);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getDataWithToken(mobile_siteConfig.USER_DETAILS);
 
-  //   loadProfileDetails();
-  // }, [isFocused]);
+        if (response.status == 200 && response.data) {
+
+          console.log('get user details response:::::::', response.data)
+          const data = response.data;
+          setUserData({
+            name: data.name,
+            email: data.email,
+            mobile: data.mobile,
+            city: data.city,
+            address: data.address,
+            pincode: data.area_code,
+            country: data.country,
+            organisation: data.organisation,
+            linkedin: data.linkedin,
+            about: data.listing_about,
+            profileImage: data.image,
+            portfolioDetails:data.portfolio_details,
+            bankDetails:data.bank_details
+          });
+
+          const servicesArray = data.services.split(',').map(service => service);
+         
+          const skillsArray = data.skills.split(',').map(skill=>skill)
+          // console.log('services array::::', servicesArray)
+          setServices(servicesArray)
+          setExperience(data.experience_details)
+          setResume(data.resume)
+          setAcademicDetails(data.academic_details)
+          setSkills(skillsArray);
+        }
+      } catch (error) {
+        console.log('Error fetching user data:', error);
+      }
+    };
+
+    if (isFocused) {
+      fetchUserData();
+    }
+  }, [isFocused]);
 
   const confirmLogout = async () => {
     await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
@@ -91,9 +131,9 @@ const AccountProfile = ({
         <Image
           style={styles.Icon}
           resizeMode="cover"
-          source={profileImage ? {uri: profileImage} : Images.defaultPicIcon}
+          source={userData?.profileImage ? {uri: userData?.profileImage} : Images.defaultPicIcon}
         />
-        <Text style={styles.profileName}>{name ? name : 'User'}</Text>
+        <Text style={styles.profileName}>{userData?.name ? userData?.name : 'User'}</Text>
         {/* <Text style={styles.profileRole}>{role ? role : 'Role'}</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.profileSection}>
@@ -109,8 +149,17 @@ const AccountProfile = ({
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('ManageDetails', {
-                name: name,
-                profileImage: profileImage,
+                name: userData.name,
+                profileImage: userData.profileImage,
+                email: userData.email,
+                mobile: userData.mobile,
+                city: userData.city,
+                address: userData.address,
+                pincode: userData.pincode,
+                country: userData.country,
+                organisation: userData.organisation,
+                linkedin: userData.linkedin,
+                about: userData.about,
               });
             }}>
             <View style={styles.details}>
@@ -147,7 +196,7 @@ const AccountProfile = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('BankDetails');
+              navigation.navigate('BankDetails', {bankDetails:userData.bankDetails});
             }}>
             <View style={styles.details}>
               <Text style={styles.detailsText}>Manage Bank details</Text>
@@ -195,7 +244,7 @@ const AccountProfile = ({
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ManagePortfolio');
+                  navigation.navigate('ManagePortfolio', {portfolioDetails: userData.portfolioDetails});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Manage Portfolio</Text>
@@ -208,7 +257,7 @@ const AccountProfile = ({
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('AddSkills');
+                  navigation.navigate('AddSkills', {skillsList});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Skills</Text>
@@ -221,7 +270,7 @@ const AccountProfile = ({
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ManageExperience');
+                  navigation.navigate('ManageExperience', {experience});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Experience</Text>
@@ -244,7 +293,7 @@ const AccountProfile = ({
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('AddServices');
+                  navigation.navigate('AddServices', {servicesList});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Manage Services</Text>
@@ -267,7 +316,7 @@ const AccountProfile = ({
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ManageResume');
+                  navigation.navigate('ManageResume', {resume});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Resume</Text>
@@ -280,7 +329,7 @@ const AccountProfile = ({
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ManageAcademics');
+                  navigation.navigate('ManageAcademics', {academicDetails});
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Academics</Text>
@@ -363,7 +412,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     color: Colors.black,
   },
-
 
   Icon: {
     width: wp(38),

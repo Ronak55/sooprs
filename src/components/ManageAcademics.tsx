@@ -18,55 +18,60 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 
-const ManageAcademics = ({navigation}) => {
+const ManageAcademics = ({navigation, route} : {navigation:any, route:any}) => {
+
+  const {academicDetails} = route.params;
   const [academics, setAcademics] = useState([]);
   const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
 
-  const fetchAcademics = async () => {
-    setLoading(true);
-    let lead_id = await AsyncStorage.getItem('uid');
-    if (lead_id) lead_id = lead_id.replace(/^"|"$/g, '');
+  // const fetchAcademics = async () => {
+  //   setLoading(true);
+  //   let lead_id = await AsyncStorage.getItem('uid');
+  //   if (lead_id) lead_id = lead_id.replace(/^"|"$/g, '');
 
-    const formData = new FormData();
-    formData.append('user_id', lead_id);
+  //   const formData = new FormData();
+  //   formData.append('user_id', lead_id);
 
-    try {
-      const response = await fetch(
-        'https://sooprs.com/api2/public/index.php/get_academics',
-        {
-          method: 'POST',
-          body: formData,
-        },
-      );
+  //   try {
+  //     const response = await fetch(
+  //       'https://sooprs.com/api2/public/index.php/get_academics',
+  //       {
+  //         method: 'POST',
+  //         body: formData,
+  //       },
+  //     );
 
-      const result = await response.json();
+  //     const result = await response.json();
 
-      if (result.status === 200) {
-        console.log('academics details::::::::', result.msg);
-        setAcademics(result.msg);
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Fetch Error',
-          text2: 'Failed to fetch academic details.',
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching academics:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Network Error',
-        text2: 'Please try again later.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (result.status === 200) {
+  //       console.log('academics details::::::::', result.msg);
+  //       setAcademics(result.msg);
+  //     } else {
+  //       Toast.show({
+  //         type: 'error',
+  //         text1: 'Fetch Error',
+  //         text2: 'Failed to fetch academic details.',
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching academics:', error);
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Network Error',
+  //       text2: 'Please try again later.',
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchAcademics();
-  }, [isFocused]);
+    // fetchAcademics();
+    console.log('academic details::::::::::', academicDetails);
+    setAcademics(academicDetails);
+
+  }, [isFocused, route?.params?.academicDetails]);
 
   const renderAcademicCard = ({item}) => (
     <View style={styles.card}>

@@ -35,17 +35,13 @@ const Home = ({ navigation }: { navigation: any }) => {
       const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
       const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
 
-      const parsedprofilepic = JSON.parse(profilepic);
-
-      console.log("profile image::::::::::", parsedprofilepic);
-
       const parsedName = JSON.parse(name);
+      console.log('name of the professional:::::::::;', name)
+      const parsedprofilepic = JSON.parse(profilepic);
       if (name !== null) {
         setName(parsedName ?? '');
       }
-      if (parsedprofilepic) {
         setProfilePic(parsedprofilepic);
-      } 
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
@@ -195,10 +191,10 @@ const Home = ({ navigation }: { navigation: any }) => {
               Your Expertise
             </Text>
           </View>
-          <View style={styles.searchFilter}>
+          {/* <View style={styles.searchFilter}>
             <SearchBar placeholderName="Projects" />
-            {/* <Filter setFilteredProjects={setFilteredProjects}/> */}
-          </View>
+            <Filter setFilteredProjects={setFilteredProjects}/>
+          </View> */}
           {/* <IntroCard
             cardText="Discover projects with ease!"
             showBtn={true}
@@ -254,6 +250,7 @@ const styles = StyleSheet.create({
   textAlign: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginBottom:hp(3)
   },
 
   profText:{

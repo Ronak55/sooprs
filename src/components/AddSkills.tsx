@@ -9,7 +9,7 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
@@ -17,14 +17,18 @@ import Images from '../assets/image';
 import ButtonNew from './ButtonNew';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import { useIsFocused } from '@react-navigation/native';
 
-const AddSkills = ({navigation}: {navigation: any}) => {
+const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
+
+  const {skillsList} = route.params; 
   const [visible, setVisible] = useState(false);
   const [skills, setSkills] = useState([]); // Skills from API
   const [selectedSkill, setSelectedSkill] = useState(null); // Selected skill
   const [skillId, setSkillId] = useState(null); // Selected skill ID
   const [addedSkills, setAddedSkills] = useState([]); // Submitted skills list
   const [userId, setUserId] = useState(null);
+  const isFocused = useIsFocused();
 
   // Fetch skills from the API when modal opens
   const fetchSkills = async () => {
@@ -37,8 +41,13 @@ const AddSkills = ({navigation}: {navigation: any}) => {
       );
       const result = await response.json();
       if (result.status == 200) {
-        console.log('skills info:::::::::::::::', result.msg);
-        setSkills(result.msg);
+        // console.log('skills info:::::::::::::::', result.msg);
+        const formattedData = result.msg.map(skill => ({
+          id: skill.skill_id,
+          skill_name: skill.skill_name,
+        }));
+        console.log('skills formatted:::::::::', formattedData)
+        setSkills(formattedData);
       } else {
         console.log('skills not fetched...');
       }
@@ -51,6 +60,27 @@ const AddSkills = ({navigation}: {navigation: any}) => {
       });
     }
   };
+
+  useEffect(()=>{
+
+    fetchSkills();
+     
+  }, [isFocused])
+
+  const getSkillsList = ()=>{
+    console.log('skills list:::::;', skillsList)
+    const newSkillsNames = skillsList.map((skillsId:any) => {
+      const skillsMap = skills.find((skill:any) => skill.id === skillsId); 
+
+      return skillsMap;
+    });
+    console.log('added skills names:::::::;;', newSkillsNames);
+    setAddedSkills(newSkillsNames.filter(Boolean)); // Filter out any null values
+  }
+
+  useEffect(() => {
+    getSkillsList();
+  }, [skills]);
 
   // Get the user ID from AsyncStorage
   const getUserId = async () => {
@@ -79,7 +109,7 @@ const AddSkills = ({navigation}: {navigation: any}) => {
 
         if (result.status == 200) {
 
-            console.log('skill added :::::::::', response.msg);
+            console.log('skill added :::::::::', result.msg);
           // Update addedSkills with the new skill
           const newSkill = skills.find(skill => skill.skill_id === skillId);
           setAddedSkills(prevSkills => [...prevSkills, newSkill]);
@@ -172,7 +202,7 @@ const AddSkills = ({navigation}: {navigation: any}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.headerSection}>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
           <Image
@@ -207,6 +237,7 @@ const AddSkills = ({navigation}: {navigation: any}) => {
                 </TouchableOpacity>
               </View>
             )}
+            nestedScrollEnabled
             columnWrapperStyle={styles.row}
           />
         ) : (
@@ -291,7 +322,7 @@ const AddSkills = ({navigation}: {navigation: any}) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -353,6 +384,7 @@ const styles = StyleSheet.create({
   crossIcon: {
     width: wp(5),
     height: hp(5),
+    // tintColor:Colors.white
   },
 
   skillCardText: {
@@ -367,7 +399,7 @@ const styles = StyleSheet.create({
   },
 
   addSkill: {
-    marginTop: hp(5),
+    marginTop: hp(0),
     alignItems: 'center',
   },
 

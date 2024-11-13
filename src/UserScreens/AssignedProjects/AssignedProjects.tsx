@@ -50,9 +50,10 @@ import {
         console.log('assigned projects response data::::', responseData);
   
         if (responseData.status === 200) {
-          setAssignedProjects(responseData.msg);
+          setAssignedProjects(responseData.msg || []);
         } else if (responseData.status === 400) {
           console.error('An error has occurred!');
+          setAssignedProjects([]); 
         }
       } catch (error) {
         console.error('Error fetching projects:', error);

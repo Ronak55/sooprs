@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711271604841",
+    "project_id": "sooprs-11905",
+    "storage_bucket": "sooprs-11905.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711271604841:android:71120871d6d88ec80938f8",
+        "android_client_info": {
+          "package_name": "com.sooprsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7_byuoyfIWHBeY31Ct6puTC6aTqNJv_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

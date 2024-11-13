@@ -17,72 +17,76 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import {useIsFocused} from '@react-navigation/native';
 
-const ManageExperience = ({navigation}: {navigation: any}) => {
+const ManageExperience = ({navigation, route}: {navigation: any}) => {
+
+  const {experience} = route.params;
   const [experienceData, setExperienceData] = useState<any[]>([]);
   const [noExperienceMessage, setNoExperienceMessage] = useState<string>('');
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchExperienceData = async () => {
-      let lead_id = await AsyncStorage.getItem('uid');
-      if (lead_id) {
-        lead_id = lead_id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
-      }
+    // const fetchExperienceData = async () => {
+    //   let lead_id = await AsyncStorage.getItem('uid');
+    //   if (lead_id) {
+    //     lead_id = lead_id.replace(/^"|"$/g, ''); // Removes leading and trailing quotes if present
+    //   }
 
-      const formData = new FormData();
-      formData.append('user_id', lead_id);
+    //   const formData = new FormData();
+    //   formData.append('user_id', lead_id);
 
-      try {
-        const response = await fetch(
-          'https://sooprs.com/api2/public/index.php/get_exp',
-          {
-            method: 'POST',
-            body: formData,
-          },
-        );
+    //   try {
+    //     const response = await fetch(
+    //       'https://sooprs.com/api2/public/index.php/get_exp',
+    //       {
+    //         method: 'POST',
+    //         body: formData,
+    //       },
+    //     );
 
-        const res = await response.json();
-        if (res.status == 200) {
-          const uniqueExperiences = Array.from(
-            new Set(res.msg.map(item => item.organization)),
-          ).map(organization =>
-            res.msg.find(item => item.organization === organization),
-          );
+    //     const res = await response.json();
+    //     if (res.status == 200) {
+    //       const uniqueExperiences = Array.from(
+    //         new Set(res.msg.map(item => item.organization)),
+    //       ).map(organization =>
+    //         res.msg.find(item => item.organization === organization),
+    //       );
 
-          console.log('unique exp:::::::::::', uniqueExperiences);
+    //       console.log('unique exp:::::::::::', uniqueExperiences);
 
-          if (uniqueExperiences.length > 0) {
-            setExperienceData(uniqueExperiences); // Set unique experience data
-            setNoExperienceMessage('');
-          } else {
-            setNoExperienceMessage('No experience found');
-            setExperienceData([]);
-          }
-        } else {
-          setNoExperienceMessage(res.msg || 'An error occurred');
-          setExperienceData([]);
-          Toast.show({
-            text1: 'Error',
-            text2: res.msg,
-            type: 'error',
-            position: 'top',
-          });
-        }
-      } catch (error) {
-        console.error(error);
-        setNoExperienceMessage('Error fetching data');
-        setExperienceData([]);
-        Toast.show({
-          text1: 'Error',
-          text2: 'Error fetching data',
-          type: 'error',
-          position: 'top',
-        });
-      }
-    };
-
-    fetchExperienceData();
-  }, [isFocused]);
+    //       if (uniqueExperiences.length > 0) {
+    //         setExperienceData(uniqueExperiences); // Set unique experience data
+    //         setNoExperienceMessage('');
+    //       } else {
+    //         setNoExperienceMessage('No experience found');
+    //         setExperienceData([]);
+    //       }
+    //     } else {
+    //       setNoExperienceMessage(res.msg || 'An error occurred');
+    //       setExperienceData([]);
+    //       Toast.show({
+    //         text1: 'Error',
+    //         text2: res.msg,
+    //         type: 'error',
+    //         position: 'top',
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //     setNoExperienceMessage('Error fetching data');
+    //     setExperienceData([]);
+    //     Toast.show({
+    //       text1: 'Error',
+    //       text2: 'Error fetching data',
+    //       type: 'error',
+    //       position: 'top',
+    //     });
+    //   }
+    // };
+    // fetchExperienceData();
+    console.log('experience details::::::::', experience)
+    setExperienceData(experience)
+  
+  }, [route?.params?.experience]);
 
   const renderExperienceItem = ({item}: {item: any}) => (
     <View style={styles.card}>

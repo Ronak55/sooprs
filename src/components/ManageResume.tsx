@@ -17,10 +17,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'; // Toast for notifications
 import ButtonNew from './ButtonNew';
 
-const ManageResume = ({navigation}: {navigation: any}) => {
+const ManageResume = ({navigation, route}: {navigation: any, route:any}) => {
+
+  const {resume} = route.params;
   const [fileUri, setFileUri] = useState<string | null>(null); // State to hold file URI
   const [uploading, setUploading] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null); // State to hold download URL
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(resume); // State to hold download URL
   const [fileType, setFileType] = useState('');
 
 
@@ -143,7 +145,7 @@ const ManageResume = ({navigation}: {navigation: any}) => {
       {downloadUrl && (
         <View style={styles.download}>
           <Text style={styles.downloadText}>
-            To download your file  </Text>
+            Download your resume</Text>
             <TouchableOpacity onPress={() => Linking.openURL(downloadUrl)}>
             <Text style={styles.downloadTextColored}>Click here </Text></TouchableOpacity>
         </View>

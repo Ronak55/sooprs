@@ -15,7 +15,8 @@ import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
+const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
+  // const navigation = useNavigation();
   const {id} = route.params;
   const [bids, setBids] = useState([]);
   const [rewardedBids, setRewardedBids] = useState([]);
@@ -101,10 +102,12 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
         console.error('Error fetching bids:', error);
       });
   };
-
+  
   useEffect(() => {
+
+    console.log('id project::::::::', route.params)
     getBids();
-  }, [isFocused]);
+  }, [id]);
 
   // Render each bid as a card
   const renderBidCard = ({ item }) => {
@@ -143,7 +146,7 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('Projects')}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

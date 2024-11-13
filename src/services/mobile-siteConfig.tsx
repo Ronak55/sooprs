@@ -38,7 +38,7 @@ export const mobile_siteConfig = Object.freeze({
 
     LEADS:'get_all_leads',
     CATEGORIES:'sr_services_new_cat',
-
+    LIVE_SEARCH:'ajax-live-search',
     // Project 
 
     GET_CATEGORIES:'sr_services_all',
@@ -48,10 +48,10 @@ export const mobile_siteConfig = Object.freeze({
     QUERY_DETAIL:'query_detail',
     ADD_BID:'add_bid',
     MY_BIDS:'get_my_leads',
-    FILTER_PROFF:'filter_service_ajax',
-
+    FILTER_PROF:'filter_service_ajax',
+    
     //profile
-
+    USER_DETAILS:'get-user-details',
     GET_USER_PROFILE:'get-user-profile',
     UPDATE_PROFILE_PROFESSIONAL:'update_profile_professional',
     UPLOAD_PICTURE:'upload_picture'

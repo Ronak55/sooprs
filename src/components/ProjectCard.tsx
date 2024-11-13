@@ -12,6 +12,7 @@ import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
 
 const {width} = Dimensions.get('window');
 
@@ -141,8 +142,7 @@ const ProjectCard = ({
             {createdAt && (
               <View style={styles.dateContainer}>
                 <Text style={styles.dateText}>
-                  {' '}
-                  {new Date(createdAt).toLocaleDateString('en-GB')}
+                 {createdAt}
                 </Text>
               </View>
             )}

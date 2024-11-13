@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: wp(1),
-    paddingVertical: hp(0.5),
+    paddingVertical: hp(2),
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },

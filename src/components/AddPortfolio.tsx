@@ -23,42 +23,44 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [portfolio, setPortfolio] = useState('');
-  
+    const [fileUri, setFileUri] = useState('');
     const [filePath, setFilePath] = useState('No file chosen');
   
     // Request storage permission for Android
-    const requestStoragePermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission',
-            message: 'This app needs access to your storage to select images.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    };
+    // const requestStoragePermission = async () => {
+    //   try {
+    //     const granted = await PermissionsAndroid.request(
+    //       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+    //       {
+    //         title: 'Storage Permission',
+    //         message: 'This app needs access to your storage to select images.',
+    //         buttonNeutral: 'Ask Me Later',
+    //         buttonNegative: 'Cancel',
+    //         buttonPositive: 'OK',
+    //       },
+    //     );
+    //     return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //   } catch (err) {
+    //     console.warn(err);
+    //     return false;
+    //   }
+    // };
+
+
   
     // Function to handle file selection
     const chooseFile = async () => {
-      if (Platform.OS === 'android') {
-        const permissionGranted = await requestStoragePermission();
-        if (!permissionGranted) {
-          Toast.show({
-            type: 'error',
-            text1: 'Permission Denied',
-            text2: 'Storage permission is required to select images.',
-          });
-          return;
-        }
-      }
+      // if (Platform.OS === 'android') {
+      //   const permissionGranted = await requestStoragePermission();
+      //   if (!permissionGranted) {
+      //     Toast.show({
+      //       type: 'error',
+      //       text1: 'Permission Denied',
+      //       text2: 'Storage permission is required to select images.',
+      //     });
+      //     return;
+      //   }
+      // }
   
       // Launch the image library to choose an image
       const result = await launchImageLibrary({
@@ -68,9 +70,29 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
   
       if (result.assets && result.assets.length > 0) {
         // Set the selected image's file path
+        console.log('results image url:::::::', result.assets[0])
         setFilePath(result.assets[0].fileName);
+        setFileUri(result.assets[0].uri);
+      
       }
     };
+
+    const getFileType = (filePath) => {
+      const extension = filePath.split('.').pop().toLowerCase(); // Extract file extension
+      switch (extension) {
+        case 'jpg':
+        case 'jpeg':
+          return 'image/jpeg'; // MIME type for JPEG
+        case 'png':
+          return 'image/png'; // MIME type for PNG
+        case 'webp':
+          return 'image/webp'; // MIME type for WebP
+        default:
+          return 'application/octet-stream'; // Default MIME type if not matched
+      }
+    };
+    
+    const fileType = getFileType(filePath);
   
     const handleSave = async () => {
       try {
@@ -88,16 +110,27 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
         formData.append('description', description);
         formData.append('link', portfolio);
   
-        // Append the selected file if available
+        // // Append the selected file if available
         if (filePath !== 'No file chosen') {
-          formData.append('files[]', {
-            uri: filePath,
+          formData.append('files', {
+            uri: fileUri,
             name: filePath.split('/').pop(), // Extract file name from path
-            type: 'image/jpeg', // Adjust based on the file type
+            type: fileType // Adjust based on the file type
           });
         }
 
-        console.log('formdata of portfolio::::::', formData)
+        // console.log('formdata of portfolio::::::', formData)
+        console.log('FormData contents:::::::', {
+          id: lead_id,
+          title: title,
+          description: description,
+          link: portfolio,
+          file: {
+            uri: filePath,
+            name: filePath.split('/').pop(),
+            type: fileType,
+          },
+        });
   
         // Make the POST request
         const response = await fetch(
@@ -110,7 +143,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
   
         const res = await response.json();
   
-        if (res.status === 200) {
+        console.log('response port:::::::;', res);
+        if (res.status == 200) {
          
             Toast.show({
             type: 'success',
@@ -119,7 +153,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
           });
           navigation.goBack();
 
-        } else if (res.status === 400) {
+        } else if (res.status == 400) {
           Toast.show({
             type: 'error',
             text1: 'Error',

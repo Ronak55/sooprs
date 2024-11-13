@@ -71,6 +71,7 @@ projectStatus: require('../assets/Icons/projectStatus.png'),
 splashLogo:require('../assets/Icons/splashLogo.gif'),
 cancelIcon: require('../assets/Icons/cancel.png'),
 defaultPicIcon: require('../assets/Icons/defaultPic.png'),
+sendIcon:require('../assets/Icons/sendIcon.png'),
 
 }
 

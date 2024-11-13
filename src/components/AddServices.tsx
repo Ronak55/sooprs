@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, Modal, TouchableWithoutFeedback, FlatList } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, Modal, TouchableWithoutFeedback, FlatList, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Images from '../assets/image'
 import { hp, wp } from '../assets/commonCSS/GlobalCSS'
@@ -7,8 +7,11 @@ import FSize from '../assets/commonCSS/FSize'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonNew from './ButtonNew'
 import Toast from 'react-native-toast-message'
+import { useIsFocused } from '@react-navigation/native'
 
-const AddServices = ({navigation} : {navigation:any}) => {
+const AddServices = ({navigation, route} : {navigation:any, route:any}) => {
+
+  const {servicesList} = route.params;
 
 const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState('');
@@ -17,11 +20,25 @@ const [services, setServices] = useState([]);
   const [serviceId, setServiceId] = useState(null);
   const [visible, setVisible] = useState(false);
   const [userId, setUserId] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     fetchServices();
     fetchUserId();
-  }, []);
+  }, [isFocused]);
+
+  useEffect(() => {
+
+    console.log('services list:::::;', servicesList)
+    const newServiceNames = servicesList.map((serviceId:any) => {
+      const service = services.find((service:any) => service.id === serviceId); 
+
+      return service;
+    });
+    console.log('added services names:::::::;;', newServiceNames);
+
+    setaddedServices(newServiceNames.filter(Boolean)); // Filter out any null values
+  }, [services]);
 
   const fetchUserId = async () => {
     const id = await AsyncStorage.getItem('uid');
@@ -36,14 +53,14 @@ const [services, setServices] = useState([]);
       });
       const data = await response.json();
 
-      if(data.status == 200){
+      if(data.msg){
+        // console.log('services data::::::', data.msg)
         const formattedData = data.msg.map(service => ({
             id: service.id,
             service_name: service.service_name,
           }));
-
+          console.log('formatted service data::::::::::', formattedData)
           setServices(formattedData);
-          
       } else{
 
         console.log('error fetching services::::::::', data.msg);
@@ -154,7 +171,7 @@ const [services, setServices] = useState([]);
   const closeModal = () => setVisible(false);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.headerSection}>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
           <Image
@@ -188,11 +205,11 @@ const [services, setServices] = useState([]);
             </View>
           )}
           columnWrapperStyle={styles.row}
+          nestedScrollEnabled
         />
       ) : (
         <Text style={styles.noServicesText}>No services available!</Text>
       )}
-
       {/* Add Service Button */}
       <View style={styles.addService}>
         <ButtonNew
@@ -273,7 +290,7 @@ const [services, setServices] = useState([]);
         </TouchableWithoutFeedback>
       </Modal>
     </View>
-    </View>
+    </ScrollView>
   )
 }
 
