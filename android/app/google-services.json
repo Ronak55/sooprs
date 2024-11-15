@@ -7,12 +7,33 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:711271604841:android:71120871d6d88ec80938f8",
+        "mobilesdk_app_id": "1:711271604841:android:f773899bf36691b50938f8",
         "android_client_info": {
           "package_name": "com.sooprsapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "711271604841-1lkkfarpoli288tm4pmfhljsftvemfop.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sooprsapp",
+            "certificate_hash": "299da46fabeeb20e0a3998f0dfe014d92fdac4c2"
+          }
+        },
+        {
+          "client_id": "711271604841-r6o2jeir3h9t148d3sp478hjfq45t01m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sooprsapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "711271604841-bhp00rb7b4c804a65gvginlf0hq3tfj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB7_byuoyfIWHBeY31Ct6puTC6aTqNJv_w"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711271604841-bhp00rb7b4c804a65gvginlf0hq3tfj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

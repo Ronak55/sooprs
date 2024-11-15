@@ -8,6 +8,7 @@ const ButtonNew = ({
   btntext,
   bgColor,
   textColor,
+  isBorder,
   onPress,
   isDisabled
 }: {
@@ -15,6 +16,7 @@ const ButtonNew = ({
   btntext: any;
   bgColor: any;
   textColor: any;
+  isBorder:any;
   onPress: () => void;
   isDisabled:any
 }) => {
@@ -23,7 +25,7 @@ const ButtonNew = ({
       disabled={isDisabled}
       style={{
         backgroundColor: bgColor,
-        borderWidth: 1,
+        borderWidth: isBorder ? 1 : 0,
         borderColor: '#0077FF',
         alignItems: 'center',
         justifyContent: 'center',
@@ -31,7 +33,7 @@ const ButtonNew = ({
         paddingVertical:hp(1.5),
         // height: hp(5.5),
         borderRadius: wp(2),
-        marginBottom:hp(2)
+        marginBottom:hp(0.5)
       }}
       onPress={onPress} >
       {imgSource ? (
@@ -43,7 +45,7 @@ const ButtonNew = ({
           <Text style={{color: textColor, fontWeight: '500', fontSize:FSize.fs13}}>{btntext}</Text>
         </View>
       ) : (
-        <Text style={{color: textColor, fontWeight: '500'}}>{btntext}</Text>
+        <Text style={{color: textColor, fontWeight: '500', textDecorationLine: !isBorder ? 'underline' : 'none'}}>{btntext}</Text>
       )}
     </TouchableOpacity>
   );

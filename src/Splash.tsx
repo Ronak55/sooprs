@@ -15,7 +15,7 @@ const Splash = ({ navigation }: { navigation: any }) => {
         duration: 1000,      // Duration for the fade-out effect
         useNativeDriver: true,
       }).start(() => {
-        navigation.navigate('Onboarding'); // Navigate after the animation completes
+        navigation.navigate('Authentication'); // Navigate after the animation completes
       });
     }, 2000); // Delay of 2 seconds before starting the fade-out
 

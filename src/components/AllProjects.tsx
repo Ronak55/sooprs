@@ -69,6 +69,7 @@ const AllProjects = ({
           )
         }
         bgColor={Colors.sooprsblue}
+        isBorder={false}
         textColor={Colors.white}
         onPress={loadMoreProjects}
         isDisabled={newLoading} // Disable button while loading

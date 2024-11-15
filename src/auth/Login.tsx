@@ -35,6 +35,7 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FSize from '../assets/commonCSS/FSize';
 
 const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const {profileType} = route.params;
@@ -50,10 +51,10 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        '221184294127-4tlrho79se0dtk5s3f6u646vp4tsnf6p.apps.googleusercontent.com',
+        '711271604841-bhp00rb7b4c804a65gvginlf0hq3tfj7.apps.googleusercontent.com',
     });
   }, []);
-  
+
   const showAlert = (title: string, message: string) => {
     setAlertTitle(title);
     setAlertMessage(message);
@@ -144,11 +145,14 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     //   );
     //   return;
     // }
+    const fcmToken = await AsyncStorage.getItem(mobile_siteConfig.fcmToken)
+
+    console.log('fcm token get login::::', fcmToken);
 
     const payload = {
       email: email,
       password: password,
-      is_buyer: profileType === 'Client' ? 1 : 0,
+      fcm_token:fcmToken
     };
 
     const isClient = profileType === 'Client' ? '1' : '0';
@@ -213,19 +217,41 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           text2: 'Something went wrong. Please try again.',
           position: 'top',
         });
-      });
+      })
   };
 
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <KeyboardAwareScrollView style={styles.container}>
-        <View style={styles.imageContainer}>
+        <View style={styles.headerSection}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              source={Images.backArrow}
+              resizeMode="contain"
+              style={styles.backArrow}
+            />
+          </TouchableOpacity>
           <Image source={Images.Sooprslogo} style={styles.img} />
         </View>
         <View style={styles.section}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Login</Text>
+            <Text style={styles.subTitleText}>
+              Discover a world of opportunities on Sooprs
+            </Text>
+            <ButtonNew
+              imgSource={Images.googleIcon}
+              btntext="Continue with Google"
+              bgColor="#F6F6F6"
+              textColor="black"
+              onPress={signInWithGoogle}
+            />
+            <View style={styles.orSection}>
+              <View style={styles.line} />
+              <Text style={styles.or}>or</Text>
+              <View style={styles.line} />
+            </View>
           </View>
           <View style={styles.inputContainer}>
             <CInput
@@ -250,31 +276,28 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               keyboardType={'default'}
             />
           </View>
-          <View style={{}}>
+          <View style={styles.buttons}>
             <ButtonNew
               imgSource={null}
               btntext={
-                loading ? <ActivityIndicator color={Colors.white} /> : 'Login'
+                loading ? <ActivityIndicator color={Colors.white} /> : 'Sign in'
               }
               bgColor={Colors.sooprsblue}
               textColor={Colors.white}
               onPress={handleOnPress}
+              isBorder={true}
               isDisabled={loading}
             />
-            <TouchableOpacity
-              style={styles.forgotPassword}
-              onPress={() => {
-                navigation.navigate('Forgot');
-              }}>
-              <Text style={styles.forgotText}>Forgot Password?</Text>
-            </TouchableOpacity>
-            <ButtonNew
-              imgSource={Images.googleIcon}
-              btntext="Continue with Google"
-              bgColor="white"
-              textColor="black"
-              onPress={signInWithGoogle}
-            />
+            <View style={styles.forgotSection}>
+              <Text style={styles.forgotyourPass}>Forgot your Password ?</Text>
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => {
+                  navigation.navigate('Forgot');
+                }}>
+                <Text style={styles.forgotText}>Click here</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <CustomAlert
@@ -296,34 +319,84 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  headerSection: {
+    marginHorizontal: wp(5),
+    marginVertical: hp(2),
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(13),
+  },
+  backArrow: {
+    width: wp(8),
+    height: hp(8),
+  },
+  headerTitle: {
+    color: Colors.black,
+    fontWeight: '600',
+    fontSize: FSize.fs18,
+  },
+
+  buttons: {
+    flexDirection: 'column',
+  },
+
+  orSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(1),
+    marginBottom: hp(5),
+  },
+
+  line: {
+    width: wp(30),
+    borderWidth: wp(0.1),
+    borderColor: '#D9D9D9',
+  },
+
+  or: {
+    fontFamily: 'poppins',
+    fontWeight: '400',
+    fontSize: FSize.fs16,
+    color: Colors.black,
+  },
+
   title: {
-    marginVertical: hp(4),
+    flexDirection: 'column',
+    gap: hp(3),
+    alignItems: 'center',
   },
   titleText: {
     fontFamily: 'poppins',
-    fontSize: wp(6.5),
-    fontWeight: '600',
-    color: Colors.sooprsblue,
+    fontSize: FSize.fs22,
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    color: Colors.black,
   },
 
-  imageContainer: {
-    backgroundColor: 'rgba(64, 123, 255, 0.11)',
-    width: wp(100),
-    height: hp(37),
-    alignItems: 'center',
+  subTitleText: {
+    marginHorizontal: wp(10),
+    fontFamily: 'poppins',
+    textAlign: 'center',
+    fontSize: FSize.fs14,
+    color: '#999999',
+  },
+
+  forgotSection: {
+    flexDirection: 'row',
+    gap: wp(2),
+    marginTop: hp(3),
+    // alignItems:'center',
     justifyContent: 'center',
-    borderBottomLeftRadius: wp(25),
-    borderBottomRightRadius: wp(25),
   },
 
   img: {
     objectFit: 'contain',
-    width: wp(70),
+    width: wp(50),
   },
 
   section: {
     marginHorizontal: wp(10),
-    marginVertical: hp(3),
+    // marginVertical: hp(1),
   },
 
   inputContainer: {
@@ -332,13 +405,22 @@ const styles = StyleSheet.create({
 
   forgotPassword: {
     alignItems: 'center',
-    marginBottom: 15,
+    // marginBottom: 15,
+    justifyContent: 'center',
+  },
+
+  forgotyourPass: {
+    fontFamily: 'inter',
+    fontWeight: '700',
+    color: Colors.black,
+    fontSize: FSize.fs14,
   },
 
   forgotText: {
     fontFamily: 'inter',
     fontWeight: '800',
-    fontSize: wp(3),
+    fontSize: FSize.fs14,
     color: Colors.sooprsblue,
+    textDecorationLine: 'underline',
   },
 });

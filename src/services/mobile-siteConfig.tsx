@@ -16,6 +16,7 @@ export const mobile_siteConfig = Object.freeze({
 
     // Token
     TOKEN:'token',
+    fcmToken:'fcm_token',
 
     //email
 

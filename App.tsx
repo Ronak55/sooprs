@@ -25,6 +25,7 @@ import Toast from 'react-native-toast-message';
 import Splash from './src/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mobile_siteConfig} from './src/services/mobile-siteConfig';
+import { requestUserPermission, NotificationListener, initializeApp } from './NotificationService';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,7 +45,7 @@ const MainApp = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Splash" component={Splash} />
-      <Stack.Screen name="Onboarding" component={Onboarding} />
+      {/* <Stack.Screen name="Onboarding" component={Onboarding} /> */}
       <Stack.Screen name="Authentication" component={Authentication} />
       {/* Client login */}
       <Stack.Screen name="ClientLoggedIn" component={ClientBottomTab} />
@@ -58,6 +59,13 @@ const MainApp = () => {
 };
 
 const App = () => {
+
+  useEffect(() => {
+    initializeApp();
+    requestUserPermission();
+    NotificationListener();
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <GestureHandlerRootView style={{flex: 1}}>

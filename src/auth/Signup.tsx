@@ -6,6 +6,9 @@ import {
   View,
   Alert,
   StatusBar,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import Colors from '../assets/commonCSS/Colors';
@@ -43,6 +46,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [isProfessional, setIsProfessional] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setItems(countryCodes);
@@ -164,15 +168,68 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
   //   console.log('valll::', val);
   // };
 
+  const signupWithGoogle = ()=>{
+
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <KeyboardAwareScrollView style={styles.container}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Sign up</Text>
-          <View style={styles.inputContainer}>
+        <View style={styles.headerSection}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              source={Images.backArrow}
+              resizeMode="contain"
+              style={styles.backArrow}
+            />
+          </TouchableOpacity>
+          <Image source={Images.Sooprslogo} style={styles.img} />
+        </View>
+        <View style={styles.section}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Sign Up</Text>
+            {/* <ButtonNew
+              imgSource={Images.googleIcon}
+              btntext="Continue with Google"
+              bgColor="#F6F6F6"
+              textColor="black"
+              onPress={signupWithGoogle}
+              isBorder={undefined}
+              isDisabled={undefined}
+            />
+            <View style={styles.orSection}>
+              <View style={styles.line} />
+              <Text style={styles.or}>or</Text>
+              <View style={styles.line} />
+            </View> */}
+          </View>
+          {/* <View style={styles.inputContainer}>
             <CInput
-              title="Your name"
+              title="Email address"
+              name="Enter your email address"
+              newlabel={false}
+              style={undefined}
+              setValue={(val: any) => setEmail(val)}
+              value={email}
+              isPassword={false}
+              keyboardType={'default'}
+            />
+
+            <CInput
+              title="Password"
+              name="Enter your password"
+              newlabel={false}
+              style={undefined}
+              setValue={(val: React.SetStateAction<string>) => setPassword(val)}
+              value={password}
+              isPassword={true}
+              keyboardType={'default'}
+            />
+          </View> */}
+            <View style={styles.inputContainer}>
+            <CInput
+              title=""
               name="Enter your full name"
               newlabel={false}
               style={undefined}
@@ -182,7 +239,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
               keyboardType={'default'}
             />
             <CInput
-              title="Email address"
+              title=""
               name="Enter your email address"
               newlabel={false}
               style={undefined}
@@ -215,7 +272,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
                 />
               </View>
               <CInput
-                title="Mobile"
+                title=""
                 name="Enter your phone no."
                 newlabel={true}
                 style={{width: '70%'}}
@@ -229,7 +286,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
             </View>
 
             <CInput
-              title="Password"
+              title=""
               name="Input your password"
               newlabel={false}
               style={undefined}
@@ -240,7 +297,7 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
             />
 
             <CInput
-              title="Confirm Password"
+              title=""
               name="Confirm your password"
               newlabel={false}
               style={undefined}
@@ -251,24 +308,29 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
               isPassword={true}
               keyboardType={'default'}
             />
-
+          </View>
+          <View style={styles.buttons}>
             <ButtonNew
               imgSource={null}
-              btntext="Sign up"
-              bgColor="#0077FF"
-              textColor="#FFFFFF"
+              btntext={
+                loading ? <ActivityIndicator color={Colors.white} /> : 'Sign up'
+              }
+              bgColor={Colors.sooprsblue}
+              textColor={Colors.white}
               onPress={handleOnPress}
+              isBorder={true}
+              isDisabled={loading}
             />
-
-            <ButtonNew
-              imgSource={Images.googleIcon}
-              btntext="Continue with Google"
-              bgColor="white"
-              textColor="black"
-              onPress={() => {
-                navigation.navigate('Login');
-              }}
-            />
+            <View style={styles.forgotSection}>
+              <Text style={styles.forgotyourPass}>Already have an account?</Text>
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => {
+                  navigation.navigate('Login', {profileType: profileType === 'Client' ? 1 : 0});
+                }}>
+                <Text style={styles.forgotText}>Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <CustomAlert
@@ -289,20 +351,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  title: {
-    marginHorizontal: wp(8),
-    marginVertical: hp(5),
-  },
-  titleText: {
-    fontFamily: 'poppins',
-    fontSize: wp(7),
-    fontWeight: '600',
-    color: Colors.sooprsblue,
-  },
-  inputContainer: {
-    marginTop: hp(4),
-    gap: 4,
-  },
 
   phoneContainer: {
     flexDirection: 'row',
@@ -312,7 +360,7 @@ const styles = StyleSheet.create({
   },
   countryCodePickerContainer: {
     width: '50%',
-    height:'40%'
+    height: '105%',
   },
   countryCodePicker: {
     height: hp(5),
@@ -338,5 +386,111 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs14,
     textAlign: 'center',
     color: Colors.black,
+  },
+
+  headerSection: {
+    marginHorizontal: wp(5),
+    marginVertical: hp(2),
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(13),
+  },
+  backArrow: {
+    width: wp(8),
+    height: hp(8),
+  },
+  headerTitle: {
+    color: Colors.black,
+    fontWeight: '600',
+    fontSize: FSize.fs18,
+  },
+
+  buttons: {
+    flexDirection: 'column',
+  },
+
+  orSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(1),
+    marginBottom: hp(5),
+  },
+
+  line: {
+    width: wp(30),
+    borderWidth: wp(0.1),
+    borderColor: '#D9D9D9',
+  },
+
+  or: {
+    fontFamily: 'poppins',
+    fontWeight: '400',
+    fontSize: FSize.fs16,
+    color: Colors.black,
+  },
+
+  title: {
+    flexDirection: 'column',
+    gap: hp(3),
+    alignItems: 'center',
+  },
+  titleText: {
+    fontFamily: 'poppins',
+    fontSize: FSize.fs22,
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    color: Colors.black,
+  },
+
+  subTitleText: {
+    marginHorizontal: wp(10),
+    fontFamily: 'poppins',
+    textAlign: 'center',
+    fontSize: FSize.fs14,
+    color: '#999999',
+  },
+
+  forgotSection: {
+    flexDirection: 'row',
+    gap: wp(2),
+    marginTop: hp(3),
+    // alignItems:'center',
+    justifyContent: 'center',
+  },
+
+  img: {
+    objectFit: 'contain',
+    width: wp(50),
+  },
+
+  section: {
+    marginHorizontal: wp(10),
+    // marginVertical: hp(1),
+  },
+
+  inputContainer: {
+    marginTop: hp(4),
+    gap: hp(1),
+  },
+
+  forgotPassword: {
+    alignItems: 'center',
+    // marginBottom: 15,
+    justifyContent: 'center',
+  },
+
+  forgotyourPass: {
+    fontFamily: 'inter',
+    fontWeight: '700',
+    color: Colors.black,
+    fontSize: FSize.fs14,
+  },
+
+  forgotText: {
+    fontFamily: 'inter',
+    fontWeight: '800',
+    fontSize: FSize.fs14,
+    color: Colors.sooprsblue,
+    textDecorationLine: 'underline',
   },
 });

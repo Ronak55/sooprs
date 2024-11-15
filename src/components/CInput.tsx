@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     fontFamily: 'inter',
     fontWeight: '400',
     fontSize: FSize.fs16,
-    paddingBottom: 2,
+    paddingBottom: hp(1),
   },
   newlabel: {
     position: 'relative',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   textInputSection: {
     paddingLeft: wp(2),
     borderWidth: 1,
-    borderColor: Colors.gray,
+    borderColor: '#D9D9D9',
     borderRadius: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',

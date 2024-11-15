@@ -1,52 +1,57 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GestureRecognizer from 'react-native-swipe-gestures';
+import {CommonActions} from '@react-navigation/native';
+import Images from './assets/image';
+import {hp, wp} from './assets/commonCSS/GlobalCSS';
+import ButtonNew from './components/ButtonNew';
+import Toast from 'react-native-toast-message';
 import Colors from './assets/commonCSS/Colors';
 import FSize from './assets/commonCSS/FSize';
-import Images from './assets/image';
-import GestureRecognizer from 'react-native-swipe-gestures';
-import {hp, wp} from './assets/commonCSS/GlobalCSS';
-import { mobile_siteConfig } from './services/mobile-siteConfig';
-import { CommonActions } from '@react-navigation/native';
 
-const Onboarding = ({navigation}: {navigation: any}) => {
+const Onboarding = ({navigation} : {navigation:any}) => {
   const [activeScreen, setActiveScreen] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
-    // Function to check token and usertype from AsyncStorage
     const checkUserLoginStatus = async () => {
       try {
-        const token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
-        const usertype = await AsyncStorage.getItem(mobile_siteConfig.IS_BUYER);
-
-        const parsedUserType = JSON.parse(usertype);
-
-        console.log('token::::::::::::', token)
-        console.log("usertype:::::::::::::", JSON.parse(usertype));
-        
+        const token = await AsyncStorage.getItem('TOKEN');
+        const usertype = await AsyncStorage.getItem('IS_BUYER');
         if (token && usertype) {
-            let resetAction = CommonActions.reset({
-              index: 0,
-              routes: [
-                {name: parsedUserType == 1 ? 'ClientLoggedIn' : 'ProfessionalLoggedIn'}
-              ],
-            });
-            navigation.dispatch(resetAction);
-          } 
-           else {
-          setLoading(false); // If no token/usertype, stop loading and show the onboarding screen
+          let resetAction = CommonActions.reset({
+            index: 0,
+            routes: [
+              {
+                name:
+                  JSON.parse(usertype) == 1
+                    ? 'ClientLoggedIn'
+                    : 'ProfessionalLoggedIn',
+              },
+            ],
+          });
+          navigation.dispatch(resetAction);
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error reading data from AsyncStorage', error);
         setLoading(false);
       }
     };
-
-    checkUserLoginStatus(); // Call function on component mount
+    checkUserLoginStatus();
   }, []);
 
-  // Loading Spinner while checking AsyncStorage
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -55,170 +60,236 @@ const Onboarding = ({navigation}: {navigation: any}) => {
     );
   }
 
-  const Buttons = ({buttonName, bgColor, onPress}: {buttonName: String, bgColor: any, onPress: () => void}) => {
-    return (
-      <TouchableOpacity style={{
-        backgroundColor: bgColor,
-        width: wp(41),
-        height: hp(6.5),
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 13
-      }} onPress={onPress}>
-        <Text style={styles.buttonText}>
-          {buttonName}
-        </Text>
-      </TouchableOpacity>
-    );
+  const profiles = [
+    {
+      id: 1,
+      name: 'Professional',
+      des: 'Showcase Your Expertise',
+      img: Images.Professionallogo,
+    },
+    {
+      id: 2,
+      name: 'Client',
+      des: 'Elevate Your Business',
+      img: Images.Clientlogo,
+    },
+  ];
+
+  const handleRadioChange = id => {
+    setSelectedCard(id);
   };
 
-  const CircularDot = ({bgColor, style}: {bgColor: any, style: any}) => {
-    return (
-      <View
-        style={[{
-          height: hp(1),
-          width: hp(1),
-          borderRadius: hp(0.5),
-          backgroundColor: bgColor,
-        }, style]}>
-      </View>
-    );
+  const handleButtonPress = action => {
+    if (!selectedCard) {
+      Toast.show({type: 'info', text1: 'Please select your profile'});
+      return;
+    }
+    navigation.navigate(action, {
+      profileType: profiles.find(p => p.id === selectedCard)?.name,
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <GestureRecognizer
-        style={styles.containerItems}
-        onSwipeLeft={() => {
-          if (activeScreen < 2) {
-            setActiveScreen(activeScreen + 1);
-          }
-        }}
-        onSwipeRight={() => {
-          if (activeScreen > 0) {
-            setActiveScreen(activeScreen - 1);
-          }
-        }}>
-        <View style={{alignItems: 'center'}}>
-          <View>
-            {activeScreen == 0 ? (
-              <View style={styles.titleSection}>
-                <Text style={styles.title}>Get Professional</Text>
-                <Text style={styles.titledesc}>
-                  Discover a world of opportunities with our Browse Gigs
-                </Text>
-              </View>
-            ) : activeScreen == 1 ? (
-              <View style={styles.titleSection}>
-                <Text style={styles.title}>Browse Gigs</Text>
-                <Text style={styles.titledesc}>
-                  Discover a world of opportunities with our Browse Gigs section
-                </Text>
-              </View>
-            ) : activeScreen == 2 ? (
-              <View style={styles.titleSection}>
-                <Text style={styles.title}>Find Projects</Text>
-                <Text style={styles.titledesc}>
-                  Discover a world of opportunities with our Browse Gigs section.
-                </Text>
-              </View>
-            ) : null}
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={Images.Sooprslogo} style={styles.logo} />
+        </View>
+        <View style={styles.imageContainer}>
+          <Image
+            source={
+              activeScreen === 0
+                ? Images.OnboardingScreen1
+                : activeScreen === 1
+                ? Images.OnboardingScreen2
+                : Images.OnboardingScreen3
+            }
+            style={styles.onboardingImage}
+          />
+        </View>
+        <View style={styles.section}>
+          <View style={styles.profileSelectionContainer}>
+            <View style={styles.gestures}>
+              <GestureRecognizer
+                style={styles.containerItems}
+                onSwipeLeft={() =>
+                  activeScreen < 2 && setActiveScreen(activeScreen + 1)
+                }
+                onSwipeRight={() =>
+                  activeScreen > 0 && setActiveScreen(activeScreen - 1)
+                }>
+                <View style={styles.titleSection}>
+                  {activeScreen === 0 ? (
+                    <>
+                      <Text style={styles.title}>Get Professional</Text>
+                      <Text style={styles.subtitle}>
+                        Discover a world of opportunities with our Browse Gigs
+                      </Text>
+                    </>
+                  ) : activeScreen === 1 ? (
+                    <>
+                      <Text style={styles.title}>Browse Gigs</Text>
+                      <Text style={styles.subtitle}>
+                        Discover a world of opportunities with our Browse Gigs
+                        section
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.title}>Find Projects</Text>
+                      <Text style={styles.subtitle}>
+                        Discover a world of opportunities with our Browse Gigs
+                        section.
+                      </Text>
+                    </>
+                  )}
+                </View>
+                <View style={styles.dotsContainer}>
+                  {[0, 1, 2].map(index => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.dot,
+                        {
+                          backgroundColor:
+                            activeScreen === index ? '#0077ff' : '#D9D9D9',
+                        },
+                      ]}
+                    />
+                  ))}
+                </View>
+              </GestureRecognizer>
+            </View>
+            <View style={styles.profileTypes}>
+              {profiles.map(profile => (
+                <TouchableOpacity
+                  key={profile.id}
+                  style={[
+                    styles.profileCard,
+                    {
+                      backgroundColor:
+                        selectedCard === profile.id ? '#F2F7FF' : '#FFFFFF',
+                    },
+                  ]}
+                  onPress={() => handleRadioChange(profile.id)}>
+                  <Image source={profile.img} style={styles.profileImage} />
+                  <Text style={styles.profileName}>
+                    Join as a {profile.name}
+                  </Text>
+                  <Text style={styles.profileDescription}>{profile.des}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-          <View style={{
-            flexDirection: 'row',
-            marginHorizontal: wp(6),
-            marginVertical: hp(5),
-          }}>
-            <CircularDot
-              bgColor={activeScreen === 0 ? '#0077ff' : '#D9D9D9'}
-              style={undefined}
+          <View style={styles.actionButtonContainer}>
+            <ButtonNew
+              btntext="Sign Up"
+              bgColor="#FFFFFF"
+              textColor="#0077FF"
+              isBorder={false}
+              onPress={() => handleButtonPress('Signup')}
+              imgSource={undefined}
+              isDisabled={undefined}
             />
-            <CircularDot
-              bgColor={activeScreen === 1 ? '#0077ff' : '#D9D9D9'}
-              style={{marginHorizontal: wp(3)}}
+            <Text style={styles.or}>or</Text>
+            <ButtonNew
+              btntext="Log in"
+              bgColor="#0077FF"
+              textColor="#FFFFFF"
+              onPress={() => handleButtonPress('Login')}
+              isBorder={true}
+              imgSource={undefined}
+              isDisabled={undefined}
             />
-            <CircularDot
-              bgColor={activeScreen === 2 ? '#0077ff' : '#D9D9D9'}
-              style={undefined}
-            />
-          </View>
-          <View style={styles.ImageSection}>
-            <Image
-              style={styles.singleImage}
-              source={
-                activeScreen === 0
-                  ? Images.OnboardingScreen1
-                  : activeScreen === 1
-                    ? Images.OnboardingScreen2
-                    : Images.OnboardingScreen3
-              }>
-            </Image>
           </View>
         </View>
-      </GestureRecognizer>
-      <View style={styles.buttonSection}>
-        <Buttons buttonName="Skip" bgColor="black" onPress={() => { navigation.navigate('Authentication'); }}></Buttons>
-        <Buttons buttonName="Next" bgColor="#407BFF" onPress={() => {
-          if (activeScreen === 2) {
-            navigation.navigate("Authentication");
-          } else {
-            setActiveScreen(activeScreen + 1);
-          }
-        }}></Buttons>
       </View>
-    </View>
+    </>
   );
 };
 
-export default Onboarding;
-
 const styles = StyleSheet.create({
-  container: {
+  section: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
+    position: 'absolute',
+    top: hp(40),
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // marginBottom:hp(20)
   },
-  containerItems: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: hp(6),
-    flexDirection: 'column',
-  },
-  title: {
-    fontFamily: 'Lato',
-    fontWeight: '700',
-    fontSize: hp(3.5),
-    color: '#08090D',
-  },
-  titledesc: {
-    marginTop: hp(1),
-    color: '#787878',
-    width: wp(70),
+  container: {flex: 1, backgroundColor: '#fff', paddingHorizontal: wp(6)},
+  loadingContainer: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  logoContainer: {alignItems: 'center', marginTop: hp(3)},
+  logo: {width: wp(40), height: hp(13), resizeMode: 'contain'},
+  containerItems: {alignItems: 'center', justifyContent: 'center'},
+  titleSection: {alignItems: 'center', marginTop: hp(2), gap: hp(0.5)},
+  title: {fontSize: FSize.fs22, fontWeight: 'bold', color: '#000'},
+  subtitle: {
+    paddingHorizontal: wp(14),
+    fontSize: FSize.fs12,
+    color: Colors.gray,
     textAlign: 'center',
   },
-  ImageSection: {
-    alignItems: 'center',
-    marginTop: hp(1),
-    backgroundColor: 'white',
+  dotsContainer: {flexDirection: 'row', marginVertical: hp(3)},
+  dot: {
+    height: hp(1),
+    width: hp(1),
+    borderRadius: hp(0.5),
+    marginHorizontal: wp(1),
   },
-  singleImage: {
-    objectFit: 'contain',
-    height: hp(50),
-  },
-  titleSection: {
-    alignItems: 'center',
-  },
-  buttonSection: {
-    marginBottom: hp(8),
+  imageContainer: {alignItems: 'center', marginVertical: hp(3)},
+  onboardingImage: {width: wp(120), height: hp(60), resizeMode: 'contain'},
+  buttonContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: hp(3),
+  },
+
+  profileSelectionContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    marginVertical: hp(1),
     marginHorizontal: wp(7),
+    // backgroundColor:'red',
+  },
+
+  profileTypes: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  buttonText: {
-    color: '#FFFFFF',
-  },
-  loadingContainer: {
-    flex: 1,
+  gestures: {
     justifyContent: 'center',
-    alignItems: 'center',
   },
+
+  profileCard: {
+    width: wp(42),
+    alignItems: 'center',
+    paddingHorizontal: wp(2),
+    paddingVertical: hp(3),
+    borderRadius: 10,
+    gap: hp(1),
+    borderColor: Colors.gray,
+    // backgroundColor:'#F2F7FF',
+    borderWidth: 1,
+  },
+  profileImage: {width: wp(8), height: hp(4), resizeMode: 'contain'},
+  // profileImagetwo: {width: wp(16), height: hp(6), resizeMode: 'contain'},
+  profileName: {
+    fontSize: FSize.fs13,
+    fontWeight: 'bold',
+    color: '#000',
+    marginTop: hp(1),
+  },
+  profileDescription: {
+    fontSize: FSize.fs11,
+    color: '#7c7c7c',
+    textAlign: 'center',
+  },
+  actionButtonContainer: {alignItems: 'center', marginTop: hp(1)},
+  or: {fontSize: FSize.fs12, color: '#7c7c7c', marginBottom: hp(2)},
 });
+
+export default Onboarding;
