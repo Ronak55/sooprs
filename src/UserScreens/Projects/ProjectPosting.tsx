@@ -540,6 +540,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
             textColor={Colors.white}
             onPress={handleNextPress}
             isDisabled={loading}
+            isBorder={true}
           />
         </View>
       </View>

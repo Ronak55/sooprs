@@ -132,6 +132,7 @@ import {
             bgColor="#0077FF"
             textColor="#FFFFFF"
             onPress={() => navigation.navigate('AddPortfolio')}
+            isBorder={true}
           />
         </View>
       </ScrollView>

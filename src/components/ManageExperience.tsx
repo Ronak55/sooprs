@@ -139,6 +139,7 @@ const ManageExperience = ({navigation, route}: {navigation: any}) => {
           bgColor="#0077FF"
           textColor="#FFFFFF"
           onPress={() => navigation.navigate('AddExperience')}
+          isBorder={true}
         />
       </ScrollView>
     </View>

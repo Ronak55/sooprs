@@ -198,6 +198,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               textColor={Colors.white}
               onPress={getContactDetails}
               isDisabled={!btnVisible || loading} // Disable button while loading
+              isBorder={true}
             />
           </View>
         </View>

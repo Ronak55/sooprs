@@ -140,6 +140,7 @@ import {
             bgColor="#0077FF"
             textColor="#FFFFFF"
             onPress={handleSubmit}
+            isBorder={true}
           />
         </View>
   

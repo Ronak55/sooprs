@@ -339,6 +339,7 @@ const MilestoneModal = ({
               textColor={Colors.white}
               onPress={handleSaveMilestone}
               isDisabled={loading}
+              isBorder={true}
             />
           </View>
         </View>
@@ -826,6 +827,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 textColor={Colors.white}
                 onPress={() => handlePayment(milestone_amount)}
                 isDisabled={loading} // Disable button while loading
+                isBorder={true}
               />
           </View>
         </View>
@@ -1041,6 +1043,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
                 textColor={Colors.white}
                 onPress={selectFile}
                 isDisabled={loading || uploading} // Disable button while loading or uploading
+                isBorder={true}
               />
             </>
           )}
@@ -1054,6 +1057,7 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
             bgColor={Colors.sooprsblue}
             textColor={Colors.white}
             onPress={handleAcceptProject}
+            isBorder={true}
           />
         </View>
       )}

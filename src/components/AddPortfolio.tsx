@@ -232,6 +232,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
               bgColor="#0077FF"
               textColor="#FFFFFF"
               onPress={handleSave}
+              isBorder={true}
             />
           </View>
         </View>

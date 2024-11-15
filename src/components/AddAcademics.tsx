@@ -168,6 +168,7 @@ const AddAcademics = ({navigation}: {navigation: any}) => {
               bgColor={Colors.sooprsblue}
               textColor={Colors.white}
               onPress={handleSave}
+              isBorder={true}
             />
           </View>
         </View>

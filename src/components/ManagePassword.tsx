@@ -165,6 +165,7 @@ const ManagePassword = ({navigation}: {navigation: any}) => {
           textColor={Colors.white}
           onPress={handleChangePassword}
           imgSource={undefined}
+          isBorder={true}
         />
       </View>
     </View>

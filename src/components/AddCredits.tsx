@@ -344,6 +344,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
             bgColor="#0077FF"
             textColor="#FFFFFF"
             onPress={openModal}
+            isBorder={true}
           />
           <Modal
             visible={visible}

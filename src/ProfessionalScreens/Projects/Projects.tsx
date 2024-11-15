@@ -156,6 +156,7 @@ const Projects = ({navigation}) => {
                 textColor={Colors.white}
                 onPress={loadMoreProjects}
                 isDisabled={newLoading} // Disable button while loading
+                isBorder={true}
               />
           </View>
       );

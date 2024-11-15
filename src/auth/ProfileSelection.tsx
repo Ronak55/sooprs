@@ -102,7 +102,7 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
 
     const profileSelected = profiles.find(p => p.id === id)?.name;
 
-    // console.log('profiletype:::::', profileSelected);
+    console.log('profiletype:::::', profileSelected);
     // setSelectedCard(id);
     navigation.navigate('Login', {
       profileType: profileSelected,

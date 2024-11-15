@@ -225,6 +225,7 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
             bgColor="#0077FF"
             textColor="#FFFFFF"
             onPress={handleOnPress}
+            isBorder={true}
           />
         </View>
       </View>

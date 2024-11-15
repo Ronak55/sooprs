@@ -59,6 +59,7 @@ const AllProjects = ({
 
     if (hasMore) {
       return (
+        <View style={{marginTop:hp(2)}}>
         <ButtonNew
         imgSource={undefined}
         btntext={
@@ -69,11 +70,12 @@ const AllProjects = ({
           )
         }
         bgColor={Colors.sooprsblue}
-        isBorder={false}
+        isBorder={true}
         textColor={Colors.white}
         onPress={loadMoreProjects}
         isDisabled={newLoading} // Disable button while loading
       />
+      </View>
       );
     }
 

@@ -1,20 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Animated, Dimensions, Easing, Image, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Animated, Dimensions, Easing, Image } from 'react-native';
 import Images from './assets/image';
 import { hp, wp } from './assets/commonCSS/GlobalCSS';
 import Colors from './assets/commonCSS/Colors';
-import ProfileSelection from './auth/ProfileSelection';
 
 const { width, height } = Dimensions.get('window');
 
-const Splash = ({navigation} : {navigation:any}) => {
+const Splash = ({ navigation }: { navigation: any }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity for the logo
   const waveAnim1 = useRef(new Animated.Value(0.3)).current; // First wave animation
   const waveAnim2 = useRef(new Animated.Value(0.3)).current; // Second wave animation
   const waveAnim3 = useRef(new Animated.Value(0.3)).current; // Third wave animation
   const slideAnim = useRef(new Animated.Value(0)).current; // Slide animation for screen transition
 
-  const [isSplashVisible, setIsSplashVisible] = useState(true); // State to toggle screens
+  const [isSplashComplete, setIsSplashComplete] = useState(false); // State to toggle navigation
 
   useEffect(() => {
     const startAnimation = () => {
@@ -23,7 +22,7 @@ const Splash = ({navigation} : {navigation:any}) => {
         createWaveAnimation(waveAnim2),
         createWaveAnimation(waveAnim3),
       ]).start(() => {
-        navigateToNextScreen(); // Trigger the screen transition after wave animations
+        navigation.navigate('Authentication');
       });
 
       // Fade in the logo
@@ -41,26 +40,10 @@ const Splash = ({navigation} : {navigation:any}) => {
   const createWaveAnimation = (anim: Animated.Value) =>
     Animated.timing(anim, {
       toValue: 1, // Full expansion of the wave
-      duration: 2000, // Smooth animation duration
+      duration: 2500, // Smooth animation duration
       easing: Easing.out(Easing.ease), // Smooth wave-like easing
       useNativeDriver: false, // Animating width and height, so native driver can't be used
     });
-
-  const navigateToNextScreen = () => {
-    // Slide the splash screen out
-    Animated.timing(slideAnim, {
-      toValue: -height, // Slide splash screen out of view (bottom to top)
-      duration: 600,
-      easing: Easing.ease,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsSplashVisible(false); // Hide the splash screen and show the next screen
-    });
-  };
-
-  if (!isSplashVisible) {
-    return <ProfileSelection navigation={navigation}/>; // Render the next screen
-  }
 
   const createWaveStyle = (anim: Animated.Value) => ({
     transform: [{ scale: anim }],
@@ -104,7 +87,6 @@ const Splash = ({navigation} : {navigation:any}) => {
   );
 };
 
-
 export default Splash;
 
 const styles = StyleSheet.create({
@@ -126,5 +108,4 @@ const styles = StyleSheet.create({
     width: wp(30), // Logo width
     height: hp(15), // Logo height
   },
-
 });

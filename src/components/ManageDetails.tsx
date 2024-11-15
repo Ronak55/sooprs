@@ -471,8 +471,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           btntext={'Update Profile'}
           bgColor={Colors.sooprsblue}
           textColor={Colors.white}
-          onPress={saveProfileDetails}
-        />
+          onPress={saveProfileDetails} isBorder={true} isDisabled={undefined}        />
       </View>
     </ScrollView>
   );
@@ -564,7 +563,7 @@ const styles = StyleSheet.create({
   },
 
   saveButton: {
-    marginTop: hp(2),
+    marginVertical: hp(1.5),
     marginHorizontal: wp(5),
   },
 });

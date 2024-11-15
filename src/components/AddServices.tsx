@@ -218,6 +218,7 @@ const [services, setServices] = useState([]);
           bgColor="#0077FF"
           textColor="#FFFFFF"
           onPress={openModal}
+          isBorder={true}
         />
       </View>
 

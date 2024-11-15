@@ -139,6 +139,7 @@ const ManageResume = ({navigation, route}: {navigation: any, route:any}) => {
         bgColor={Colors.sooprsblue}
         textColor={Colors.white}
         onPress={handleUpload}
+        isBorder={true}
       />
       </View>
 

@@ -127,6 +127,7 @@ const ManageAcademics = ({navigation, route} : {navigation:any, route:any}) => {
           bgColor="#0077FF"
           textColor="#FFFFFF"
           onPress={() => navigation.navigate('AddAcademics')}
+          isBorder={true}
         />
       </View>
     </View>

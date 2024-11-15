@@ -90,7 +90,7 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
   };
   // Handle adding skill
   const handleSubmit = async () => {
-    if (skillId) {
+
       try {
         // Prepare FormData payload
         const formData = new FormData();
@@ -111,7 +111,7 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
 
             console.log('skill added :::::::::', result.msg);
           // Update addedSkills with the new skill
-          const newSkill = skills.find(skill => skill.skill_id === skillId);
+          const newSkill = skills.find(skill => skill.id === skillId);
           setAddedSkills(prevSkills => [...prevSkills, newSkill]);
           Toast.show({
             type: 'success',
@@ -137,13 +137,7 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
           text2: 'Failed to add skill. Please try again.',
         });
       }
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'No Skill Selected',
-        text2: 'Please select a skill to proceed.',
-      });
-    }
+     
   };
 
   const removeSkill = async skillId => {
@@ -162,10 +156,15 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
 
       const res = await response.json();
 
-      if (response.status === 200) {
+      if (response.status == 200) {
         // Remove skill from local state
+        console.log('removed skills section::::::::::', res.msg);
+
+        console.log("added skills::::", addedSkills);
+        console.log('skill id::::::', skillId);
+
         setAddedSkills(prevSkills =>
-          prevSkills.filter(skill => skill.skill_id !== skillId),
+          prevSkills.filter(skill => skill.id !== skillId),
         );
         Toast.show({
           type: 'success',
@@ -220,14 +219,14 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
         {addedSkills.length > 0 ? (
           <FlatList
             data={addedSkills}
-            keyExtractor={item => item.skill_id}
+            keyExtractor={item => item.id}
             numColumns={2} // Two columns
             renderItem={({item}) => (
               <View style={styles.skillCard}>
                 <Text style={styles.skillCardText}>{item.skill_name}</Text>
                 {/* Cross Icon for Deleting */}
                 <TouchableOpacity
-                  onPress={() => removeSkill(item.skill_id)}
+                  onPress={() => removeSkill(item.id)}
                   style={styles.crossIconContainer}>
                   <Image
                     source={Images.crossIcon}
@@ -252,8 +251,7 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
           btntext="Add Skills"
           bgColor="#0077FF"
           textColor="#FFFFFF"
-          onPress={openModal}
-        />
+          onPress={openModal} isBorder={true} isDisabled={undefined}        />
       </View>
 
       {/* Modal */}
@@ -286,12 +284,12 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
                 <Text style={styles.labelText}>Select Skill</Text>
                 <FlatList
                   data={skills}
-                  keyExtractor={item => item.skill_id}
+                  keyExtractor={item => item.id}
                   renderItem={({item}) => (
                     <TouchableOpacity
                       onPress={() => {
                         setSelectedSkill(item.skill_name);
-                        setSkillId(item.skill_id);
+                        setSkillId(item.id);
                       }}
                       style={[
                         styles.skillItem,

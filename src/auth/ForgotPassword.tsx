@@ -133,6 +133,7 @@ const ForgotPassword = ({navigation}: {navigation: any}) => {
                 bgColor="#0077FF"
                 textColor="#FFFFFF"
                 onPress={EmailHandlePress}
+                isBorder={true}
               />
             </>
           ) : (
@@ -163,6 +164,7 @@ const ForgotPassword = ({navigation}: {navigation: any}) => {
                 bgColor="#0077FF"
                 textColor="#FFFFFF"
                 onPress={handleNewPasswordSubmit}
+                isBorder={true}
               />
             </>
           )}

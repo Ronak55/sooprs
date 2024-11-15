@@ -167,6 +167,7 @@ const BidModal = ({
                 textColor={Colors.white}
                 onPress={handleSubmit}
                 isDisabled={loading} // Disable button while loading
+                isBorder={true}
               />
             </View>
           </TouchableWithoutFeedback>
