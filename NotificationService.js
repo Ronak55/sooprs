@@ -28,23 +28,23 @@ async function getFCMToken() {
 
 export const NotificationListener = () => {
     // Handle foreground messages
-    messaging().onMessage(async remoteMessage => {
-      console.log('Foreground message received:', remoteMessage);
-    });
+    // messaging().onMessage(async remoteMessage => {
+    //   console.log('Foreground message received:', remoteMessage);
+    // });
   
-    // Handle background messages
-    messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Background message received:', remoteMessage);
-    });
+    // // Handle background messages
+    // messaging().setBackgroundMessageHandler(async remoteMessage => {
+    //   console.log('Background message received:', remoteMessage);
+    // });
   
-    // Handle messages when app is opened from quit state
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log('Quit state message:', remoteMessage);
-        }
-      });
+    // // Handle messages when app is opened from quit state
+    // messaging()
+    //   .getInitialNotification()
+    //   .then(remoteMessage => {
+    //     if (remoteMessage) {
+    //       console.log('Quit state message:', remoteMessage);
+    //     }
+    //   });
   };
 
 export const initializeApp = async () => {
@@ -59,19 +59,20 @@ export const initializeApp = async () => {
       console.log('User provisionally granted permissions request');
     }
 
+     
     const channelId = await notifee.createChannel({
       id: 'default',
       name: 'default channel',
       importance: AndroidImportance.HIGH,
     });
 
-    // // Display a greeting notification immediately
     await notifee.displayNotification({
       title: 'Voila !',
       body:'Welcome to Sooprs 🎉',
       android: {
         channelId,
         importance: AndroidImportance.HIGH,
+        // smallIcon: 'ic_stat_sooprslogo',
         pressAction: {
           id: 'default',
         },
@@ -80,7 +81,13 @@ export const initializeApp = async () => {
 
     // Handle foreground notifications
     const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
-      const { title, body } = remoteMessage.notification;
+      
+      console.log('Foreground notification:', remoteMessage);
+
+      const title = remoteMessage?.notification?.title || 'Default Title';
+      const body = remoteMessage?.notification?.body || 'Default Body';
+
+      console.log('foreground title and body are displayed:::', title, body )
 
       await notifee.displayNotification({
         title,
@@ -88,6 +95,7 @@ export const initializeApp = async () => {
         android: {
           channelId,
           importance: AndroidImportance.HIGH,
+          // smallIcon: 'ic_stat_sooprslogo',
           pressAction: {
             id: 'default',
           },
@@ -97,7 +105,13 @@ export const initializeApp = async () => {
 
     // Handle background and quit state notifications
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      const { title, body } = remoteMessage.notification;
+
+      console.log('Notification handled in the background!', remoteMessage);
+
+      const title = remoteMessage?.notification?.title || 'Default Title';
+      const body = remoteMessage?.notification?.body || 'Default Body';
+
+      console.log('background title and body are displayed:::', title, body )
 
       await notifee.displayNotification({
         title,
@@ -105,6 +119,7 @@ export const initializeApp = async () => {
         android: {
           channelId,
           importance: AndroidImportance.HIGH,
+          // smallIcon: 'ic_stat_sooprslogo',
           pressAction: {
             id: 'default',
           },

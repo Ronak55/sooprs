@@ -289,13 +289,13 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               isDisabled={loading}
             />
             <View style={styles.forgotSection}>
-              <Text style={styles.forgotyourPass}>Forgot your Password ?</Text>
+              <Text style={styles.forgotyourPass}>Don’t have an account?</Text>
               <TouchableOpacity
                 style={styles.forgotPassword}
                 onPress={() => {
-                  navigation.navigate('Forgot');
+                  navigation.navigate('Signup', {profileType: profileType === 'Client' ? 1 : 0});
                 }}>
-                <Text style={styles.forgotText}>Click here</Text>
+                <Text style={styles.forgotText}>Sign up</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(1),
-    marginBottom: hp(5),
+    marginVertical: hp(3),
   },
 
   line: {
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
 
   title: {
     flexDirection: 'column',
-    gap: hp(3),
+    gap: hp(0.7),
     alignItems: 'center',
   },
   titleText: {
@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(10),
     fontFamily: 'poppins',
     textAlign: 'center',
+    marginBottom:hp(3),
     fontSize: FSize.fs14,
     color: '#999999',
   },

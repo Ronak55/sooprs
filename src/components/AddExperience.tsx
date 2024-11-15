@@ -97,12 +97,11 @@ import {
             name="Enter your organisation"
             newlabel={false}
             style={undefined}
-            setValue={(val: any) => setOrganisation(val)}
+            setValue={(val:any) => setOrganisation(val)}
             value={organisation}
             isPassword={false}
             keyboardType={'default'}
           />
-  
           <CInput
             title="Designation"
             name="Enter your designation"

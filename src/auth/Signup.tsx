@@ -189,6 +189,9 @@ const Signup = ({navigation, route}: {navigation: any; route: any}) => {
         <View style={styles.section}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Sign Up</Text>
+            <Text style={styles.subTitleText}>
+              Discover a world of opportunities on Sooprs
+            </Text>
             {/* <ButtonNew
               imgSource={Images.googleIcon}
               btntext="Continue with Google"
@@ -431,7 +434,7 @@ const styles = StyleSheet.create({
 
   title: {
     flexDirection: 'column',
-    gap: hp(3),
+    gap: hp(1.2),
     alignItems: 'center',
   },
   titleText: {

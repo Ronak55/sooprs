@@ -16,6 +16,7 @@ const CInput = ({
   title,
   name,
   isPassword,
+  loggedIn,
   newlabel,
   style,
   customInputStyle,
@@ -28,6 +29,7 @@ const CInput = ({
   title: string;
   name: string;
   isPassword: boolean;
+  loggedIn:boolean;
   newlabel:boolean;
   style: any;
   customInputStyle:any;

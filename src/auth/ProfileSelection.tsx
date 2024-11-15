@@ -98,19 +98,26 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
     },
   ];
 
-  const handleRadioChange = id => {
-    setSelectedCard(id);
-  };
+  const handleRadioChange = (id:any) => {
 
-  const handleButtonPress = action => {
-    if (!selectedCard) {
-      Toast.show({type: 'info', text1: 'Please select your profile'});
-      return;
-    }
-    navigation.navigate(action, {
-      profileType: profiles.find(p => p.id === selectedCard)?.name,
+    const profileSelected = profiles.find(p => p.id === id)?.name;
+
+    // console.log('profiletype:::::', profileSelected);
+    // setSelectedCard(id);
+    navigation.navigate('Login', {
+      profileType: profileSelected,
     });
   };
+
+  // const handleButtonPress = action => {
+  //   if (!selectedCard) {
+  //     Toast.show({type: 'info', text1: 'Please select your profile'});
+  //     return;
+  //   }
+  //   navigation.navigate(action, {
+  //     profileType: profiles.find(p => p.id === selectedCard)?.name,
+  //   });
+  // };
 
   return (
     <>
@@ -205,7 +212,7 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
               ))}
             </View>
           </View>
-          <View style={styles.actionButtonContainer}>
+          {/* <View style={styles.actionButtonContainer}>
             <ButtonNew
               btntext="Sign Up"
               bgColor="#FFFFFF"
@@ -225,7 +232,7 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
               imgSource={undefined}
               isDisabled={undefined}
             />
-          </View>
+          </View> */}
         </View>
       </View>
     </>
@@ -235,15 +242,17 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
 const styles = StyleSheet.create({
   section: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: "#FDFDFD",
     position: 'absolute',
-    top: hp(40),
+    borderTopLeftRadius:wp(10),
+    borderTopRightRadius:wp(10),
+    top: hp(55),
     left: 0,
     right: 0,
     bottom: 0,
     // marginBottom:hp(20)
   },
-  container: {flex: 1, backgroundColor: '#fff', paddingHorizontal: wp(6)},
+  container: {flex: 1, backgroundColor:'#F2F7FF', paddingHorizontal: wp(6)},
   loadingContainer: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   logoContainer: {alignItems: 'center', marginTop: hp(3)},
   logo: {width: wp(40), height: hp(13), resizeMode: 'contain'},
@@ -280,6 +289,7 @@ const styles = StyleSheet.create({
   },
 
   profileTypes: {
+    marginTop:hp(2),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
