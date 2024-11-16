@@ -206,6 +206,9 @@ const Projects = ({navigation}) => {
               colors={[Colors.sooprsblue]}
             />
           }
+          ListEmptyComponent={() => (
+            <Text style={styles.emptyMessage}>No projects found !</Text>
+          )}
         />
       </View>
     </View>
@@ -254,5 +257,12 @@ const styles = StyleSheet.create({
     marginBottom: hp(15),
     color: Colors.gray,
     fontSize: wp(3.5),
+  },
+
+  emptyMessage: { 
+    textAlign: 'center',
+    marginTop: hp(35),
+    color: 'gray',
+    fontSize: FSize.fs14,
   },
 });

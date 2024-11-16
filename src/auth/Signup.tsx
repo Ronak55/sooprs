@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
 
   forgotyourPass: {
     fontFamily: 'inter',
-    fontWeight: '700',
+    fontWeight: '600',
     color: Colors.black,
     fontSize: FSize.fs14,
   },

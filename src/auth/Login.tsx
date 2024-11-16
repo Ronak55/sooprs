@@ -77,36 +77,70 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log('userinfo:::::::::', userInfo);
-      // const { email, name } = userInfo?.data?.user;
+      const formData = new FormData();
+      // console.log('userinfo:::::::::', userInfo);
+      const idToken = userInfo?.data?.idToken;
+      const fcmToken = await AsyncStorage.getItem(mobile_siteConfig.fcmToken);
+      // console.log('fcm token::::::::::', fcmToken);
+      // console.log('id token:::::::::', idToken);
 
-      // if (email && name) {
-      //   const request = {
-      //     email,
-      //     name,
-      //     type: 'google.com',
-      //   };
+      formData.append('token', idToken);
+      formData.append('fcm_token', fcmToken);
 
-      //   console.log('user info google:::::::::', request);
+      console.log('formdata for google:::::::::', formData);
 
-      //   postData(request, mobile_siteConfig.SOCIAL_LOGIN).then(async (res) => {
-      //     if (res) {
-      //       await AsyncStorage.setItem(mobile_siteConfig.MOB_ACCESS_TOKEN_KEY, res?.token);
-      //       await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'TRUE');
-      //       Alert.alert(
-      //         'Sign-In Successful',
-      //         `Hello, ${name}`,
-      //         [
-      //           { text: 'OK', onPress: () => navigation.navigate('LoggedIn') }
-      //         ]
-      //       );
-      //     } else {
-      //       Alert.alert('Error', 'Login failed');
-      //     }
-      //   });
+      fetch('https://sooprs.com/api2/public/index.php/app-google-login', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(async res => {
+          console.log('google login respose::::::::::', res);
+          if (res.status == 200) {
+            storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+            storeDataToAsyncStorage(mobile_siteConfig.UID, res?.user_id);
+            storeDataToAsyncStorage(mobile_siteConfig.TOKEN, res?.token);
+            storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);       
+            storeDataToAsyncStorage(mobile_siteConfig.NAME, res?.name);
+            storeDataToAsyncStorage(mobile_siteConfig.SLUG, res?.slug);
+            storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, res?.is_buyer);
+            storeDataToAsyncStorage(
+              mobile_siteConfig.PROFILE_PIC,
+              res?.profile_pic,
+            );
 
-      //   await AsyncStorage.setItem('googleUserInfo', JSON.stringify({ email, name }));
-      // }
+            Toast.show({
+              type: 'success',
+              text1: 'Login Successful',
+              text2: 'You have loggedin successfully!',
+              position: 'top',
+            });
+
+            isLoading(false);
+
+            let resetAction = CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name:
+                    profileType === 'Client'
+                      ? 'ClientLoggedIn'
+                      : 'ProfessionalLoggedIn',
+                },
+              ],
+            });
+            navigation.dispatch(resetAction);
+          } else {
+            console.log('response token:::::::::::', res);
+            Toast.show({
+              type: 'error',
+              text1: 'Something went wrong',
+              text2: res.msg || 'Google Signin failed. Please try again.',
+              position: 'top',
+            });
+            isLoading(false);
+          }
+        });
     } catch (error) {
       console.log('Sign-In Error:', error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -122,6 +156,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         console.log('error google:::::::::', error);
         Alert.alert('Sign-In Error', 'An error occurred during sign-in');
       }
+      isLoading(false);
     }
   };
 
@@ -145,14 +180,14 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     //   );
     //   return;
     // }
-    const fcmToken = await AsyncStorage.getItem(mobile_siteConfig.fcmToken)
+    const fcmToken = await AsyncStorage.getItem(mobile_siteConfig.fcmToken);
 
     console.log('fcm token get login::::', fcmToken);
 
     const payload = {
       email: email,
       password: password,
-      fcm_token:fcmToken
+      fcm_token: fcmToken,
     };
 
     const isClient = profileType === 'Client' ? '1' : '0';
@@ -169,17 +204,18 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           });
 
           storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-          storeDataToAsyncStorage(mobile_siteConfig.UID, response.user_id);
-          storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response.token);
+          storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
+          storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
           storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
           storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
+          storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
           storeDataToAsyncStorage(
             mobile_siteConfig.IS_BUYER,
-            response.is_buyer,
+            response?.is_buyer,
           );
           storeDataToAsyncStorage(
             mobile_siteConfig.PROFILE_PIC,
-            response.profile_pic,
+            response?.profile_pic,
           );
           // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
           isLoading(false);
@@ -217,7 +253,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           text2: 'Something went wrong. Please try again.',
           position: 'top',
         });
-      })
+      });
   };
 
   return (
@@ -242,11 +278,19 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
             </Text>
             <ButtonNew
               imgSource={Images.googleIcon}
-              btntext="Continue with Google"
+              btntext={
+                loading ? (
+                  <ActivityIndicator color={Colors.white} />
+                ) : (
+                  'Continue with Google'
+                )
+              }
               bgColor="#F6F6F6"
               textColor="black"
               onPress={signInWithGoogle}
+              isDisabled={loading}
             />
+
             <View style={styles.orSection}>
               <View style={styles.line} />
               <Text style={styles.or}>or</Text>
@@ -255,7 +299,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           </View>
           <View style={styles.inputContainer}>
             <CInput
-              title="Email address"
+              title=""
               name="Enter your email address"
               newlabel={false}
               style={undefined}
@@ -266,7 +310,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
             />
 
             <CInput
-              title="Password"
+              title=""
               name="Enter your password"
               newlabel={false}
               style={undefined}
@@ -293,7 +337,9 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               <TouchableOpacity
                 style={styles.forgotPassword}
                 onPress={() => {
-                  navigation.navigate('Signup', {profileType: profileType === 'Client' ? 1 : 0});
+                  navigation.navigate('Signup', {
+                    profileType: profileType === 'Client' ? 1 : 0,
+                  });
                 }}>
                 <Text style={styles.forgotText}>Sign up</Text>
               </TouchableOpacity>
@@ -377,7 +423,7 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(10),
     fontFamily: 'poppins',
     textAlign: 'center',
-    marginBottom:hp(3),
+    marginBottom: hp(3),
     fontSize: FSize.fs14,
     color: '#999999',
   },
@@ -412,14 +458,14 @@ const styles = StyleSheet.create({
 
   forgotyourPass: {
     fontFamily: 'inter',
-    fontWeight: '700',
+    fontWeight: '600',
     color: Colors.black,
     fontSize: FSize.fs14,
   },
 
   forgotText: {
     fontFamily: 'inter',
-    fontWeight: '800',
+    fontWeight: '700',
     fontSize: FSize.fs14,
     color: Colors.sooprsblue,
     textDecorationLine: 'underline',

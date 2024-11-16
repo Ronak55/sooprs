@@ -3,6 +3,7 @@ import { StyleSheet, View, Animated, Dimensions, Easing, Image } from 'react-nat
 import Images from './assets/image';
 import { hp, wp } from './assets/commonCSS/GlobalCSS';
 import Colors from './assets/commonCSS/Colors';
+import { CommonActions } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -13,29 +14,42 @@ const Splash = ({ navigation }: { navigation: any }) => {
   const waveAnim3 = useRef(new Animated.Value(0.3)).current; // Third wave animation
   const slideAnim = useRef(new Animated.Value(0)).current; // Slide animation for screen transition
 
-  const [isSplashComplete, setIsSplashComplete] = useState(false); // State to toggle navigation
-
   useEffect(() => {
     const startAnimation = () => {
-      Animated.stagger(400, [
+      Animated.stagger(500, [
         createWaveAnimation(waveAnim1),
         createWaveAnimation(waveAnim2),
-        createWaveAnimation(waveAnim3),
-      ]).start(() => {
-        navigation.navigate('Authentication');
-      });
+        Animated.parallel([
+          createWaveAnimation(waveAnim3),
+          Animated.timing(fadeAnim, {
+            toValue: 0, // Fade out the logo
+            duration: 500, // Smooth fade-out
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
 
-      // Fade in the logo
+      setTimeout(() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Authentication' }],
+          })
+        );
+      }, 1500); // Adjust this timing if needed for smooth transition
+  
+      // Fade in the logo initially
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 800,
+        duration: 500,
         useNativeDriver: true,
       }).start();
     };
-
-    const timer = setTimeout(startAnimation, 1000); // Delay before starting the animations
+  
+    const timer = setTimeout(startAnimation, 100); // Delay before starting the animations
     return () => clearTimeout(timer); // Clear timeout if component unmounts
   }, [fadeAnim, waveAnim1, waveAnim2, waveAnim3]);
+  
 
   const createWaveAnimation = (anim: Animated.Value) =>
     Animated.timing(anim, {
@@ -45,25 +59,31 @@ const Splash = ({ navigation }: { navigation: any }) => {
       useNativeDriver: false, // Animating width and height, so native driver can't be used
     });
 
-  const createWaveStyle = (anim: Animated.Value) => ({
-    transform: [{ scale: anim }],
-    width: anim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [wp(150), width * 2], // Scale beyond screen size
-    }),
-    height: anim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [hp(30), height * 2], // Scale beyond screen size
-    }),
-    borderRadius: anim.interpolate({
-      inputRange: [0, 0.7, 1],
-      outputRange: [wp(30), wp(150), 0], // Gradually reduce borderRadius
-    }),
-    opacity: anim.interpolate({
-      inputRange: [0, 0.9, 1],
-      outputRange: [0.7, 0.5, 0], // Fade out the wave
-    }),
-  });
+    const createWaveStyle = (anim: Animated.Value) => {
+      const size = anim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [wp(150), width * 2], // Single size value for both width and height
+      });
+    
+      return {
+        transform: [{ scale: anim }],
+        width: size,
+        height: size, // Ensure height matches width
+        borderRadius: size.interpolate({
+          inputRange: [0, width * 2],
+          outputRange: [wp(75), width], // Half of the size to make it a perfect circle
+        }),
+        opacity: anim.interpolate({
+          inputRange: [0, 0.9, 1],
+          outputRange: [0.7, 0.5, 0], // Fade out the wave
+        }),
+        position: 'absolute',
+        backgroundColor: 'white', // White color for the wave
+        justifyContent: 'center',
+        alignItems: 'center',
+      };
+    };
+    
 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: slideAnim }] }]}>
@@ -78,7 +98,7 @@ const Splash = ({ navigation }: { navigation: any }) => {
         style={[
           styles.logo,
           {
-            opacity: fadeAnim, // Apply fade-in effect to the logo
+            opacity: fadeAnim, // Apply fade-in and fade-out effect to the logo
           },
         ]}
         resizeMode="contain"

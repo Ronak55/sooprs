@@ -173,7 +173,7 @@ const Home = ({ navigation }: { navigation: any }) => {
             tintColor={Colors.sooprsblue}
             colors={[Colors.sooprsblue, Colors.black]}
           />
-        }>
+        } showsVerticalScrollIndicator={false}>
         <Header
           navigation={navigation}
           img={profilePic}

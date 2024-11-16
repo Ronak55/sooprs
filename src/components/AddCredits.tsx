@@ -1,7 +1,9 @@
 import {
-    FlatList,
+  FlatList,
   Image,
   Modal,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,18 +21,16 @@ import RazorpayCheckout from 'react-native-razorpay';
 import {useIsFocused} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mobile_siteConfig} from '../services/mobile-siteConfig';
-import { useWindowDimensions } from 'react-native';
-import {TabView, SceneMap } from 'react-native-tab-view';
-
+import {useWindowDimensions} from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
 
 const AddCredits = ({navigation}: {navigation: any}) => {
-
- const layout = useWindowDimensions();
- const [index, setIndex] = useState(0);
- const [routes] = useState([
-    { key: 'all', title: 'All' },
-    { key: 'credited', title: 'Credited' },
-    { key: 'debited', title: 'Debited' },
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'all', title: 'All'},
+    {key: 'credited', title: 'Credited'},
+    {key: 'debited', title: 'Debited'},
   ]);
   const [visible, setVisible] = useState(false);
   const [credits, setCredits] = useState('');
@@ -41,6 +41,8 @@ const AddCredits = ({navigation}: {navigation: any}) => {
   const [sampleAmount, setsampleAmount] = useState(['$10', '$20', '$30']);
   const [name, setName] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); 
+
 
   const openModal = () => setVisible(true);
   const closeModal = () => setVisible(false);
@@ -48,20 +50,23 @@ const AddCredits = ({navigation}: {navigation: any}) => {
   const AllTab = () => (
     <FlatList
       data={transactions}
-      keyExtractor={(item) => item.updated_at}
-      renderItem={({ item }) => (
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      keyExtractor={item => item.updated_at}
+      renderItem={({item}) => (
         <View
           style={[
             styles.transactionCard,
-            item.transaction_type === "0" ? styles.debitCard : styles.creditCard,
-          ]}
-        >
+            item.transaction_type === '0'
+              ? styles.debitCard
+              : styles.creditCard,
+          ]}>
           <View style={styles.transactionRow}>
             {/* Transaction Date */}
             <Text style={styles.transactionDate}>
-              {item.transaction_date || "No Date"}
+              {item.transaction_date || 'No Date'}
             </Text>
-  
+
             {/* Transaction ID */}
             {item.transaction_id ? (
               <Text style={styles.transactionId}>
@@ -69,112 +74,105 @@ const AddCredits = ({navigation}: {navigation: any}) => {
               </Text>
             ) : null}
           </View>
-  
+
           <Text style={styles.transactionRemark}>{item.remark}</Text>
-  
+
           <View style={styles.transactionDetails}>
             {/* Transaction Amount */}
-            <Text style={styles.transactionAmount}>
-              {item.amount}
-            </Text>
-  
+            <Text style={styles.transactionAmount}>{item.amount}</Text>
+
             {/* Transaction Type */}
             <Text style={styles.transactionType}>
-              {item.transaction_type==='0' ? 'Debited' : 'Credited'}
+              {item.transaction_type === '0' ? 'Debited' : 'Credited'}
             </Text>
           </View>
         </View>
       )}
-      contentContainerStyle={{ padding: wp(4) }} // 16
+      contentContainerStyle={{padding: wp(4)}} // 16
+      ListEmptyComponent={() => (
+        <Text style={styles.emptyMessage}>No transactions found !</Text>
+      )}
     />
   );
-  
+
   const CreditedTab = () => (
     <FlatList
-    data={transactions.filter(item => item.transaction_type === "1")}
-    keyExtractor={(item) => item.updated_at}
-    renderItem={({ item }) => (
-      <View
-        style={[
-          styles.transactionCard,
-          styles.creditCard,
-        ]}
-      >
-        <View style={styles.transactionRow}>
-          {/* Transaction Date */}
-          <Text style={styles.transactionDate}>
-            {item.transaction_date || "No Date"}
-          </Text>
-
-          {/* Transaction ID */}
-          {item.transaction_id ? (
-            <Text style={styles.transactionId}>
-              ID: {item.transaction_id}
+      data={transactions.filter(item => item.transaction_type === '1')}
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      keyExtractor={item => item.updated_at}
+      renderItem={({item}) => (
+        <View style={[styles.transactionCard, styles.creditCard]}>
+          <View style={styles.transactionRow}>
+            {/* Transaction Date */}
+            <Text style={styles.transactionDate}>
+              {item.transaction_date || 'No Date'}
             </Text>
-          ) : null}
+
+            {/* Transaction ID */}
+            {item.transaction_id ? (
+              <Text style={styles.transactionId}>
+                ID: {item.transaction_id}
+              </Text>
+            ) : null}
+          </View>
+
+          <Text style={styles.transactionRemark}>{item.remark}</Text>
+
+          <View style={styles.transactionDetails}>
+            {/* Transaction Amount */}
+            <Text style={styles.transactionAmount}>{item.amount}</Text>
+
+            {/* Transaction Type */}
+            <Text style={styles.transactionType}>Credited</Text>
+          </View>
         </View>
-
-        <Text style={styles.transactionRemark}>{item.remark}</Text>
-
-        <View style={styles.transactionDetails}>
-          {/* Transaction Amount */}
-          <Text style={styles.transactionAmount}>
-            {item.amount}
-          </Text>
-
-          {/* Transaction Type */}
-          <Text style={styles.transactionType}>
-            Credited
-          </Text>
-        </View>
-      </View>
-    )}
-    contentContainerStyle={{ padding: wp(4) }} // 16
-  />
+      )}
+      contentContainerStyle={{padding: wp(4)}} // 16
+      ListEmptyComponent={() => (
+        <Text style={styles.emptyMessage}>No credits found !</Text>
+      )}
+    />
   );
 
   const DebitedTab = () => (
     <FlatList
-    data={transactions.filter(item => item.transaction_type === "0")}
-    keyExtractor={(item) => item.updated_at}
-    renderItem={({ item }) => (
-      <View
-        style={[
-          styles.transactionCard,
-          styles.debitCard,
-        ]}
-      >
-        <View style={styles.transactionRow}>
-          {/* Transaction Date */}
-          <Text style={styles.transactionDate}>
-            {item.transaction_date || "No Date"}
-          </Text>
-
-          {/* Transaction ID */}
-          {item.transaction_id ? (
-            <Text style={styles.transactionId}>
-              ID: {item.transaction_id}
+      data={transactions.filter(item => item.transaction_type === '0')}
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      keyExtractor={item => item.updated_at}
+      renderItem={({item}) => (
+        <View style={[styles.transactionCard, styles.debitCard]}>
+          <View style={styles.transactionRow}>
+            {/* Transaction Date */}
+            <Text style={styles.transactionDate}>
+              {item.transaction_date || 'No Date'}
             </Text>
-          ) : null}
+
+            {/* Transaction ID */}
+            {item.transaction_id ? (
+              <Text style={styles.transactionId}>
+                ID: {item.transaction_id}
+              </Text>
+            ) : null}
+          </View>
+
+          <Text style={styles.transactionRemark}>{item.remark}</Text>
+
+          <View style={styles.transactionDetails}>
+            {/* Transaction Amount */}
+            <Text style={styles.transactionAmount}>{item.amount}</Text>
+
+            {/* Transaction Type */}
+            <Text style={styles.transactionType}>Debited</Text>
+          </View>
         </View>
-
-        <Text style={styles.transactionRemark}>{item.remark}</Text>
-
-        <View style={styles.transactionDetails}>
-          {/* Transaction Amount */}
-          <Text style={styles.transactionAmount}>
-            {item.amount}
-          </Text>
-
-          {/* Transaction Type */}
-          <Text style={styles.transactionType}>
-            Debited
-          </Text>
-        </View>
-      </View>
-    )}
-    contentContainerStyle={{ padding: wp(4) }} // 16
-  />
+      )}
+      contentContainerStyle={{padding: wp(4)}} // 16
+      ListEmptyComponent={() => (
+        <Text style={styles.emptyMessage}>No debits found !</Text>
+      )}
+    />
   );
 
   const renderScene = SceneMap({
@@ -183,14 +181,12 @@ const AddCredits = ({navigation}: {navigation: any}) => {
     debited: DebitedTab,
   });
 
-
   const addCredits = async () => {
-
     // console.log('amountcredits work')
     const amountInUSD = parseFloat(addcreditAmount);
-    const conversionRate = 83.97; 
+    const conversionRate = 83.97;
     const amountInINR = amountInUSD * conversionRate;
-    const amountInPaise = amountInINR * 100; 
+    const amountInPaise = amountInINR * 100;
 
     // Initialize FormData
     const formdata = new FormData();
@@ -206,117 +202,134 @@ const AddCredits = ({navigation}: {navigation: any}) => {
 
       const res = await response.json();
 
-      if(res.order_id){
-
+      if (res.order_id) {
         console.log('order id::::::::::', res.order_id);
-        setOrderId(res.order_id); 
+        setOrderId(res.order_id);
 
         const options = {
-            key: 'rzp_live_SwPxj3HuCi6h9s',  // Replace with your Razorpay Key ID
-            amount: amountInPaise,
-            currency: 'INR',
-            name: 'Gazetinc Technology LLP',
-            description: 'Sooprs',
-            order_id: res.order_id,
-            image:'https://sooprs.com/assets/images/sooprs_logo.png',
-            handler: (paymentResponse) => {
-              // Handle successful payment here
-              console.log('Payment Successful:::::', paymentResponse);
-            },
-            prefill: {
-              email: 'contact@sooprs.com',
-              contact: '8474081159',
-            },
-            theme: {
-              color: '#0077FF',
-            },
-          };
+          key: 'rzp_live_SwPxj3HuCi6h9s', // Replace with your Razorpay Key ID
+          amount: amountInPaise,
+          currency: 'INR',
+          name: 'Gazetinc Technology LLP',
+          description: 'Sooprs',
+          order_id: res.order_id,
+          image: 'https://sooprs.com/assets/images/sooprs_logo.png',
+          handler: paymentResponse => {
+            // Handle successful payment here
+            console.log('Payment Successful:::::', paymentResponse);
+          },
+          prefill: {
+            email: 'contact@sooprs.com',
+            contact: '8474081159',
+          },
+          theme: {
+            color: '#0077FF',
+          },
+        };
 
-          RazorpayCheckout.open(options).then((data) => {
+        RazorpayCheckout.open(options)
+          .then(data => {
             console.log('Payment data::::', data);
-          }).catch((error) => {
+          })
+          .catch(error => {
             console.error('Razorpay error:', error);
           });
-
       }
     } catch (error) {
       console.error('Error creating order:', error);
     }
   };
 
-  useEffect(() => {
-    const fetchWallet = async () => {
-      const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-      const parsedName = JSON.parse(name);
-      const formdata = new FormData();
-      formdata.append('auth_user_slug', parsedName);
+  const fetchWallet = async () => {
+    const userSlug = await AsyncStorage.getItem(mobile_siteConfig.SLUG);
+    const parsedSlug = JSON.parse(userSlug);
+    const formdata = new FormData();
+    formdata.append('auth_user_slug', parsedSlug);
+    console.log('formdata:::::::::', formdata);
 
-      console.log('formdata:::::::::', formdata);
+    console.log('wallet balance formdata:::::::', formdata);
 
-      try {
-        const response = await fetch(
-          'https://sooprs.com/api2/public/index.php/wallet_balance',
-          {
-            method: 'POST',
-            body: formdata,
-          },
-        );
+    try {
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/wallet_balance',
+        {
+          method: 'POST',
+          body: formdata,
+        },
+      );
 
-        const res = await response.json();
-
-        // Check if the response status is 200
-        if (res.status === 200) {
-          console.log('wallet balance::::::', res.msg.wallet);
-          // Store the wallet value in state
-          setCredits(res.msg.wallet);
-        } else {
-          console.error('Error fetching wallet balance:', res.msg);
-        }
-      } catch (error) {
-        console.error('Error fetching wallet balance:', error);
+      const res = await response.json();
+      // Check if the response status is 200
+      if (res.status == 200) {
+        console.log('wallet balance::::::', res.msg.wallet);
+        // Store the wallet value in state
+        setCredits(res.msg.wallet);
+      } else {
+        console.error('Error fetching wallet balance:', res.msg);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+    }
+  };
 
-    const fetchTransactions = async () => {
-        let lead_id = await AsyncStorage.getItem('uid');
-        const formData = new FormData();
-  
-        if (lead_id) {
-          lead_id = lead_id.replace(/^"|"$/g, '');
-        }
-        formData.append('user_id', lead_id);
-        formData.append('data_value', '2');
-  
-        try {
-          const response = await fetch(
-            'https://sooprs.com/api2/public/index.php/get_transactions',
-            {
-              method: 'POST',
-              body: formData,
-            },
-          );
-  
-          const res = await response.json();
-  
-          if (res.status === 200) {
-            console.log('transactions fetched::::', res.msg)
-            
-            setTransactions(res.msg)
-          } else {
-            console.error('Error fetching transactions:', res.msg);
-          }
-        } catch (error) {
-          console.error('Error fetching transactions:', error);
-        }
-      };
-  
+  const fetchTransactions = async () => {
+    let lead_id = await AsyncStorage.getItem('uid');
+    const formData = new FormData();
 
+    if (lead_id) {
+      lead_id = lead_id.replace(/^"|"$/g, '');
+    }
+    formData.append('user_id', lead_id);
+    formData.append('data_value', '2');
+
+    try {
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/get_transactions',
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
+
+      const res = await response.json();
+
+      if (res.status === 200) {
+        console.log('transactions fetched::::', res.msg);
+
+        setTransactions(res.msg);
+      } else {
+        console.error('Error fetching transactions:', res.msg);
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchWallet();
     fetchTransactions();
   }, [isFocused]);
 
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWallet();
+    await fetchTransactions();
+    setRefreshing(false); 
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={Colors.sooprsblue}
+          colors={[Colors.sooprsblue, Colors.black]}
+        />}
+      >
       <View style={styles.headerSection}>
         <TouchableOpacity onPress={() => navigation.navigate('Account')}>
           <Image
@@ -393,11 +406,13 @@ const AddCredits = ({navigation}: {navigation: any}) => {
                           key={index}
                           imgSource={null} // or specify an image if needed
                           btntext={amount}
-                          bgColor="white"
+                          bgColor={Colors.white}
                           textColor={Colors.sooprsblue}
                           onPress={() =>
                             setaddCreditAmount(amount.replace('$', ''))
                           }
+                          isBorder={true}
+                          isDisabled={undefined}
                         />
                       ))}
                     </View>
@@ -415,10 +430,10 @@ const AddCredits = ({navigation}: {navigation: any}) => {
         </View>
       </View>
       <TabView
-        navigationState={{ index, routes }}
+        navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
+        initialLayout={{width: layout.width}}
         renderTabBar={props => (
           <View style={styles.tabBar}>
             {props.navigationState.routes.map((route, i) => {
@@ -430,9 +445,11 @@ const AddCredits = ({navigation}: {navigation: any}) => {
                   style={[
                     styles.tabItem,
                     isActive ? styles.activeTabItem : styles.inactiveTabItem,
-                  ]}
-                >
-                  <Text style={isActive ? styles.activeTabText : styles.inactiveTabText}>
+                  ]}>
+                  <Text
+                    style={
+                      isActive ? styles.activeTabText : styles.inactiveTabText
+                    }>
                     {route.title}
                   </Text>
                 </TouchableOpacity>
@@ -441,7 +458,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
           </View>
         )}
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -498,6 +515,10 @@ const styles = StyleSheet.create({
     width: wp(8),
     height: hp(3),
     tintColor: Colors.sooprsblue,
+  },
+
+  sample:{
+    gap:hp(1)
   },
 
   creditText: {
@@ -614,7 +635,7 @@ const styles = StyleSheet.create({
   inactiveTabText: {
     color: Colors.sooprsblue, // Inactive tab text color
     fontWeight: '500',
-    fontSize: FSize.fs14
+    fontSize: FSize.fs14,
   },
 
   transactionCard: {
@@ -623,34 +644,34 @@ const styles = StyleSheet.create({
     marginBottom: hp(2), // 12
     backgroundColor: '#f9f9f9', // Light gray background
     elevation: 2,
-    borderColor: '#ddd', 
+    borderColor: '#ddd',
     borderWidth: 1,
   },
   debitCard: {
-    backgroundColor: '#ffe6e6', 
+    backgroundColor: '#ffe6e6',
   },
   creditCard: {
     backgroundColor: '#e6ffe6',
   },
   transactionRow: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: hp(1),
   },
   transactionRemark: {
     fontSize: FSize.fs16,
     fontWeight: 'bold',
-    color: '#333', 
-    marginBottom: hp(1), 
+    color: '#333',
+    marginBottom: hp(1),
   },
   transactionDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp(1), 
+    marginBottom: hp(1),
   },
   transactionAmount: {
-    fontSize: FSize.fs16, 
-    fontWeight: '600', 
+    fontSize: FSize.fs16,
+    fontWeight: '600',
     color: '#0077FF',
   },
   transactionType: {
@@ -665,5 +686,11 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs12, // Smaller font for date
     color: '#999',
   },
- 
+
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: hp(10),
+    color: 'gray',
+    fontSize: FSize.fs14,
+  },
 });

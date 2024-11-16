@@ -294,7 +294,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           )}
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}  showsVerticalScrollIndicator={false}>
         <View style={styles.projectSection}>
           <View style={styles.projectTitle}>
             <Text style={styles.title}>{name}</Text>
@@ -403,7 +403,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}  showsVerticalScrollIndicator={false}>
           {activeTab === 'description' ? (
             <View style={styles.projectSection}>
               <Text style={styles.detailsText}>{desc}</Text>
@@ -456,6 +456,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
                     renderItem={renderBidCard}
                     keyExtractor={item => item.id.toString()}
                     contentContainerStyle={styles.flatListContainer}
+                    showsVerticalScrollIndicator={false}
+                    scrollEnabled={false}
                   />
                 )}
               </View>

@@ -186,9 +186,9 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
   };
 
   const isValidMobile = (mobile: string) => {
-    const mobileRegex = /^[0-9]{10}$/;
+    const mobileRegex = /^\+?[0-9]{10,15}$/; 
     return mobileRegex.test(mobile);
-  };
+  };  
 
   const validatePincode = value => {
     const pincodeRegex = /^[1-9][0-9]{5}$/;

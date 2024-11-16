@@ -6,7 +6,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS'; // Import hp and wp for responsiveness
 import ProjectCard from './ProjectCard';
@@ -18,16 +18,17 @@ const AllProjects = ({
   isLoading,
   hasMore,
   loadMoreProjects,
-  newLoading
+  newLoading,
 }: {
   navigation: any;
   projectDetail: any[];
   isLoading: boolean;
   hasMore: boolean;
-  newLoading:any;
+  newLoading: any;
   loadMoreProjects: () => void;
 }) => {
   const renderItem = ({item, index}: {item: any; index: any}) => (
+
     <ProjectCard
       navigation={navigation}
       name={item.project_title}
@@ -42,6 +43,9 @@ const AllProjects = ({
       bidId={undefined}
       Customer_name={undefined}
       customer_id={undefined}
+      isAssigned={undefined}
+      Customer_image={undefined}
+      project_status={undefined}
     />
   );
 
@@ -59,23 +63,23 @@ const AllProjects = ({
 
     if (hasMore) {
       return (
-        <View style={{marginTop:hp(2)}}>
-        <ButtonNew
-        imgSource={undefined}
-        btntext={
-          newLoading ? (
-            <ActivityIndicator color={Colors.white} />
-          ) : (
-            'Show More'
-          )
-        }
-        bgColor={Colors.sooprsblue}
-        isBorder={true}
-        textColor={Colors.white}
-        onPress={loadMoreProjects}
-        isDisabled={newLoading} // Disable button while loading
-      />
-      </View>
+        <View style={{marginTop: hp(2)}}>
+          <ButtonNew
+            imgSource={undefined}
+            btntext={
+              newLoading ? (
+                <ActivityIndicator color={Colors.white} />
+              ) : (
+                'Show More'
+              )
+            }
+            bgColor={Colors.sooprsblue}
+            isBorder={true}
+            textColor={Colors.white}
+            onPress={loadMoreProjects}
+            isDisabled={newLoading} // Disable button while loading
+          />
+        </View>
       );
     }
 
@@ -90,6 +94,7 @@ const AllProjects = ({
         keyExtractor={(item, index) => index.toString()}
         ListFooterComponent={renderFooter} // Footer for pagination
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
       />
     </View>
   );

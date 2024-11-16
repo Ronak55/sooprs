@@ -59,34 +59,34 @@ const AccountProfile = ({
       try {
         const response = await getDataWithToken(mobile_siteConfig.USER_DETAILS);
 
-        if (response.status == 200 && response.data) {
+        if (response?.data) {
 
-          console.log('get user details response:::::::', response.data)
-          const data = response.data;
+          console.log('get user details response:::::::', response?.data)
+          const data = response?.data;
           setUserData({
-            name: data.name,
-            email: data.email,
-            mobile: data.mobile,
-            city: data.city,
-            address: data.address,
-            pincode: data.area_code,
-            country: data.country,
-            organisation: data.organisation,
-            linkedin: data.linkedin,
-            about: data.listing_about,
-            profileImage: data.image,
-            portfolioDetails:data.portfolio_details,
-            bankDetails:data.bank_details
+            name: data?.name,
+            email: data?.email,
+            mobile: data?.mobile,
+            city: data?.city,
+            address: data?.address,
+            pincode: data?.area_code,
+            country: data?.country,
+            organisation: data?.organisation,
+            linkedin: data?.linkedin,
+            about: data?.listing_about,
+            profileImage: data?.image,
+            portfolioDetails:data?.portfolio_details,
+            bankDetails:data?.bank_details
           });
 
-          const servicesArray = data.services.split(',').map(service => service);
+          const servicesArray = data?.services ? data?.services.split(',').map(service => service) : [];
          
-          const skillsArray = data.skills.split(',').map(skill=>skill)
+          const skillsArray = data?.skills ? data?.skills.split(',').map(skill=>skill) : []
           // console.log('services array::::', servicesArray)
           setServices(servicesArray)
-          setExperience(data.experience_details)
-          setResume(data.resume)
-          setAcademicDetails(data.academic_details)
+          setExperience(data?.experience_details)
+          setResume(data?.resume)
+          setAcademicDetails(data?.academic_details)
           setSkills(skillsArray);
         }
       } catch (error) {

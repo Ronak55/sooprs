@@ -107,6 +107,9 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
           <RefreshControl refreshing={refreshing} onRefresh={getAssignedProjects} colors={[Colors.sooprsblue]} />
         }
         contentContainerStyle={{ paddingBottom: hp(10) }}
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyMessage}>No projects found !</Text>
+        )}
       />
       </View>
     </View>
@@ -148,5 +151,12 @@ const styles = StyleSheet.create({
 
   assigned:{
     marginHorizontal: wp(5),
-  }
+  },
+
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: hp(35),
+    color: 'gray',
+    fontSize: FSize.fs14,
+  },
 });

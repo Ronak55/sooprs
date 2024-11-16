@@ -9,6 +9,7 @@ export const mobile_siteConfig = Object.freeze({
     // LOGIN
     LOGIN:'login-user',
     IS_LOGIN: "is_login",
+    SOCIAL_LOGIN:"app-google-login",
     UID:'uid',
     IS_BUYER:'client',
     PROFILE_PIC:'profilepic',
@@ -25,6 +26,11 @@ export const mobile_siteConfig = Object.freeze({
     // name
 
     NAME:'name',
+    SLUG:'slug',
+
+    //notification
+
+    SEEN_NOTIFICATION:'notification',
 
     //PASSWORD
     PASSWORD:'password',

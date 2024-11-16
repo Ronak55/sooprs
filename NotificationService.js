@@ -66,65 +66,83 @@ export const initializeApp = async () => {
       importance: AndroidImportance.HIGH,
     });
 
-    await notifee.displayNotification({
-      title: 'Voila !',
-      body:'Welcome to Sooprs 🎉',
-      android: {
-        channelId,
-        importance: AndroidImportance.HIGH,
-        // smallIcon: 'ic_stat_sooprslogo',
-        pressAction: {
-          id: 'default',
-        },
-      },
-    });
+    // await notifee.displayNotification({
+    //   title: 'Voila !',
+    //   body:'Welcome to Sooprs 🎉',
+    //   android: {
+    //     channelId,
+    //     importance: AndroidImportance.HIGH,
+    //     // smallIcon: 'ic_stat_sooprslogo',
+    //     pressAction: {
+    //       id: 'default',
+    //     },
+    //   },
+    // });
 
     // Handle foreground notifications
+    let lastNotificationId = null;
+
     const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
-      
+      const notificationId = remoteMessage?.messageId;
+    
+      // Prevent duplicate handling
+      if (lastNotificationId === notificationId) {
+        console.log('Duplicate notification ignored:', notificationId);
+        return;
+      }
+    
+      lastNotificationId = notificationId;
+    
       console.log('Foreground notification:', remoteMessage);
-
-      const title = remoteMessage?.notification?.title || 'Default Title';
-      const body = remoteMessage?.notification?.body || 'Default Body';
-
-      console.log('foreground title and body are displayed:::', title, body )
-
+    
       await notifee.displayNotification({
-        title,
-        body,
+        id: `foreground_${notificationId}`, // Use unique ID per notification
+        title: remoteMessage?.notification?.title,
+        body: remoteMessage?.notification?.body,
         android: {
           channelId,
           importance: AndroidImportance.HIGH,
-          // smallIcon: 'ic_stat_sooprslogo',
           pressAction: {
             id: 'default',
           },
         },
       });
     });
+    
 
     // Handle background and quit state notifications
     messaging().setBackgroundMessageHandler(async remoteMessage => {
 
+      const notificationId = remoteMessage?.messageId;
+    
+      // Prevent duplicate handling
+      if (lastNotificationId === notificationId) {
+        console.log('Duplicate notification ignored:', notificationId);
+        return;
+      }
+    
+      lastNotificationId = notificationId;
+      
       console.log('Notification handled in the background!', remoteMessage);
 
-      const title = remoteMessage?.notification?.title || 'Default Title';
-      const body = remoteMessage?.notification?.body || 'Default Body';
+      const title = remoteMessage?.notification?.title;
+      const body = remoteMessage?.notification?.body;
 
       console.log('background title and body are displayed:::', title, body )
 
-      await notifee.displayNotification({
-        title,
-        body,
-        android: {
-          channelId,
-          importance: AndroidImportance.HIGH,
-          // smallIcon: 'ic_stat_sooprslogo',
-          pressAction: {
-            id: 'default',
+        await notifee.displayNotification({
+          id: `background_${notificationId}`,
+          title: remoteMessage?.notification?.title,
+          body: remoteMessage?.notification?.body,
+          android: {
+            channelId,
+            importance: AndroidImportance.HIGH,
+            pressAction: {
+              id: 'default',
+            },
           },
-        },
-      });
+        });
+      
     });
 
     // Clean up listeners on unmount

@@ -59,6 +59,7 @@ const ProjectCard = ({
 
   // Function to show limited text when the card is collapsed
   const getLimitedDescription = (description: string) => {
+    // console.log('description:::::::::::', description);
     const limit = 150; // Set character limit
     return description.length > limit
       ? `${description.substring(0, limit)}...`
