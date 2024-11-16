@@ -73,13 +73,13 @@ const IndividualChat = ({navigation, route}) => {
         res.forEach(message => {
           if (message?.pro_details?.id === userId) {
             // Current user is the sender
-            console.log('sender image::::::::', message.pro_details.image);
-            setsenderImage(message.pro_details.image);
+            console.log('sender image::::::::', message?.pro_details?.image);
+            setsenderImage(message?.pro_details?.image);
           } else {
             // Other user is the receiver
-            console.log('receiver image::::::::', message.pro_details.image);
-            setReceiverImage(message.pro_details.image);
-            setReceiverName(message.pro_details.name);
+            console.log('receiver image::::::::', message?.pro_details?.image);
+            setReceiverImage(message?.pro_details?.image);
+            setReceiverName(message?.pro_details?.name);
           }
         });
       }

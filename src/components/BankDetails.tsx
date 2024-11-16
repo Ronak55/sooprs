@@ -20,7 +20,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
 
-  const {bankDetails} = route.params;
+  const bankDetails = route?.params?.bankName ? route?.params?.bankName : "";
 
   const [bankName, setBankName] = useState('');
   const [bankNameError, setBankNameError] = useState('');

@@ -116,7 +116,7 @@ const ManageAcademics = ({navigation, route} : {navigation:any, route:any}) => {
           renderItem={renderAcademicCard}
           contentContainerStyle={styles.listContainer}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>No academic records found.</Text>
+            <Text style={styles.emptyText}>No academic records found !</Text>
           }
         />
       )}
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     color: Colors.gray,
-    marginTop: hp(10),
-    fontSize: FSize.fs16,
+    marginTop: hp(35),
+    fontSize: FSize.fs14,
   },
 });

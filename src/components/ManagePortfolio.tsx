@@ -106,7 +106,7 @@ import {
     };
   
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.headerSection}>
           <TouchableOpacity onPress={() => navigation.navigate('Account')}>
             <Image
@@ -123,7 +123,8 @@ import {
           keyExtractor={item => item.id}
           numColumns={2}
           contentContainerStyle={styles.portfolioList}
-          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
         />
         <View style={styles.title}>
           <ButtonNew

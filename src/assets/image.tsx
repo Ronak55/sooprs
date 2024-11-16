@@ -72,6 +72,9 @@ splashLogo:require('../assets/Icons/splashLogo.gif'),
 cancelIcon: require('../assets/Icons/cancel.png'),
 defaultPicIcon: require('../assets/Icons/defaultPic.png'),
 sendIcon:require('../assets/Icons/sendIcon.png'),
+referandearn:require('../assets/images/referandearn.png'),
+referIcon: require('../assets/Icons/referIcon.png'),
+copyIcon: require('../assets/Icons/copyIcon.png')
 
 }
 

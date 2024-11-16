@@ -25,6 +25,7 @@ import IndividualChat from './IndividualChat';
 import ProjectStatus from './ProjectStatus';
 import AssignedProjects from '../UserScreens/AssignedProjects/AssignedProjects';
 import BankDetails from './BankDetails';
+import Refer from './Refer';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -49,6 +50,7 @@ const HomeStack = () => {
       <Stack.Screen name="IndividualChat" component={IndividualChat} />
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
       <Stack.Screen name="Gigs" component={Gigs} />
+      <Stack.Screen name="Refer" component={Refer} />
     </Stack.Navigator>
   );
 };

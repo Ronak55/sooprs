@@ -109,7 +109,6 @@ export const initializeApp = async () => {
       });
     });
     
-
     // Handle background and quit state notifications
     messaging().setBackgroundMessageHandler(async remoteMessage => {
 

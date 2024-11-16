@@ -43,16 +43,16 @@ const AccountProfile = ({
     linkedin: '',
     about: '',
     profileImage: '',
-    portfolioDetails:'',
-    bankDetails:''
+    portfolioDetails: '',
+    bankDetails: '',
   });
 
   const [servicesList, setServices] = useState([]);
-  const [resume, setResume] = useState("");
+  const [slug, setSlug] = useState("");
+  const [resume, setResume] = useState('');
   const [experience, setExperience] = useState({});
-  const [skillsList, setSkills] = useState("");
-  const [academicDetails, setAcademicDetails] = useState({})
-
+  const [skillsList, setSkills] = useState('');
+  const [academicDetails, setAcademicDetails] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -60,8 +60,7 @@ const AccountProfile = ({
         const response = await getDataWithToken(mobile_siteConfig.USER_DETAILS);
 
         if (response?.data) {
-
-          console.log('get user details response:::::::', response?.data)
+          console.log('get user details response:::::::', response?.data);
           const data = response?.data;
           setUserData({
             name: data?.name,
@@ -75,18 +74,22 @@ const AccountProfile = ({
             linkedin: data?.linkedin,
             about: data?.listing_about,
             profileImage: data?.image,
-            portfolioDetails:data?.portfolio_details,
-            bankDetails:data?.bank_details
+            portfolioDetails: data?.portfolio_details,
+            bankDetails: data?.bank_details,
           });
 
-          const servicesArray = data?.services ? data?.services.split(',').map(service => service) : [];
-         
-          const skillsArray = data?.skills ? data?.skills.split(',').map(skill=>skill) : []
+          const servicesArray = data?.services
+            ? data?.services.split(',').map(service => service)
+            : [];
+
+          const skillsArray = data?.skills
+            ? data?.skills.split(',').map(skill => skill)
+            : [];
           // console.log('services array::::', servicesArray)
-          setServices(servicesArray)
-          setExperience(data?.experience_details)
-          setResume(data?.resume)
-          setAcademicDetails(data?.academic_details)
+          setServices(servicesArray);
+          setExperience(data?.experience_details);
+          setResume(data?.resume);
+          setAcademicDetails(data?.academic_details);
           setSkills(skillsArray);
         }
       } catch (error) {
@@ -94,8 +97,16 @@ const AccountProfile = ({
       }
     };
 
+    const getSlug = async()=>{
+
+      const slug = await AsyncStorage.getItem(mobile_siteConfig.SLUG);
+      const parsedSlug = JSON.parse(slug);
+      setSlug(parsedSlug);
+    }
+
     if (isFocused) {
       fetchUserData();
+      getSlug();
     }
   }, [isFocused]);
 
@@ -131,9 +142,15 @@ const AccountProfile = ({
         <Image
           style={styles.Icon}
           resizeMode="cover"
-          source={userData?.profileImage ? {uri: userData?.profileImage} : Images.defaultPicIcon}
+          source={
+            userData?.profileImage
+              ? {uri: userData?.profileImage}
+              : Images.defaultPicIcon
+          }
         />
-        <Text style={styles.profileName}>{userData?.name ? userData?.name : 'User'}</Text>
+        <Text style={styles.profileName}>
+          {userData?.name ? userData?.name : 'User'}
+        </Text>
         {/* <Text style={styles.profileRole}>{role ? role : 'Role'}</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.profileSection}>
@@ -196,7 +213,9 @@ const AccountProfile = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('BankDetails', {bankDetails:userData.bankDetails});
+              navigation.navigate('BankDetails', {
+                bankDetails: userData.bankDetails,
+              });
             }}>
             <View style={styles.details}>
               <Text style={styles.detailsText}>Manage Bank details</Text>
@@ -244,7 +263,9 @@ const AccountProfile = ({
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ManagePortfolio', {portfolioDetails: userData.portfolioDetails});
+                  navigation.navigate('ManagePortfolio', {
+                    portfolioDetails: userData.portfolioDetails,
+                  });
                 }}>
                 <View style={styles.details}>
                   <Text style={styles.detailsText}>Manage Portfolio</Text>
@@ -343,6 +364,29 @@ const AccountProfile = ({
             </View>
           </>
         )}
+        <View style={styles.commonSettings}>
+          <View style={styles.settings}>
+            <Image
+              style={styles.accountIcon}
+              resizeMode="cover"
+              source={Images.referIcon}
+            />
+            <Text style={styles.accountText}>Refer & Earn</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Refer', {slug: slug});
+            }}>
+            <View style={styles.details}>
+              <Text style={styles.detailsText}>Refer a friend</Text>
+              <Image
+                style={styles.rightArrowIcon}
+                resizeMode="cover"
+                source={Images.rigthArrowIcon}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
         <View style={styles.logout}>
           <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Image source={Images.logoutIcon} style={styles.icon} />

@@ -38,7 +38,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FSize from '../assets/commonCSS/FSize';
 
 const Login = ({navigation, route}: {navigation: any; route: any}) => {
-  const {profileType} = route.params;
+  const {profileType} = route?.params;
   // const [email, setEmail] = useState('2shaaar.clicked@gmail.com');
   // const [password, setPassword] = useState('@Heartcliff123');
   const [email, setEmail] = useState('');
@@ -47,6 +47,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const [loading, isLoading] = useState(false);
+  const [googleLoading, setgoogleLoading] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -74,6 +75,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   };
 
   const signInWithGoogle = async () => {
+    setgoogleLoading(true);
+
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
@@ -97,40 +100,62 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         .then(async res => {
           console.log('google login respose::::::::::', res);
           if (res.status == 200) {
-            storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-            storeDataToAsyncStorage(mobile_siteConfig.UID, res?.user_id);
-            storeDataToAsyncStorage(mobile_siteConfig.TOKEN, res?.token);
-            storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);       
-            storeDataToAsyncStorage(mobile_siteConfig.NAME, res?.name);
-            storeDataToAsyncStorage(mobile_siteConfig.SLUG, res?.slug);
-            storeDataToAsyncStorage(mobile_siteConfig.IS_BUYER, res?.is_buyer);
-            storeDataToAsyncStorage(
-              mobile_siteConfig.PROFILE_PIC,
-              res?.profile_pic,
-            );
+            console.log('client or prof::::::::', res?.is_buyer)
+            const googleProfile = res?.is_buyer == 0 ? 'Professional' : 'Client';
+            // const profile = JSON.stringify(profileType);
+            
+            console.log('check professional client first:::::::::', googleProfile, typeof(googleProfile))
+            console.log('check professional client:::::::::', profileType)
 
-            Toast.show({
-              type: 'success',
-              text1: 'Login Successful',
-              text2: 'You have loggedin successfully!',
-              position: 'top',
-            });
+            if(googleProfile !== profileType) {
+              console.log('helllllllllllllo')
+              setgoogleLoading(false);
+              Toast.show({
+                type: 'error',
+                text1: 'Invalid Credentials',
+                text2: 'Please login using your registered id',
+                position: 'top',
+              });
+            } else {
+              console.log('loggedinhelllllllllooooooo');
+              storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+              storeDataToAsyncStorage(mobile_siteConfig.UID, res?.user_id);
+              storeDataToAsyncStorage(mobile_siteConfig.TOKEN, res?.token);
+              storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
+              storeDataToAsyncStorage(mobile_siteConfig.NAME, res?.name);
+              storeDataToAsyncStorage(mobile_siteConfig.SLUG, res?.slug);
+              storeDataToAsyncStorage(
+                mobile_siteConfig.IS_BUYER,
+                res?.is_buyer,
+              );
+              storeDataToAsyncStorage(
+                mobile_siteConfig.PROFILE_PIC,
+                res?.profile_pic,
+              );
 
-            isLoading(false);
+              Toast.show({
+                type: 'success',
+                text1: 'Login Successful',
+                text2: 'You have loggedin successfully!',
+                position: 'top',
+              });
 
-            let resetAction = CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name:
-                    profileType === 'Client'
-                      ? 'ClientLoggedIn'
-                      : 'ProfessionalLoggedIn',
-                },
-              ],
-            });
-            navigation.dispatch(resetAction);
-          } else {
+              setgoogleLoading(false);
+
+              let resetAction = CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name:
+                      res?.is_buyer === '1'
+                        ? 'ClientLoggedIn'
+                        : 'ProfessionalLoggedIn',
+                  },
+                ],
+              });
+              navigation.dispatch(resetAction);
+            }
+          } else if (res.status == 400) {
             console.log('response token:::::::::::', res);
             Toast.show({
               type: 'error',
@@ -138,7 +163,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               text2: res.msg || 'Google Signin failed. Please try again.',
               position: 'top',
             });
-            isLoading(false);
+            setgoogleLoading(false);
           }
         });
     } catch (error) {
@@ -156,7 +181,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         console.log('error google:::::::::', error);
         Alert.alert('Sign-In Error', 'An error occurred during sign-in');
       }
-      isLoading(false);
+      setgoogleLoading(false);
     }
   };
 
@@ -190,49 +215,61 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
       fcm_token: fcmToken,
     };
 
-    const isClient = profileType === 'Client' ? '1' : '0';
-
     postData(payload, mobile_siteConfig.LOGIN)
       .then((response: any) => {
-        if (response.status === '200' || response.msg === 'Login successful!') {
+        if (response.status == 200 || response.msg === 'Login successful!') {
           console.log('response token:::::::::::', response);
-          Toast.show({
-            type: 'success',
-            text1: 'Login Successful',
-            text2: 'You have loggedin successfully!',
-            position: 'top',
-          });
 
-          storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-          storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
-          storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
-          storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
-          storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
-          storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
-          storeDataToAsyncStorage(
-            mobile_siteConfig.IS_BUYER,
-            response?.is_buyer,
-          );
-          storeDataToAsyncStorage(
-            mobile_siteConfig.PROFILE_PIC,
-            response?.profile_pic,
-          );
-          // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
-          isLoading(false);
+          const googleProfile = response?.is_buyer == 0 ? 'Professional' : 'Client';
+          // const profile = JSON.stringify(profileType);
 
-          let resetAction = CommonActions.reset({
-            index: 0,
-            routes: [
-              {
-                name:
-                  profileType === 'Client'
-                    ? 'ClientLoggedIn'
-                    : 'ProfessionalLoggedIn',
-              },
-            ],
-          });
-          navigation.dispatch(resetAction);
-        } else if (response.status === 400) {
+          if (googleProfile !== profileType) {
+            isLoading(false);
+            Toast.show({
+              type: 'error',
+              text1: 'Invalid Credentials',
+              text2: 'Please login using your registered id',
+              position: 'top',
+            });
+          } else {
+            Toast.show({
+              type: 'success',
+              text1: 'Login Successful',
+              text2: 'You have loggedin successfully!',
+              position: 'top',
+            });
+
+            storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+            storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
+            storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
+            storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
+            storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
+            storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
+            storeDataToAsyncStorage(
+              mobile_siteConfig.IS_BUYER,
+              response?.is_buyer,
+            );
+            storeDataToAsyncStorage(
+              mobile_siteConfig.PROFILE_PIC,
+              response?.profile_pic,
+            );
+            // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
+            isLoading(false);
+
+            let resetAction = CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name:
+                    profileType === 'Client'
+                      ? 'ClientLoggedIn'
+                      : 'ProfessionalLoggedIn',
+                },
+              ],
+            });
+            navigation.dispatch(resetAction);
+          }
+        } else if (response.status == 400) {
           // Show error message for status 400
           console.log('response token:::::::::::', response);
           Toast.show({
@@ -277,10 +314,10 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               Discover a world of opportunities on Sooprs
             </Text>
             <ButtonNew
-              imgSource={Images.googleIcon}
+              imgSource={googleLoading ? '' : Images.googleIcon}
               btntext={
-                loading ? (
-                  <ActivityIndicator color={Colors.white} />
+                googleLoading ? (
+                  <ActivityIndicator color={Colors.black} />
                 ) : (
                   'Continue with Google'
                 )
@@ -288,7 +325,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               bgColor="#F6F6F6"
               textColor="black"
               onPress={signInWithGoogle}
-              isDisabled={loading}
+              isDisabled={googleLoading}
             />
 
             <View style={styles.orSection}>
