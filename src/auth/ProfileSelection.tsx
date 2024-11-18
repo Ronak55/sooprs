@@ -34,6 +34,7 @@ const ProfileSelection = ({navigation}: {navigation: any}) => {
         const usertype = await AsyncStorage.getItem(mobile_siteConfig.IS_BUYER);
 
         console.log('usertype ::::::::', usertype);
+        
         if (token && usertype) {
           let resetAction = CommonActions.reset({
             index: 0,

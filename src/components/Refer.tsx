@@ -27,22 +27,39 @@ const Refer = ({ navigation, route }: { navigation: any; route: any }) => {
         message: `Hey there! 👋\n\nI've been using this amazing app. Use my referral code *${slug}* to sign up and get bonus credits. 🎉\n\nDownload the app here: https://play.google.com/store/apps/details?id=com.sooprsapp`,
         title: 'Refer & Earn',
       });
-
-      if (result.action === Share.sharedAction) {
+  
+      // Check the result action
+      if (result.action === Share.sharedAction && result.activityType) {
+        // User successfully shared via specific activity (e.g., WhatsApp, Email)
         Toast.show({
-            type: 'success',
-            text1: 'Thanks for Sharing! 🎉',
-            text2: 'Your referral code has been shared successfully.',
-            position: 'top',
-            visibilityTime: 2000,
-          });
-      } else if (result.action === Share.dismissedAction) {
-        console.log('Share dismissed');
+          type: 'success',
+          text1: 'Thanks for Sharing! 🎉',
+          text2: 'Your referral code has been shared successfully.',
+          position: 'top',
+          visibilityTime: 2000,
+        });
+      } else if (result.action === Share.dismissedAction || !result.activityType) {
+        // User dismissed the share dialog or returned without sharing
+        Toast.show({
+          type: 'error',
+          text1: 'Share Canceled 😕',
+          text2: 'You didn’t share your referral code. Try again!',
+          position: 'top',
+          visibilityTime: 2000,
+        });
       }
     } catch (error) {
       console.error('Error sharing:', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Oops! Something went wrong. 😟',
+        text2: 'Please try again.',
+        position: 'top',
+        visibilityTime: 2000,
+      });
     }
   };
+  
 
   return (
     <View style={styles.section}>
@@ -129,7 +146,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   bottomPart: {
-    
+
   },
   referLeft: {
     flexDirection: 'column',
