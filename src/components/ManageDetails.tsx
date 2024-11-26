@@ -125,6 +125,9 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
         {
           method: 'POST',
           body: formData,
+          headers:{
+            'User-Agent': 'com.sooprsapp/1.0',
+          }
         },
       );
 
@@ -285,7 +288,10 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
           {
             method: 'POST',
             body: formData,
-          },
+            headers:{
+              'User-Agent': 'com.sooprsapp/1.0',
+            }
+          }, 
         );
 
         const responseData = await response.json();

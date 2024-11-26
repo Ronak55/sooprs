@@ -81,7 +81,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       const formData = new FormData();
-      // console.log('userinfo:::::::::', userInfo);
+      console.log('userinfo:::::::::', userInfo);
       const idToken = userInfo?.data?.idToken;
       const fcmToken = await AsyncStorage.getItem(mobile_siteConfig.fcmToken);
       // console.log('fcm token::::::::::', fcmToken);

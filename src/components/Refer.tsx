@@ -64,7 +64,7 @@ const Refer = ({ navigation, route }: { navigation: any; route: any }) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('AccountProfile')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

@@ -452,7 +452,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginLeft: wp(2),
     elevation: 2,
+    maxWidth: '50%', // Restrict the maximum width of the bubble
+    alignSelf: 'flex-start', // Align the bubble to the left
   },
+  
   senderMessage: {
     flexDirection: 'row',
     marginRight: wp(3),
@@ -461,7 +464,7 @@ const styles = StyleSheet.create({
     // marginBottom: hp(0.5),
   },
   senderBubble: {
-    maxWidth: '75%',
+    maxWidth: '50%',
     backgroundColor: '#EFF6FF',
     padding: wp(2.5),
     borderRadius: 15,

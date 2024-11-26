@@ -149,9 +149,30 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         if (result.status === 200) {
           // Decrypt the mobile number received from the API
           setMobile(result.encrypted_mobile_number);
+          Toast.show({
+            type: 'success', // Type of the toast (could also be 'success', 'info', etc.)
+            text1: 'Success', // Main message
+            text2: 'Contact number is visible now', // Secondary message
+            position: 'top', // Position of the toast
+            visibilityTime: 3000, // Duration for which the toast will be visible
+          });
           setbtnVisible(false); // Hide the button after successful fetch
+        } else{
+          onClose();
+          Toast.show({
+            type: 'error', // Type of the toast (could also be 'success', 'info', etc.)
+            text1: result.msg,
+            position: 'top', // Position of the toast
+            visibilityTime: 3000, // Duration for which the toast will be visible
+          });
         }
       } catch (error) {
+        Toast.show({
+          type: 'error', // Type of the toast (could also be 'success', 'info', etc.)
+          text1: 'Network issue',
+          position: 'top', // Position of the toast
+          visibilityTime: 3000, // Duration for which the toast will be visible
+        });
         console.error('Error fetching contact details:', error);
       } finally {
         setLoading(false); // Stop loading spinner

@@ -12,6 +12,7 @@ import AllProjects from '../../components/AllProjects'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import { mobile_siteConfig } from '../../services/mobile-siteConfig'
+import MovingBanner from '../../components/MovingBanner'
 
 const {width} = Dimensions.get('window');
 
@@ -181,6 +182,7 @@ const Home = ({ navigation }: { navigation: any }) => {
           btnName=""
           isClient={false}
         />
+        <MovingBanner navigation={navigation}/>
         <View style={styles.section}>
           <View style={styles.textAlign}>
             <Text style={styles.homeInfo}>Browse </Text>

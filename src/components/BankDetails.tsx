@@ -103,6 +103,7 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
+            'User-Agent': 'com.sooprsapp/1.0',
           },
           body: formData,
         }

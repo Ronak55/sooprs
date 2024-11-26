@@ -42,6 +42,7 @@ const Home = ({ navigation }: { navigation: any }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data',
+        'User-Agent': 'com.sooprsapp/1.0',
       },
       body: formdata,
     };
@@ -50,7 +51,7 @@ const Home = ({ navigation }: { navigation: any }) => {
       const response = await fetch('https://sooprs.com/api2/public/index.php/get_professionals_ajax', requestOptions);
       const res = await response.json();
       if (res.status === 200) {
-        // console.log('professional data:::::', res.msg);
+        console.log('professional data:::::', res.msg);
         setProfessionals(res.msg); // Update the state with fetched data
       } else {
         console.error('Failed to fetch professionals:', res.message);

@@ -30,6 +30,7 @@ import IndividualChat from './IndividualChat';
 import ProjectStatus from './ProjectStatus';
 import AssignedProjects from '../ProfessionalScreens/Projects/AssignedProjects';
 import Refer from './Refer';
+import MovingBanner from './MovingBanner';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -60,6 +61,7 @@ const HomeStack = () => {
       <Stack.Screen name="ManagePortfolio" component={ManagePortfolio} />
       <Stack.Screen name="ManageResume" component={ManageResume} />
       <Stack.Screen name="ManageAcademics" component={ManageAcademics} />
+      <Stack.Screen name="MovingBanner" component={MovingBanner}/>
       <Stack.Screen name="Refer" component={Refer}/>
     </Stack.Navigator>
   );

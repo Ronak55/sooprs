@@ -13,6 +13,7 @@ export async function postData(data: any, urlPath: string) {
       headers: {
         Accept: "*/*",
         "Content-Type": "application/json",
+        'User-Agent': 'com.sooprsapp/1.0',
         // Origin: 'localhost',
         //   authorization:
         //     'Bearer ' +
@@ -42,6 +43,7 @@ export async function postFormData(formData: FormData, urlPath: string) {
       mode: 'cors',
       headers: {
         Accept: '*/*',
+        'User-Agent': 'com.sooprsapp/1.0',
         // Note: No need to specify 'Content-Type' for FormData, it will be automatically set by fetch.
       },
       body: formData, // Pass FormData directly
@@ -127,6 +129,7 @@ export async function getDataWithToken(urlPath: string) {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer "+ JSON.parse(token),
+        'User-Agent': 'com.sooprsapp/1.0',
       },
     });
 
@@ -156,6 +159,7 @@ export async function patchData(data: any, urlPath: string) {
       headers: {
         "Content-Type": "application/json",
         Origin: "http://localhost:3000",
+        
       },
       body: JSON.stringify(data),
     });
@@ -181,6 +185,7 @@ export async function PutDataWithToken(data: any, urlPath: string) {
         Accept: "*/*",
         // "Content-Type": 'application/json',
         Authorization: 'Bearer ' + token,
+        'User-Agent': 'com.sooprsapp/1.0',
       },
       // body: JSON.stringify(data),
       body: data,

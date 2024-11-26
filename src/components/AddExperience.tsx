@@ -49,6 +49,9 @@ import {
           {
             method: 'POST',
             body: formData,
+            headers:{
+              'User-Agent': 'com.sooprsapp/1.0',
+            }
           },
         );
   

@@ -172,7 +172,7 @@ const Projects = ({navigation}) => {
       id={item.id}
       desc={item.description}
       category={item.service_name}
-      budget={`${item.min_budget} - ${item.max_budget_amount}`}
+      budget={`$${item.min_budget} - $${item.max_budget_amount}`}
       bids={''}
       createdAt={''}
       index={index}

@@ -151,7 +151,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
             text1: 'Success',
             text2: res.msg,
           });
-          navigation.goBack();
+          navigation.navigate('Account');
 
         } else if (res.status == 400) {
           Toast.show({

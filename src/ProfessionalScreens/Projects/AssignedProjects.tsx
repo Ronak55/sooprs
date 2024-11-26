@@ -67,7 +67,7 @@ const AssignedProjects = ({ navigation }: { navigation: any }) => {
       id={item.id}
       desc={item.description}
       category={item['service-name']}
-      budget={`${item.min_budget} - ${item.max_budget_amount}`}
+      budget={`$${item.min_budget} - $${item.max_budget_amount}`}
       bids={''}
       createdAt={''}
       index={index}
