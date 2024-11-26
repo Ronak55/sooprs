@@ -64,7 +64,7 @@ import {
             text1: 'Success',
             text2: res.msg,
           });
-          navigation.goBack(); // Navigate back to manage experience screen
+          navigation.navigate('Account'); // Navigate back to manage experience screen
         } else if (res.status === 400) {
           Toast.show({
             type: 'error',

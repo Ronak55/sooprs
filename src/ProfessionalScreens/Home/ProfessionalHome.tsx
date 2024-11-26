@@ -13,6 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import { mobile_siteConfig } from '../../services/mobile-siteConfig'
 import MovingBanner from '../../components/MovingBanner'
+import { useSelector } from 'react-redux'
+import { selectProfilePic, selectUserName } from '../../redux/selectors'
 
 const {width} = Dimensions.get('window');
 
@@ -33,16 +35,14 @@ const Home = ({ navigation }: { navigation: any }) => {
 
   const getNameAndImage = async () => {
     try {
-      const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
-      const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
+      const userName = useSelector(selectUserName);
+      const userProfilePic = useSelector(selectProfilePic);
 
-      const parsedName = JSON.parse(name);
-      console.log('name of the professional:::::::::;', name)
-      const parsedprofilepic = JSON.parse(profilepic);
-      if (name !== null) {
-        setName(parsedName ?? '');
-      }
-        setProfilePic(parsedprofilepic);
+      console.log('redux username:::::', userName);
+      console.log('redux profilepic:::::', profilePic)
+
+        setName(userName || ''); // Set name from Redux
+        setProfilePic(userProfilePic || ''); // Set profile picture from Redux
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
@@ -144,6 +144,7 @@ const Home = ({ navigation }: { navigation: any }) => {
     if (isFocused) {
       getProjects(0);
       getNameAndImage();
+
     }
   }, [isFocused]);
 

@@ -26,6 +26,8 @@ import Splash from './src/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mobile_siteConfig} from './src/services/mobile-siteConfig';
 import { requestUserPermission, NotificationListener, initializeApp } from './NotificationService';
+import { Provider } from 'react-redux';
+import store from './src/redux/store';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +69,7 @@ const App = () => {
   }, []);
 
   return (
+    <Provider store={store}>
     <SafeAreaView style={{flex: 1}}>
       <GestureHandlerRootView style={{flex: 1}}>
         <NavigationContainer>
@@ -75,6 +78,7 @@ const App = () => {
         </NavigationContainer>
       </GestureHandlerRootView>
     </SafeAreaView>
+    </Provider>
   );
 };
 

@@ -76,7 +76,7 @@ const AddAcademics = ({navigation}: {navigation: any}) => {
             text1: 'Success',
             text2: res.msg,
           });
-          navigation.goBack();
+          navigation.navigate('Account')
 
         } else if (res.status == 400) {
           Toast.show({
@@ -135,7 +135,7 @@ const AddAcademics = ({navigation}: {navigation: any}) => {
             />
             <CInput
               title="Percentage/CGPA"
-              name="Enter Percentage/CGPA"
+              name="Enter Percentage"
               newlabel={false}
               style={undefined}
               setValue={(val: any) => setPercentage(val)}

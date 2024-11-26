@@ -36,6 +36,8 @@ import {
 } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FSize from '../assets/commonCSS/FSize';
+import {useDispatch} from 'react-redux';
+import {login} from '../redux/slices/authSlice';
 
 const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const {profileType} = route?.params;
@@ -48,6 +50,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [loading, isLoading] = useState(false);
   const [googleLoading, setgoogleLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -100,15 +103,20 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         .then(async res => {
           console.log('google login respose::::::::::', res);
           if (res.status == 200) {
-            console.log('client or prof::::::::', res?.is_buyer)
-            const googleProfile = res?.is_buyer == 0 ? 'Professional' : 'Client';
+            console.log('client or prof::::::::', res?.is_buyer);
+            const googleProfile =
+              res?.is_buyer == 0 ? 'Professional' : 'Client';
             // const profile = JSON.stringify(profileType);
-            
-            console.log('check professional client first:::::::::', googleProfile, typeof(googleProfile))
-            console.log('check professional client:::::::::', profileType)
 
-            if(googleProfile !== profileType) {
-              console.log('helllllllllllllo')
+            console.log(
+              'check professional client first:::::::::',
+              googleProfile,
+              typeof googleProfile,
+            );
+            console.log('check professional client:::::::::', profileType);
+
+            if (googleProfile !== profileType) {
+              console.log('helllllllllllllo');
               setgoogleLoading(false);
               Toast.show({
                 type: 'error',
@@ -220,7 +228,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
         if (response.status == 200 || response.msg === 'Login successful!') {
           console.log('response token:::::::::::', response);
 
-          const googleProfile = response?.is_buyer == 0 ? 'Professional' : 'Client';
+          const googleProfile =
+            response?.is_buyer == 0 ? 'Professional' : 'Client';
           // const profile = JSON.stringify(profileType);
 
           if (googleProfile !== profileType) {
@@ -232,6 +241,23 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               position: 'top',
             });
           } else {
+            storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+
+            storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
+
+            dispatch(
+              login({
+                userDetails: {
+                  userId: response.user_id,
+                  email: email,
+                  name: response.name,
+                  slug: response.slug,
+                  profilePic: response.profile_pic,
+                  isBuyer: response.is_buyer,
+                },
+              }),
+            );
+
             Toast.show({
               type: 'success',
               text1: 'Login Successful',
@@ -239,20 +265,20 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               position: 'top',
             });
 
-            storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-            storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
-            storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
-            storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
-            storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
-            storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
-            storeDataToAsyncStorage(
-              mobile_siteConfig.IS_BUYER,
-              response?.is_buyer,
-            );
-            storeDataToAsyncStorage(
-              mobile_siteConfig.PROFILE_PIC,
-              response?.profile_pic,
-            );
+            // storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
+            // storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
+            // storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
+            // storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
+            // storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
+            // storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
+            // storeDataToAsyncStorage(
+            //   mobile_siteConfig.IS_BUYER,
+            //   response?.is_buyer,
+            // );
+            // storeDataToAsyncStorage(
+            //   mobile_siteConfig.PROFILE_PIC,
+            //   response?.profile_pic,
+            // );
             // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
             isLoading(false);
 
