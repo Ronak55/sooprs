@@ -6,7 +6,6 @@ import Colors from '../assets/commonCSS/Colors';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import ProfessionalHome from '../ProfessionalScreens/Home/ProfessionalHome';
 import Projects from '../ProfessionalScreens/Projects/Projects';
-import Chat from './Chat';
 import Account from '../ProfessionalScreens/Account/Account';
 import Images from '../assets/image';
 import ProfessionalProfile from '../UserScreens/Profile/ProfessionalProfile';
@@ -31,6 +30,7 @@ import ProjectStatus from './ProjectStatus';
 import AssignedProjects from '../ProfessionalScreens/Projects/AssignedProjects';
 import Refer from './Refer';
 import MovingBanner from './MovingBanner';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Bottom = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,39 +40,64 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="ProfessionalHome" component={ProfessionalHome} />
       <Stack.Screen name="Notifications" component={Notifications} />
-      <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
-      <Stack.Screen name="Projects" component={Projects} />
-      <Stack.Screen name="Chat" component={Chat} />
       <Stack.Screen name="IndividualChat" component={IndividualChat} />
+      <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
-      <Stack.Screen name="Account" component={Account} />
+      <Stack.Screen
+        name="ProfessionalProfile"
+        component={ProfessionalProfile}
+      />
+      <Stack.Screen name="MovingBanner" component={MovingBanner} />
+    </Stack.Navigator>
+  );
+};
+
+const AccountStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="AccountScreen" component={Account} />
       <Stack.Screen name="ManageDetails" component={ManageDetails} />
-      <Stack.Screen name="ProfessionalProfile" component={ProfessionalProfile} />
-      <Stack.Screen name="AssignedProjects" component={AssignedProjects} />
-      <Stack.Screen name="ManagePassword" component={ManagePassword} />
       <Stack.Screen name="AddCredits" component={AddCredits} />
       <Stack.Screen name="AddSkills" component={AddSkills} />
       <Stack.Screen name="AddServices" component={AddServices} />
       <Stack.Screen name="AddExperience" component={AddExperience} />
       <Stack.Screen name="AddPortfolio" component={AddPortfolio} />
       <Stack.Screen name="AddAcademics" component={AddAcademics} />
+      <Stack.Screen name="ManagePassword" component={ManagePassword} />
+
       <Stack.Screen name="BankDetails" component={BankDetails} />
       <Stack.Screen name="ManageExperience" component={ManageExperience} />
       <Stack.Screen name="ManagePortfolio" component={ManagePortfolio} />
       <Stack.Screen name="ManageResume" component={ManageResume} />
       <Stack.Screen name="ManageAcademics" component={ManageAcademics} />
-      <Stack.Screen name="MovingBanner" component={MovingBanner}/>
-      <Stack.Screen name="Refer" component={Refer}/>
+      <Stack.Screen name="Refer" component={Refer} />
     </Stack.Navigator>
   );
 };
 
-const getTabBarIcon = (route:any, focused:boolean) =>{
+const AssignedProjectsStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="AssignedProjects" component={AssignedProjects} />
+      <Stack.Screen name="IndividualChat" component={IndividualChat} />
+      <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
+    </Stack.Navigator>
+  );
+};
 
+const ProjectsStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="Projects" component={Projects} />
+      <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
+    </Stack.Navigator>
+  );
+};
+
+const getTabBarIcon = (route: any, focused: boolean) => {
   let iconName;
 
-  switch(route.name){
-
+  switch (route.name) {
     case 'Home':
       iconName = Images.homeIcon;
       break;
@@ -95,41 +120,80 @@ const getTabBarIcon = (route:any, focused:boolean) =>{
   }
 
   return (
-    <Image source = {iconName} 
-      style={{width: focused ? wp(7) : wp(6), 
-      height: focused ? hp(7): hp(6),
-      tintColor: focused ? Colors.selectedBottomTab : Colors.sooprsblue,
-    }} resizeMode='contain'/>
-  )
-
-}
+    <Image
+      source={iconName}
+      style={{
+        width: focused ? wp(7) : wp(6),
+        height: focused ? hp(7) : hp(6),
+        tintColor: focused ? Colors.selectedBottomTab : Colors.sooprsblue,
+      }}
+      resizeMode="contain"
+    />
+  );
+};
 
 const ProfessionalBottomTab = () => {
+
+  const screensToHideTabBar = [
+    "ManageDetails",
+    "AddCredits",
+    "AddSkills",
+    "AddServices",
+    "AddExperience",
+    "AddPortfolio",
+    "AddAcademics",
+    "ManagePassword",
+    "BankDetails",
+    "ManageExperience",
+    "ManagePortfolio",
+    "ManageResume",
+    "ManageAcademics",
+    "Refer",
+    "Notifications",
+    "IndividualChat",
+    "ProjectStatus",
+    "ProjectDetails",
+  ];
+  
   return (
     <Bottom.Navigator
-      screenOptions={({route}) => ({
-        headerShown: false,
-        tabBarHideOnKeyboard: false,
-        tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          height: hp(10),
-          borderTopRightRadius:wp(10),
-          borderTopLeftRadius:wp(10),
-          paddingBottom:hp(2),
-          paddingHorizontal:wp(6)
-        },
-        tabBarIcon: ({focused}) => getTabBarIcon(route, focused),
+      screenOptions={({route}) => {
+        // Get the focused route name
+        const routeName = getFocusedRouteNameFromRoute(route);
 
-        tabBarLabel: ({focused, color}) => (
-          <Text style={{color: focused ? Colors.selectedBottomTab : Colors.sooprsblue, fontSize: FSize.fs10}}>
-            {route.name}
-          </Text>
-        ),
-      })}>
-      <Bottom.Screen name={"Home"} component={HomeStack} />
-      <Bottom.Screen name="My Bids" component={Projects} />
-      <Bottom.Screen name="Assigned Projects" component={AssignedProjects} />
-      <Bottom.Screen name="Account" component={Account} />
+        const shouldHideTabBar = screensToHideTabBar.includes(routeName);
+
+        return {
+          headerShown: false,
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: shouldHideTabBar
+            ? {display: 'none'} // Hide the tab bar
+            : {
+                backgroundColor: '#FFFFFF',
+                height: hp(10),
+                borderTopRightRadius: wp(10),
+                borderTopLeftRadius: wp(10),
+                paddingBottom: hp(2),
+              },
+          tabBarIcon: ({focused}) => getTabBarIcon(route, focused),
+          tabBarLabel: ({focused, color}) => (
+            <Text
+              style={{
+                color: focused ? Colors.selectedBottomTab : Colors.sooprsblue,
+                fontSize: FSize.fs10,
+              }}>
+              {route.name}
+            </Text>
+          ),
+        };
+      }}>
+      <Bottom.Screen name={'Home'} component={HomeStack} />
+      <Bottom.Screen name="My Bids" component={ProjectsStack} />
+      <Bottom.Screen
+        name="Assigned Projects"
+        component={AssignedProjectsStack}
+      />
+      <Bottom.Screen name="Account" component={AccountStack} />
     </Bottom.Navigator>
   );
 };

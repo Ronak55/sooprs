@@ -51,7 +51,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
     <FlatList
       data={transactions}
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
+      nestedScrollEnabled={true}
       keyExtractor={item => item.updated_at}
       renderItem={({item}) => (
         <View
@@ -99,7 +99,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
     <FlatList
       data={transactions.filter(item => item.transaction_type === '1')}
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
+      nestedScrollEnabled={true}
       keyExtractor={item => item.updated_at}
       renderItem={({item}) => (
         <View style={[styles.transactionCard, styles.creditCard]}>
@@ -139,7 +139,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
     <FlatList
       data={transactions.filter(item => item.transaction_type === '0')}
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
+      nestedScrollEnabled={true}
       keyExtractor={item => item.updated_at}
       renderItem={({item}) => (
         <View style={[styles.transactionCard, styles.debitCard]}>

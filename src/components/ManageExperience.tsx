@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
   designation: {
     fontSize: FSize.fs18,
     fontWeight: 'bold',
+    width:wp(47),
     color: Colors.black, // Made it bold for emphasis
   },
   organization: {

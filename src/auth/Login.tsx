@@ -241,22 +241,23 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               position: 'top',
             });
           } else {
+             
             storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-
             storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
-
-            dispatch(
-              login({
-                userDetails: {
-                  userId: response.user_id,
-                  email: email,
-                  name: response.name,
-                  slug: response.slug,
-                  profilePic: response.profile_pic,
-                  isBuyer: response.is_buyer,
-                },
-              }),
+            storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
+            storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
+            storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
+            storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
+            storeDataToAsyncStorage(
+              mobile_siteConfig.IS_BUYER,
+              response?.is_buyer,
             );
+            storeDataToAsyncStorage(
+              mobile_siteConfig.PROFILE_PIC,
+              response?.profile_pic,
+            );
+            storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
+            isLoading(false);
 
             Toast.show({
               type: 'success',
@@ -265,22 +266,6 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
               position: 'top',
             });
 
-            // storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
-            // storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
-            // storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
-            // storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
-            // storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
-            // storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
-            // storeDataToAsyncStorage(
-            //   mobile_siteConfig.IS_BUYER,
-            //   response?.is_buyer,
-            // );
-            // storeDataToAsyncStorage(
-            //   mobile_siteConfig.PROFILE_PIC,
-            //   response?.profile_pic,
-            // );
-            // storeDataToAsyncStorage(mobile_siteConfig.PASSWORD, password)
-            isLoading(false);
 
             let resetAction = CommonActions.reset({
               index: 0,
@@ -316,6 +301,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           text2: 'Something went wrong. Please try again.',
           position: 'top',
         });
+
+        isLoading(false);
       });
   };
 

@@ -1,14 +1,21 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, Share } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Share,
+} from 'react-native';
 import React from 'react';
 import Toast from 'react-native-toast-message';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Images from '../assets/image';
 import Colors from '../assets/commonCSS/Colors';
-import { hp, wp } from '../assets/commonCSS/GlobalCSS';
+import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 
-const Refer = ({ navigation, route }: { navigation: any; route: any }) => {
-  const { slug } = route?.params;
+const Refer = ({navigation, route}: {navigation: any; route: any}) => {
+  const {slug} = route?.params;
 
   const handleCopy = () => {
     Clipboard.setString(slug); // Copy the slug to clipboard
@@ -23,31 +30,10 @@ const Refer = ({ navigation, route }: { navigation: any; route: any }) => {
 
   const handleShare = async () => {
     try {
-      const result = await Share.share({
+      await Share.share({
         message: `Hey there! 👋\n\nI've been using this amazing app. Use my referral code *${slug}* to sign up and get bonus credits. 🎉\n\nDownload the app here: https://play.google.com/store/apps/details?id=com.sooprsapp`,
         title: 'Refer & Earn',
       });
-  
-      // Check the result action
-      if (result.action === Share.sharedAction && result.activityType) {
-        // User successfully shared via specific activity (e.g., WhatsApp, Email)
-        Toast.show({
-          type: 'success',
-          text1: 'Thanks for Sharing! 🎉',
-          text2: 'Your referral code has been shared successfully.',
-          position: 'top',
-          visibilityTime: 2000,
-        });
-      } else if (result.action === Share.dismissedAction || !result.activityType) {
-        // User dismissed the share dialog or returned without sharing
-        Toast.show({
-          type: 'error',
-          text1: 'Share Canceled 😕',
-          text2: 'You didn’t share your referral code. Try again!',
-          position: 'top',
-          visibilityTime: 2000,
-        });
-      }
     } catch (error) {
       console.error('Error sharing:', error.message);
       Toast.show({
@@ -59,7 +45,6 @@ const Refer = ({ navigation, route }: { navigation: any; route: any }) => {
       });
     }
   };
-  
 
   return (
     <View style={styles.section}>
@@ -145,9 +130,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  bottomPart: {
-
-  },
+  bottomPart: {},
   referLeft: {
     flexDirection: 'column',
     gap: hp(2),

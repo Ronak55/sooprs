@@ -57,16 +57,17 @@ const styles = StyleSheet.create({
     // width:wp(65),
     // height:hp(10),
     gap:22,
-    paddingHorizontal:wp(5),
-    paddingVertical:wp(5),
+    paddingHorizontal:wp(3),
+    paddingVertical:wp(12),
     // borderWidth:1,
     borderTopRightRadius: wp(30),
     borderBottomRightRadius: wp(30),
   },
 
   cardText:{
+    width:wp(53),
     color:Colors.white,
-    fontSize:FSize.fs19,
+    fontSize:FSize.fs18,
     fontWeight:'600'
   },
 

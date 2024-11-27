@@ -35,18 +35,21 @@ const Home = ({ navigation }: { navigation: any }) => {
 
   const getNameAndImage = async () => {
     try {
-      const userName = useSelector(selectUserName);
-      const userProfilePic = useSelector(selectProfilePic);
+      const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const profilepic = await AsyncStorage.getItem(mobile_siteConfig.PROFILE_PIC);
 
-      console.log('redux username:::::', userName);
-      console.log('redux profilepic:::::', profilePic)
-
-        setName(userName || ''); // Set name from Redux
-        setProfilePic(userProfilePic || ''); // Set profile picture from Redux
+      const parsedName = JSON.parse(name);
+      console.log('name of the client:::::::::;', name)
+      const parsedprofilepic = JSON.parse(profilepic);
+      if (name !== null) {
+        setName(parsedName ?? '');
+      }
+        setProfilePic(parsedprofilepic);
     } catch (e) {
       console.log('Error retrieving profile details:', e);
     }
   };
+
 
   const getProjects = async (newOffset: number) => {
     if (isLoading || !hasMore) return;

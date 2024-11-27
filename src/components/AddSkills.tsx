@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     padding: wp(3),
     borderRadius: wp(2),
     marginBottom: hp(1),
-    width: wp(40), // Adjust width to fit two cards per row
+    width: wp(41), // Adjust width to fit two cards per row
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between', // Ensure text and icon are spaced
@@ -386,6 +386,7 @@ const styles = StyleSheet.create({
   },
 
   skillCardText: {
+    width:wp(30),
     fontSize: FSize.fs14,
     color: Colors.white,
   },

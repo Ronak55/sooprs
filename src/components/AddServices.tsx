@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
         padding: wp(3),
         borderRadius: wp(2),
         marginBottom: hp(1),
-        width: wp(40), // Adjust width to fit two cards per row
+        // width: wp(40), // Adjust width to fit two cards per row
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
         height: hp(3),
       },
       serviceCardText: {
+        width:wp(30),
         fontSize: FSize.fs14,
         color: Colors.white,
       },

@@ -7,7 +7,6 @@ const initialState = {
     name: null,
     slug: null,
     profilePic: null,
-    isBuyer: null
   },
 };
 

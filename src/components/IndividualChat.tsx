@@ -510,6 +510,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: wp(7),
     gap: wp(1),
     marginHorizontal: wp(5),
+    marginVertical:hp(1),
     backgroundColor: Colors.white,
     // justifyContent:'center',
     // alignItems:'center',

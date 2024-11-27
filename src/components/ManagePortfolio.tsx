@@ -124,7 +124,7 @@ import {
           numColumns={2}
           contentContainerStyle={styles.portfolioList}
           showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
+          nestedScrollEnabled={true}
         />
         <View style={styles.title}>
           <ButtonNew
@@ -174,12 +174,13 @@ import {
       backgroundColor: Colors.white,
       borderRadius: 10,
       width: wp(43),
-      height: hp(30),
+      height: hp(25),
       marginBottom: hp(4),
       marginRight: wp(3),
       elevation: 4,
       shadowOpacity: 0.2,
       shadowRadius: 4,
+      overflow: 'hidden',  // Prevent overflow
     },
     imgBack: {
       width: '100%',
@@ -197,15 +198,20 @@ import {
       marginHorizontal: wp(2),
       flexDirection: 'column',
       gap: 2,
+      height:hp(5),
+      justifyContent: 'flex-start',
+      flexShrink: 1,  // Allow info to shrink if there's too much content
     },
     name: {
       fontSize: FSize.fs14,
       fontWeight: 'bold',
       color: Colors.black,
+      flexWrap: 'wrap', // Ensure long text wraps
     },
     role: {
       fontSize: FSize.fs12,
       color: Colors.gray,
+      flexWrap: 'wrap', // Ensure long text wraps
     },
     link: {
       fontSize: FSize.fs12,
