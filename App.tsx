@@ -1,19 +1,13 @@
 import {
   StyleSheet,
-  Text,
-  View,
-  StatusBar,
-  Modal,
-  ActivityIndicator,
 } from 'react-native';
 import {hp, wp} from './src/assets/commonCSS/GlobalCSS';
 import FSize from './src/assets/commonCSS/FSize';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Onboarding from './src/Onboarding';
 import ForgotPassword from './src/auth/ForgotPassword';
 import RegisterSuccess from './src/auth/Success';
 import Login from './src/auth/Login';
@@ -23,11 +17,7 @@ import ClientBottomTab from './src/components/ClientBottomTab';
 import ProfessionalBottomTab from './src/components/ProfessionalBottomTab';
 import Toast from 'react-native-toast-message';
 import Splash from './src/Splash';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {mobile_siteConfig} from './src/services/mobile-siteConfig';
 import { requestUserPermission, NotificationListener, initializeApp } from './NotificationService';
-import { Provider } from 'react-redux';
-import store from './src/redux/store';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,7 +59,6 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
     <SafeAreaView style={{flex: 1}}>
       <GestureHandlerRootView style={{flex: 1}}>
         <NavigationContainer>
@@ -78,7 +67,6 @@ const App = () => {
         </NavigationContainer>
       </GestureHandlerRootView>
     </SafeAreaView>
-    </Provider>
   );
 };
 

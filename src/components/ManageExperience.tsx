@@ -109,7 +109,7 @@ const ManageExperience = ({navigation, route}: {navigation: any}) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

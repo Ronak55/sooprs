@@ -203,7 +203,7 @@ const AddSkills = ({navigation, route}: {navigation: any, route:any}) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

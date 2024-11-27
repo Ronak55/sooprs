@@ -162,7 +162,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
         });
 
         // Navigate back to Account screen
-        navigation.navigate('Account');
+        navigation.goBack();
       } else {
         // Show error toast
         Toast.show({
@@ -342,7 +342,7 @@ const ManageDetails = ({navigation, route}: {navigation: any; route: any}) => {
   return (
     <ScrollView style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

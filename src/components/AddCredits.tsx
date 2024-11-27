@@ -331,7 +331,7 @@ const AddCredits = ({navigation}: {navigation: any}) => {
         />}
       >
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

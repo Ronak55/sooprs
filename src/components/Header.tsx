@@ -22,7 +22,7 @@ const Header = ({
     <View style={styles.header}>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('Account');
+          navigation.goBack();
         }}>
           <Image style={styles.Icon} resizeMode="cover" source={img ? {uri: img} : Images.defaultPicIcon} />
       </TouchableOpacity>

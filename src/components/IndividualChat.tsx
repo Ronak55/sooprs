@@ -138,7 +138,7 @@ const IndividualChat = ({navigation, route}) => {
 
   const sendAck = datax => {
     if (ws.readyState === WebSocket.OPEN) {
-      console.log('sending message ot the web socket..', datax);
+      console.log('sending message to the web socket..', datax);
       ws.send(JSON.stringify(datax));
     } else {
       console.error(
@@ -449,6 +449,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     paddingHorizontal: wp(3),
     paddingVertical: hp(1),
+
     borderRadius: 15,
     marginLeft: wp(2),
     elevation: 2,
@@ -461,7 +462,7 @@ const styles = StyleSheet.create({
     marginRight: wp(3),
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    // marginBottom: hp(0.5),
+    marginVertical: hp(0.3),
   },
   senderBubble: {
     maxWidth: '50%',

@@ -20,7 +20,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
 
-  const bankDetails = route?.params?.bankName ? route?.params?.bankName : "";
+  const bankDetails = route?.params?.bankDetails ? route?.params?.bankDetails : "";
 
   const [bankName, setBankName] = useState('');
   const [bankNameError, setBankNameError] = useState('');
@@ -78,7 +78,8 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
 
     try {
       const id = await AsyncStorage.getItem('uid');
-      const name = await AsyncStorage.getItem(mobile_siteConfig.NAME);
+      const name = await AsyncStorage.getItem(mobile_siteConfig.SLUG);
+      const parsedName = JSON.parse(name);
       const cleanedId = id ? id.replace(/^"|"$/g, '') : null;
 
       if (!bankName || !accNumber || !bankIFSC || bankNameError || accNumberError || bankIFSCError) {
@@ -95,7 +96,9 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
       formData.append('bank_name', bankName);
       formData.append('account_no', accNumber);
       formData.append('ifsc', bankIFSC);
-      formData.append('user', name);
+      formData.append('user', parsedName);
+
+      console.log('formdata bank details:::::::::;', formData);
 
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/add_bank_details',
@@ -111,13 +114,13 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
 
       const res = await response.json();
 
-      if (response.status === 200) {
+      if (response.status == 200) {
         Toast.show({
           type: 'success',
           text1: 'Success',
           text2: res.msg || 'Bank details added successfully!',
         });
-        navigation.navigate('Account');
+        navigation.goBack();
       } else {
         Toast.show({
           type: 'error',
@@ -158,7 +161,7 @@ const BankDetails = ({ navigation, route }: { navigation: any, route:any }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

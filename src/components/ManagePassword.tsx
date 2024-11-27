@@ -90,7 +90,7 @@ const ManagePassword = ({navigation}: {navigation: any}) => {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
-        navigation.navigate('Account'); // Navigate back to Account screen
+        navigation.goBack(); // Navigate back to Account screen
       } else {
 
         console.log('password error data::::::::::', data)
@@ -115,7 +115,7 @@ const ManagePassword = ({navigation}: {navigation: any}) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

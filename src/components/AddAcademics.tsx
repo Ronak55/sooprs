@@ -76,7 +76,7 @@ const AddAcademics = ({navigation}: {navigation: any}) => {
             text1: 'Success',
             text2: res.msg,
           });
-          navigation.navigate('Account')
+          navigation.goBack()
 
         } else if (res.status == 400) {
           Toast.show({
@@ -101,7 +101,7 @@ const AddAcademics = ({navigation}: {navigation: any}) => {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"

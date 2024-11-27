@@ -268,7 +268,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         <View style={styles.headerParts}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ProfessionalHome');
+              navigation.goBack();
             }}>
             <Image
               source={Images.backArrow}
