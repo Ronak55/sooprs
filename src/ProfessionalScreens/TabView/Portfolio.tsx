@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Image, Text, Linking } from 'react-native';
-import { hp, wp } from '../../assets/commonCSS/GlobalCSS';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Text,
+  Linking,
+} from 'react-native';
+import {hp, wp} from '../../assets/commonCSS/GlobalCSS';
 import Toast from 'react-native-toast-message';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import FSize from '../../assets/commonCSS/FSize';
 
 const Portfolio = ({route}) => {
@@ -15,10 +23,13 @@ const Portfolio = ({route}) => {
     formData.append('user_id', id);
 
     try {
-      const response = await fetch('https://sooprs.com/api2/public/index.php/manage_portfolio', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        'https://sooprs.com/api2/public/index.php/manage_portfolio',
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
 
       const res = await response.json();
       if (res.status === 200) {
@@ -27,12 +38,16 @@ const Portfolio = ({route}) => {
         Toast.show({
           type: 'error',
           text1: res.msg,
+          text1Style: {fontSize: 16, fontWeight: '600'},
+          text2Style: {fontSize: 14, color: '#666'},
         });
       }
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Something went wrong!',
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
       });
     }
   };
@@ -41,32 +56,41 @@ const Portfolio = ({route}) => {
     fetchPortfolioData();
   }, []);
 
-  const handleLinkPress = (url) => {
+  const handleLinkPress = url => {
     if (url) {
       Linking.openURL(url);
     } else {
       Toast.show({
         type: 'error',
         text1: 'Invalid URL',
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
       });
     }
   };
 
-  
-  const toggleExpand = (id) => {
-    setExpandedCardId((prevId) => (prevId === id ? null : id)); // Toggle expanded state for specific card
+  const toggleExpand = id => {
+    setExpandedCardId(prevId => (prevId === id ? null : id)); // Toggle expanded state for specific card
   };
 
-  const renderPortfolioItem = ({ item }) => {
+  const renderPortfolioItem = ({item}) => {
     const isExpanded = expandedCardId === item.id;
     const description = item.description || '';
-    const displayDescription = isExpanded ? description : description.slice(0, 50);
+    const displayDescription = isExpanded
+      ? description
+      : description.slice(0, 50);
     const shouldShowReadMore = description.length > 50;
 
     return (
-      <TouchableOpacity style={[styles.card, isExpanded && styles.expandedCard]} onPress={() => {}}>
+      <TouchableOpacity
+        style={[styles.card, isExpanded && styles.expandedCard]}
+        onPress={() => {}}>
         <View style={styles.imgBack}>
-          <Image source={{ uri: item.files }} style={styles.image} resizeMode="cover" />
+          <Image
+            source={{uri: item.files}}
+            style={styles.image}
+            resizeMode="cover"
+          />
         </View>
         <View style={styles.info}>
           <Text style={styles.name}>{item.title}</Text>

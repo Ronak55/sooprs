@@ -49,7 +49,7 @@ const HomeStack = () => {
 const ProjectStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Projects" component={Projects} />
+      <Stack.Screen name="ProjectsScreen" component={Projects} />
       <Stack.Screen name="IndividualChat" component={IndividualChat} />
       <Stack.Screen name="ProjectBids" component={ProjectBids} />
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} />
@@ -60,7 +60,7 @@ const ProjectStack = () => {
 const ProfessionalStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Professionals" component={Professionals} />
+      <Stack.Screen name="ProfessionalsScreen" component={Professionals} />
       <Stack.Screen
         name="ProfessionalProfile"
         component={ProfessionalProfile}

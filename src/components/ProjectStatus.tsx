@@ -225,6 +225,8 @@ const MilestoneModal = ({
           type: 'success',
           text1: 'Success',
           text2: res.msg,
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
         setActiveStep(3);
         // setmilestoneNames(milestones.map(m => m.milestoneName));
@@ -237,6 +239,8 @@ const MilestoneModal = ({
           type: 'error',
           text1: 'Error',
           text2: res.msg,
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
       }
     } catch (error) {
@@ -244,7 +248,10 @@ const MilestoneModal = ({
       Toast.show({
         type: 'error',
         text1: 'Failed to add milestones. Please try again.',
+        text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
       });
+
     } finally {
       isLoading(false);
     }
@@ -420,6 +427,8 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
           type: 'success',
           text1: 'Success',
           text2: res.msg,
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
         AsyncStorage.setItem(mobile_siteConfig.DELIVERED, res.status)
       } else {
@@ -427,6 +436,8 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
           type:'info',
           text1: 'Error',
           text2: res.msg,
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
       }
     } catch (error) {
@@ -599,6 +610,8 @@ const ProjectStatus = ({navigation, route}: {navigation: any; route: any}) => {
           type: 'error',
           text1: 'Error',
           text2: res.error,
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
       }
     } catch (error) {

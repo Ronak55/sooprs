@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { mobile_siteConfig } from "./mobile-siteConfig";
 import { getDataFromAsyncStorage } from "./CommonFunction";
 
-
 export async function postData(data: any, urlPath: string) {
   return new Promise((resolve, reject) => {
     fetch(mobile_siteConfig.BASE_URL + mobile_siteConfig.INDEX + urlPath, {

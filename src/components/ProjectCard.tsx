@@ -12,7 +12,7 @@ import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment';
+
 
 const {width} = Dimensions.get('window');
 
@@ -51,6 +51,7 @@ const ProjectCard = ({
   customer_id: any;
   project_status: any;
 }) => {
+
   const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
 
   const toggleReadMore = () => {
@@ -106,6 +107,16 @@ const ProjectCard = ({
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month:'short' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+
+
   return (
     <TouchableOpacity onPress={handlePress}>
       <View style={styles.cardContainer}>
@@ -143,7 +154,7 @@ const ProjectCard = ({
             {createdAt && (
               <View style={styles.dateContainer}>
                 <Text style={styles.dateText}>
-                 {createdAt}
+                 {formatDate(createdAt)}
                 </Text>
               </View>
             )}

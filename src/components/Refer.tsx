@@ -25,6 +25,8 @@ const Refer = ({navigation, route}: {navigation: any; route: any}) => {
       text2: 'Referral code copied successfully!',
       position: 'top',
       visibilityTime: 2000,
+      text1Style: {fontSize: 16, fontWeight: '600'},
+      text2Style: {fontSize: 14, color: '#666'},
     });
   };
 
@@ -42,6 +44,8 @@ const Refer = ({navigation, route}: {navigation: any; route: any}) => {
         text2: 'Please try again.',
         position: 'top',
         visibilityTime: 2000,
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
       });
     }
   };

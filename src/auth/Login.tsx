@@ -36,7 +36,6 @@ import {
 } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FSize from '../assets/commonCSS/FSize';
-import {useDispatch} from 'react-redux';
 import {login} from '../redux/slices/authSlice';
 
 const Login = ({navigation, route}: {navigation: any; route: any}) => {
@@ -49,8 +48,7 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const [loading, isLoading] = useState(false);
-  const [googleLoading, setgoogleLoading] = useState(false);
-  const dispatch = useDispatch();
+  const [googleLoading, setgoogleLoading] = useState(false)
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -81,6 +79,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
     setgoogleLoading(true);
 
     try {
+      
+      await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       const formData = new FormData();
@@ -146,6 +146,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
                 text1: 'Login Successful',
                 text2: 'You have loggedin successfully!',
                 position: 'top',
+                text1Style: { fontSize: 16, fontWeight: '600' },
+                text2Style: { fontSize: 14, color: '#666' },
               });
 
               setgoogleLoading(false);
@@ -167,9 +169,10 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
             console.log('response token:::::::::::', res);
             Toast.show({
               type: 'error',
-              text1: 'Something went wrong',
               text2: res.msg || 'Google Signin failed. Please try again.',
               position: 'top',
+              text1Style: { fontSize: 16, fontWeight: '600' },
+              text2Style: { fontSize: 14, color: '#666' },
             });
             setgoogleLoading(false);
           }
@@ -178,16 +181,20 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
       console.log('Sign-In Error:', error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Sign-In Cancelled', 'User cancelled the login flow');
+        setgoogleLoading(false);
       } else if (error.code === statusCodes.IN_PROGRESS) {
         Alert.alert('Sign-In In Progress', 'Operation is already in progress');
+        setgoogleLoading(false);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         Alert.alert(
           'Play Services Not Available',
           'Play Services are not available or outdated',
         );
+        setgoogleLoading(false);
       } else {
         console.log('error google:::::::::', error);
         Alert.alert('Sign-In Error', 'An error occurred during sign-in');
+        setgoogleLoading(false);
       }
       setgoogleLoading(false);
     }
@@ -237,14 +244,17 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
             Toast.show({
               type: 'error',
               text1: 'Invalid Credentials',
-              text2: 'Please login using your registered id',
+              text2: 'Please login using your registered ID',
               position: 'top',
+              text1Style: { fontSize: 16, fontWeight: '600', color: '#d9534f' }, // Elegant error title
+              text2Style: { fontSize: 14, color: '#999' }, // Softer error details
             });
+            
           } else {
              
             storeDataToAsyncStorage(mobile_siteConfig.IS_LOGIN, 'TRUE');
             storeDataToAsyncStorage(mobile_siteConfig.TOKEN, response?.token);
-            storeDataToAsyncStorage(mobile_siteConfig.UID, response?.user_id);
+            storeDataToAsyncStorage(mobile_siteConfig.UID, JSON.parse(response?.user_id));
             storeDataToAsyncStorage(mobile_siteConfig.EMAIL, email);
             storeDataToAsyncStorage(mobile_siteConfig.NAME, response.name);
             storeDataToAsyncStorage(mobile_siteConfig.SLUG, response?.slug);
@@ -288,6 +298,8 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
             text1: 'Incorrect Password',
             text2: response.msg || 'Login failed. Please try again.',
             position: 'top',
+            text1Style: { fontSize: 16, fontWeight: '600' },
+            text2Style: { fontSize: 14, color: '#666' },
           });
 
           isLoading(false);
@@ -300,8 +312,9 @@ const Login = ({navigation, route}: {navigation: any; route: any}) => {
           text1: 'Error',
           text2: 'Something went wrong. Please try again.',
           position: 'top',
+          text1Style: { fontSize: 16, fontWeight: '600' },
+          text2Style: { fontSize: 14, color: '#666' },
         });
-
         isLoading(false);
       });
   };

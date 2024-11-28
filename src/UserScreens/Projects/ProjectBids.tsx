@@ -15,7 +15,7 @@ import {useIsFocused} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
+const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
   // const navigation = useNavigation();
   const {id} = route.params;
   const [bids, setBids] = useState([]);
@@ -27,10 +27,7 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
 
   const [bidId, setbidId] = useState(null);
 
-
-
-  const getBids = async() => {
-
+  const getBids = async () => {
     let lead_id = await AsyncStorage.getItem('uid');
     // If lead_id has extra quotes, remove them
     if (lead_id) {
@@ -39,10 +36,9 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
 
     setuserId(lead_id);
     setleadId(id);
-  console.log('..............', id);
+    console.log('..............', id);
     const formdata = new FormData();
     formdata.append('lead_id', id);
-    
 
     const requestOptions = {
       method: 'POST',
@@ -59,8 +55,7 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
       .then(response => response.json())
       .then(res => {
         if (res.status === 200) {
-
-          console.log('bids details:::::::', res.msg)
+          console.log('bids details:::::::', res.msg);
           setBids(res.msg); // Set the bids from API response
         }
       })
@@ -95,6 +90,8 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
             text1: 'Bid rewarded',
             text2: 'You have successfully rewarded the bid!',
             position: 'top',
+            text1Style: {fontSize: 16, fontWeight: '600'},
+            text2Style: {fontSize: 14, color: '#666'},
           });
         }
       })
@@ -102,15 +99,14 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
         console.error('Error fetching bids:', error);
       });
   };
-  
-  useEffect(() => {
 
-    console.log('id project::::::::', route.params)
+  useEffect(() => {
+    console.log('id project::::::::', route.params);
     getBids();
   }, [id]);
 
   // Render each bid as a card
-  const renderBidCard = ({ item }) => {
+  const renderBidCard = ({item}) => {
     const isRewarded = rewardedBids.includes(item.id); // Check if this bid is rewarded
     return (
       <View style={styles.cardContainer}>
@@ -121,7 +117,17 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
         <Text style={styles.descriptionText}>{item.cutDesc}</Text>
         <Text style={styles.dateText}>{item.createdDate}</Text>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => {navigation.navigate('IndividualChat', {name:item.professional_name, userId: userId, leadId:leadId, bidId:item.id, recieverId:item.prof_id, id:id})}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('IndividualChat', {
+                name: item.professional_name,
+                userId: userId,
+                leadId: leadId,
+                bidId: item.id,
+                recieverId: item.prof_id,
+                id: id,
+              });
+            }}>
             <Image source={Images.chatIcon} style={styles.icon} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -135,7 +141,8 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
             disabled={isRewarded} // Disable the button if it's already rewarded
           >
             <Text style={styles.rewardText}>
-              {isRewarded ? 'Rewarded' : 'Reward'} {/* Change text based on state */}
+              {isRewarded ? 'Rewarded' : 'Reward'}{' '}
+              {/* Change text based on state */}
             </Text>
           </TouchableOpacity>
         </View>
@@ -146,7 +153,7 @@ const ProjectBids = ({navigation, route}: {navigation:any, route: any}) => {
   return (
     <View style={styles.section}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Projects')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"
@@ -188,7 +195,7 @@ const styles = StyleSheet.create({
   backArrow: {
     width: wp(8),
     height: hp(8),
-    marginRight:wp(1)
+    marginRight: wp(1),
   },
   headerTitle: {
     color: Colors.black,

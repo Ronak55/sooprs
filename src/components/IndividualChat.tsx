@@ -217,7 +217,7 @@ const IndividualChat = ({navigation, route}) => {
     >
       {/* Header Section */}
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={() => navigation.navigate('Projects')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={Images.backArrow}
             resizeMode="contain"
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: wp(7),
     gap: wp(1),
     marginHorizontal: wp(5),
-    marginVertical:hp(1),
+    marginVertical:hp(2),
     backgroundColor: Colors.white,
     // justifyContent:'center',
     // alignItems:'center',

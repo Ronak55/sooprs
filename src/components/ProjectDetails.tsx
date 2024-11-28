@@ -155,6 +155,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             text2: 'Contact number is visible now', // Secondary message
             position: 'top', // Position of the toast
             visibilityTime: 3000, // Duration for which the toast will be visible
+            text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
           });
           setbtnVisible(false); // Hide the button after successful fetch
         } else{
@@ -164,6 +166,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             text1: result.msg,
             position: 'top', // Position of the toast
             visibilityTime: 3000, // Duration for which the toast will be visible
+            text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
           });
         }
       } catch (error) {
@@ -172,6 +176,8 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
           text1: 'Network issue',
           position: 'top', // Position of the toast
           visibilityTime: 3000, // Duration for which the toast will be visible
+          text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
         });
         console.error('Error fetching contact details:', error);
       } finally {
@@ -235,13 +241,15 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         text2: 'Please place your bid first', // Secondary message
         position: 'top', // Position of the toast
         visibilityTime: 3000, // Duration for which the toast will be visible
+        text1Style: { fontSize: 16, fontWeight: '600' },
+  text2Style: { fontSize: 14, color: '#666' },
       });
     } else {
       setContactModalVisible(true); // Show the modal if the button is not disabled
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:any) => {
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'long' });
@@ -347,7 +355,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
             </View>
             <View style={styles.posted}>
               <Text style={styles.postedText}>Budget:</Text>
-              <Text style={styles.postedDate}> ${budget}</Text>
+              <Text style={styles.postedDate}> {budget}</Text>
             </View>
           </View>
           <View style={styles.contactSection}>

@@ -5,6 +5,7 @@ import ProjectCard from '../../components/ProjectCard';
 import {wp} from '../../assets/commonCSS/GlobalCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useIsFocused} from '@react-navigation/native';
+import { mobile_siteConfig } from '../../services/mobile-siteConfig';
 
 const Projects = ({navigation}: {navigation: any}) => {
   const [projectDetails, setProjectDetails] = useState<any[]>([]);
@@ -14,18 +15,20 @@ const Projects = ({navigation}: {navigation: any}) => {
 
   const getProjects = async () => {
     try {
-      const uid = await AsyncStorage.getItem('uid');
+      const uid = await AsyncStorage.getItem(mobile_siteConfig.UID);
       if (!uid) {
         console.error('UID not found');
         setLoading(false);
         return;
       }
 
+      console.log('uid of the user::::::::', uid);
       const formdata = new FormData();
       formdata.append('variable', uid);
       formdata.append('offset', 0);
       formdata.append('limit', 10);
 
+      console.log('formdata project client::::::::::', formdata)
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/get_enquiries_ajax',
         {method: 'POST', body: formdata}
@@ -35,7 +38,7 @@ const Projects = ({navigation}: {navigation: any}) => {
       console.log('Response Data:', responseData);
 
       if (responseData.status === 200) {
-        setProjectDetails(responseData.msg);
+        setProjectDetails((prev)=>[...prev, ...responseData.msg]);
       } else {
         console.warn('No projects found');
         setProjectDetails([]); // Ensure empty array if no projects are found
@@ -99,7 +102,6 @@ const Projects = ({navigation}: {navigation: any}) => {
       />
     );
   };
-
   return <View style={styles.projectsList}>{renderContent()}</View>;
 };
 

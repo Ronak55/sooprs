@@ -27,6 +27,7 @@ const AllProjects = ({
   newLoading: any;
   loadMoreProjects: () => void;
 }) => {
+
   const renderItem = ({item, index}: {item: any; index: any}) => (
 
     <ProjectCard

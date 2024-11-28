@@ -3,18 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { wp, hp } from '../../assets/commonCSS/GlobalCSS'
 import Colors from '../../assets/commonCSS/Colors'
 import FSize from '../../assets/commonCSS/FSize'
-import Header from '../../components/Header'
-import Images from '../../assets/image'
-import SearchBar from '../../components/SearchBar'
-import Filter from '../../components/Filter'
-import IntroCard from '../../components/IntroCard'
 import AllProjects from '../../components/AllProjects'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import { mobile_siteConfig } from '../../services/mobile-siteConfig'
 import MovingBanner from '../../components/MovingBanner'
-import { useSelector } from 'react-redux'
-import { selectProfilePic, selectUserName } from '../../redux/selectors'
+import Header from '../../components/Header'
 
 const {width} = Dimensions.get('window');
 
@@ -85,8 +79,8 @@ const Home = ({ navigation }: { navigation: any }) => {
               ),
           );
           setProjectDetail((prevProjects) => [
-            ...prevProjects,
             ...newProjects,
+            ...prevProjects,
           ]);
         }
       } else if (responseData.status === 400) {

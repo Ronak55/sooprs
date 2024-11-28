@@ -1,9 +1,12 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Images from '../assets/image';
 import {hp, wp} from '../assets/commonCSS/GlobalCSS';
 import Colors from '../assets/commonCSS/Colors';
 import FSize from '../assets/commonCSS/FSize';
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
 const Header = ({
   navigation,
@@ -18,6 +21,37 @@ const Header = ({
   btnName: String;
   isClient: any;
 }) => {
+
+  const [notifications, setNotifications] = useState([]);
+  const isFocused = useIsFocused();
+  const [notifCount, setNotifCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
+      let new_token = JSON.parse(token);
+
+      try {
+        const response = await fetch('https://sooprs.com/api2/public/index.php/get-notifications', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${new_token}`,
+          },
+        });
+        const res = await response.json();
+        console.log('notifications data:::::::::::', res.data);
+
+        if (res.status === 200) {
+          setNotifications(res.data);
+          setNotifCount(res.data.length)
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
+  }, [isFocused]);
+  
   return (
     <View style={styles.header}>
       <TouchableOpacity
@@ -28,8 +62,13 @@ const Header = ({
       </TouchableOpacity>
       <Text style={styles.greetText}>Hello, {name.split(' ')[0]}</Text>
       <View style={styles.rightContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Notifications', {notifications})}>
           <Image source={Images.bellIcon} resizeMode="contain" style={styles.bellIcon} />
+          {notifCount > 0 && (
+            <View style={styles.notifBadge}>
+              <Text style={styles.notifCountText}>{notifCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
         {btnName && (
           <TouchableOpacity
@@ -100,5 +139,22 @@ const styles = StyleSheet.create({
   bellIcon: {
     width: wp(4),
     height: hp(4),
+  },
+
+  notifBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -10,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notifCountText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });

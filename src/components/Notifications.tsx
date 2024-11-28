@@ -8,34 +8,41 @@ import Images from '../assets/image';
 import { useIsFocused } from '@react-navigation/native';
 import { mobile_siteConfig } from '../services/mobile-siteConfig';
 
-const Notifications = ({ navigation }) => {
+const Notifications = ({ navigation, route } : {navigation:any, route:any}) => {
   const [notifications, setNotifications] = useState([]);
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
-      let new_token = JSON.parse(token);
+  // useEffect(() => {
+  //   const fetchNotifications = async () => {
+  //     let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
+  //     let new_token = JSON.parse(token);
 
-      try {
-        const response = await fetch('https://sooprs.com/api2/public/index.php/get-notifications', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${new_token}`,
-          },
-        });
-        const res = await response.json();
-        console.log('notifications data:::::::::::', res.data);
+  //     try {
+  //       const response = await fetch('https://sooprs.com/api2/public/index.php/get-notifications', {
+  //         method: 'GET',
+  //         headers: {
+  //           Authorization: `Bearer ${new_token}`,
+  //         },
+  //       });
+  //       const res = await response.json();
+  //       console.log('notifications data:::::::::::', res.data);
 
-        if (res.status === 200) {
-          setNotifications(res.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchNotifications();
-  }, [isFocused]);
+  //       if (res.status === 200) {
+  //         setNotifications(res.data);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchNotifications();
+  // }, [isFocused]);
+
+  useEffect(()=>{
+
+    console.log('route notifications;::::::', route?.params?.notifications);
+
+    setNotifications(route?.params?.notifications);
+  }, [route?.params])
 
   const handleNotifs = (id, type) => {
     const numericType = Number(type); 
@@ -45,7 +52,7 @@ const Notifications = ({ navigation }) => {
         navigation.navigate('ProjectBids', {id});
         break;
       case 2:
-        navigation.navigate('AssignedProjects')
+        navigation.navigate('Assigned Projects')
       default:
         return;
     }

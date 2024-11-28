@@ -48,9 +48,8 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   const [items, setItems] = useState([]);
   const [minBudgetAmount, setminBudgetAmount] = useState('');
   const [maxBudgetAmount, setmaxBudgetAmount] = useState('');
-  let minBudgetSelect=0;
-  let maxBudgetSelect=0;
-
+  let minBudgetSelect = 0;
+  let maxBudgetSelect = 0;
 
   const postProgress = [
     {
@@ -125,7 +124,6 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
   };
 
   const handleProjectDesc = async () => {
-
     setLoading(true);
     // Determine min and max budget based on selectedBudget
     if (selectedBudget) {
@@ -189,13 +187,12 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       setprojectDescription(projectDescription);
     } catch (error) {
       console.error('Error posting project description:', error);
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
 
   const handleSaveProject = async () => {
-
     setLoading(true);
     try {
       // Get email from AsyncStorage
@@ -231,10 +228,23 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       console.log('Response Data::::', responseData);
 
       if (response.status === 200) {
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: responseData.msg || 'Project posted successfully!',
+          text1Style: {fontSize: 16, fontWeight: '600'},
+          text2Style: {fontSize: 14, color: '#666'},
+        });
         console.log('Project posted successfully!');
         return;
-
       } else {
+        Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: responseData.msg || 'Failed to post project!',
+          text1Style: {fontSize: 16, fontWeight: '600'},
+          text2Style: {fontSize: 14, color: '#666'},
+        });
         console.error(
           'Failed to post project. Status:',
           response.status,
@@ -244,20 +254,28 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       }
     } catch (error) {
       // Handle any other errors (e.g., network issues or form data errors)
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Something went wrong. Please try again!',
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
+      });
       console.error('An error occurred in handleSaveProject:', error.message);
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
 
   const handleNextPress = async () => {
-
     // Check if category section is completed
     if (isCategory && (!category || !serviceName || !requirements)) {
       Toast.show({
         type: 'error',
         position: 'top',
         text1: 'Please complete the category details.',
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
       });
       return;
     }
@@ -272,6 +290,8 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
           type: 'error',
           position: 'top',
           text1: 'Please mention your budget.',
+          text1Style: {fontSize: 16, fontWeight: '600'},
+          text2Style: {fontSize: 14, color: '#666'},
         });
         return;
       }
@@ -282,6 +302,8 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         type: 'error',
         position: 'top',
         text1: 'Please complete the project details.',
+        text1Style: {fontSize: 16, fontWeight: '600'},
+        text2Style: {fontSize: 14, color: '#666'},
       });
       return;
     }
@@ -530,12 +552,9 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         <View style={styles.nextbtn}>
           <ButtonNew
             imgSource={undefined}
-            btntext={ loading ? (
-              <ActivityIndicator color={Colors.white} />
-            ) : (
-              'Next'
-            )
-}
+            btntext={
+              loading ? <ActivityIndicator color={Colors.white} /> : 'Next'
+            }
             bgColor={Colors.sooprsblue}
             textColor={Colors.white}
             onPress={handleNextPress}

@@ -61,7 +61,7 @@ const Professionals = ({navigation}: {navigation: any}) => {
           <Text style={[styles.homeInfo, styles.profText]}>Connect</Text>
           <Text style={styles.homeInfo}> with</Text>
           <Text style={[styles.homeInfo, styles.profText]}> Industry</Text>
-          <Text style={[styles.homeInfo, styles.profText]}>Professionals</Text>
+          <Text style={[styles.homeInfo, styles.profText]}> Professionals</Text>
         </View>
 
         <View style={styles.searchFilter}>
@@ -104,12 +104,16 @@ const styles = StyleSheet.create({
   },
 
   textAlign: {
+    // justifyContent:'center',
+    // alignItems:'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    // width:wp(90)
   },
 
   profText: {
     color: Colors.sooprsblue,
+    fontSize:FSize.fs19
   },
 
   searchFilter: {

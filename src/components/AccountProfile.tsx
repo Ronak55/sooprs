@@ -18,6 +18,7 @@ import {mobile_siteConfig} from '../services/mobile-siteConfig';
 import ButtonNew from './ButtonNew';
 import {getDataWithToken} from '../services/mobile-api';
 import BankDetails from './BankDetails';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const AccountProfile = ({
   navigation,
@@ -48,7 +49,7 @@ const AccountProfile = ({
   });
 
   const [servicesList, setServices] = useState([]);
-  const [slug, setSlug] = useState("");
+  const [slug, setSlug] = useState('');
   const [resume, setResume] = useState('');
   const [experience, setExperience] = useState({});
   const [skillsList, setSkills] = useState('');
@@ -97,12 +98,11 @@ const AccountProfile = ({
       }
     };
 
-    const getSlug = async()=>{
-
+    const getSlug = async () => {
       const slug = await AsyncStorage.getItem(mobile_siteConfig.SLUG);
       const parsedSlug = JSON.parse(slug);
       setSlug(parsedSlug);
-    }
+    };
 
     if (isFocused) {
       fetchUserData();
@@ -111,27 +111,46 @@ const AccountProfile = ({
   }, [isFocused]);
 
   const confirmLogout = async () => {
-    await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
-    await AsyncStorage.removeItem(mobile_siteConfig.IS_BUYER);
-    await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'FALSE');
-    let reset = CommonActions.reset({
-      index: 0,
-      routes: [{name: 'Authentication'}],
-    });
-    navigation.dispatch(reset);
+    try {
+      // Remove token and buyer status from AsyncStorage
+      await AsyncStorage.removeItem(mobile_siteConfig.TOKEN);
+      await AsyncStorage.removeItem(mobile_siteConfig.IS_BUYER);
+      // Set login status to FALSE
+      await AsyncStorage.setItem(mobile_siteConfig.IS_LOGIN, 'FALSE');
+
+      // Reset navigation stack to Authentication screen
+      const reset = CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Authentication'}],
+      });
+      navigation.dispatch(reset);
+
+      console.log('User successfully logged out.');
+    } catch (error) {
+      console.error('Logout Error: ', error);
+      Alert.alert(
+        'Error',
+        'An error occurred while logging out. Please try again.',
+      );
+    }
   };
 
-  const handleLogout = async () => {
-    Alert.alert('Logout', 'Are you sure want to logout?', [
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
         text: 'No',
-        onPress: () => {},
+        onPress: () => console.log('Logout cancelled'),
         style: 'cancel',
       },
       {
         text: 'Yes',
-        onPress: () => confirmLogout(),
-        style: 'cancel',
+        onPress: async () => {
+          try {
+            await confirmLogout();
+          } catch (error) {
+            console.error('Error confirming logout: ', error);
+          }
+        },
       },
     ]);
   };
@@ -202,33 +221,33 @@ const AccountProfile = ({
             </View>
           </TouchableOpacity>
         </View>
-        <View style={styles.commonSettings}>
-          <View style={styles.settings}>
-            <Image
-              style={styles.accountIcon}
-              resizeMode="cover"
-              source={Images.bankIcon}
-            />
-            <Text style={styles.accountText}>Bank Details</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('BankDetails', {
-                bankDetails: userData.bankDetails,
-              });
-            }}>
-            <View style={styles.details}>
-              <Text style={styles.detailsText}>Manage Bank details</Text>
-              <Image
-                style={styles.rightArrowIcon}
-                resizeMode="cover"
-                source={Images.rigthArrowIcon}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
         {!isClient && (
           <>
+            <View style={styles.commonSettings}>
+              <View style={styles.settings}>
+                <Image
+                  style={styles.accountIcon}
+                  resizeMode="cover"
+                  source={Images.bankIcon}
+                />
+                <Text style={styles.accountText}>Bank Details</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('BankDetails', {
+                    bankDetails: userData.bankDetails,
+                  });
+                }}>
+                <View style={styles.details}>
+                  <Text style={styles.detailsText}>Manage Bank details</Text>
+                  <Image
+                    style={styles.rightArrowIcon}
+                    resizeMode="cover"
+                    source={Images.rigthArrowIcon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
             <View style={styles.commonSettings}>
               <View style={styles.settings}>
                 <Image
