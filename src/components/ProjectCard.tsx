@@ -12,7 +12,7 @@ import {wp, hp} from '../assets/commonCSS/GlobalCSS';
 import FSize from '../assets/commonCSS/FSize';
 import Images from '../assets/image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { decode } from 'html-entities';
 
 const {width} = Dimensions.get('window');
 
@@ -47,11 +47,10 @@ const ProjectCard = ({
   isProfessional: any;
   bidId: any;
   Customer_name: any;
-  Customer_image:any,
+  Customer_image: any;
   customer_id: any;
   project_status: any;
 }) => {
-
   const [isExpanded, setIsExpanded] = useState(false); // State to track if card is expanded
 
   const toggleReadMore = () => {
@@ -107,15 +106,13 @@ const ProjectCard = ({
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     const day = date.getDate();
-    const month = date.toLocaleString('default', { month:'short' });
+    const month = date.toLocaleString('default', {month: 'short'});
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-
-
 
   return (
     <TouchableOpacity onPress={handlePress}>
@@ -123,7 +120,7 @@ const ProjectCard = ({
         <View style={styles.column}>
           {/* Header section showing project name and favorite icon */}
           <View style={styles.header}>
-            <Text style={styles.nameText}>{name}</Text>
+            <Text style={styles.nameText}>{decode(name)}</Text>
             {/* <TouchableOpacity onPress={() => {}}>
               <Image source={Images.favoriteIcon} style={styles.favoriteIcon} />
             </TouchableOpacity> */}
@@ -137,7 +134,7 @@ const ProjectCard = ({
 
             {/* Show limited or full description based on the isExpanded state */}
             <Text style={styles.descText}>
-              {isExpanded ? desc : getLimitedDescription(desc)}
+              {isExpanded ? decode(desc) : getLimitedDescription(decode(desc))}
             </Text>
 
             {/* Read More / Read Less Button */}
@@ -154,7 +151,7 @@ const ProjectCard = ({
             {createdAt && (
               <View style={styles.dateContainer}>
                 <Text style={styles.dateText}>
-                 {formatDate(createdAt)}
+                  {!isProfessional ? createdAt : formatDate(createdAt)}
                 </Text>
               </View>
             )}
@@ -179,7 +176,7 @@ const styles = StyleSheet.create({
     paddingVertical: hp(2),
     paddingHorizontal: wp(4),
     marginVertical: hp(0.5),
-    marginHorizontal:hp(0.3),
+    marginHorizontal: hp(0.3),
   },
   column: {
     flexDirection: 'column',
@@ -188,8 +185,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom:hp(1),
-    paddingVertical:hp(1),
+    marginBottom: hp(1),
+    paddingVertical: hp(1),
     paddingHorizontal: wp(2), // Adjust padding as needed
   },
   nameText: {

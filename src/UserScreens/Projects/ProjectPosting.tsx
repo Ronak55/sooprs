@@ -174,6 +174,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       }
 
       // Decode any HTML entities in the response
+    
       const decodedResponse = decode(responseText);
       console.log('Decoded AI data response:', decodedResponse);
 
@@ -196,7 +197,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
     setLoading(true);
     try {
       // Get email from AsyncStorage
-      const email = await AsyncStorage.getItem('email');
+      const email = await AsyncStorage.getItem(mobile_siteConfig.EMAIL);
       if (!email) {
         throw new Error('Email not found in AsyncStorage');
       }
@@ -227,11 +228,11 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
       const responseData = await response.json();
       console.log('Response Data::::', responseData);
 
-      if (response.status === 200) {
+      if (response.status == 200 || response.status == 202) {
         Toast.show({
           type: 'success',
           position: 'top',
-          text1: responseData.msg || 'Project posted successfully!',
+          text1: 'Project posted successfully!',
           text1Style: {fontSize: 16, fontWeight: '600'},
           text2Style: {fontSize: 14, color: '#666'},
         });

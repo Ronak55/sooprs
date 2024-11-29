@@ -62,6 +62,7 @@ const Projects = ({navigation}: {navigation: any}) => {
   }, []);
 
   const renderItem = ({item, index}: {item: any; index: any}) => (
+
     <ProjectCard
       navigation={navigation}
       name={item.project_title}

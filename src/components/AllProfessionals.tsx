@@ -26,7 +26,7 @@ const AllProfessionals = ({ navigation, selectedService, searched}: { navigation
     };
   
     try {
-      const response = await fetch('https://sooprs.com/api2/public/index.php/get_professionals_ajax', requestOptions);
+      const response = await fetch('https://sooprs.com/api2/public/index.php/filter_service_ajax', requestOptions);
       const res = await response.json();
   
       if (res.status === 200 && res.msg.length > 0) {
