@@ -100,7 +100,7 @@ const Home = ({ navigation }: { navigation: any }) => {
       const formdata = new FormData();
       formdata.append('offset', newOffset);
       formdata.append('limit', 10);
-
+      
       const response = await fetch(
         'https://sooprs.com/api2/public/index.php/get_all_leads',
         {

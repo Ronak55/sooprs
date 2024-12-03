@@ -226,9 +226,12 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
 
       // Check if the response is okay
       const responseData = await response.json();
-      console.log('Response Data::::', responseData);
+      console.log('Post Response Data::::', responseData);
 
-      if (response.status == 200 || response.status == 202) {
+      console.log('response status:::::::', responseData.status)
+      console.log('response msg:::::::', responseData.msg)
+
+      if (responseData.status == 200 || responseData.status == 202) {
         Toast.show({
           type: 'success',
           position: 'top',
@@ -248,7 +251,7 @@ const ProjectPosting = ({navigation}: {navigation: any}) => {
         });
         console.error(
           'Failed to post project. Status:',
-          response.status,
+          responseData.status,
           'Message:',
           responseData.msg,
         );

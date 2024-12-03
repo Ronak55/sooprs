@@ -17,7 +17,7 @@ import ClientBottomTab from './src/components/ClientBottomTab';
 import ProfessionalBottomTab from './src/components/ProfessionalBottomTab';
 import Toast from 'react-native-toast-message';
 import Splash from './src/Splash';
-import { requestUserPermission, NotificationListener, initializeApp } from './NotificationService';
+import { requestUserPermission, initializeApp } from './NotificationService';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,7 +55,6 @@ const App = () => {
   useEffect(() => {
     initializeApp();
     requestUserPermission();
-    NotificationListener();
   }, []);
 
   return (

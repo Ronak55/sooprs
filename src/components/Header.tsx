@@ -30,7 +30,7 @@ const Header = ({
     const fetchNotifications = async () => {
       let token = await AsyncStorage.getItem(mobile_siteConfig.TOKEN);
       let new_token = JSON.parse(token);
-
+  
       try {
         const response = await fetch('https://sooprs.com/api2/public/index.php/get-notifications', {
           method: 'GET',
@@ -40,17 +40,24 @@ const Header = ({
         });
         const res = await response.json();
         console.log('notifications data:::::::::::', res.data);
-
+  
         if (res.status === 200) {
-          setNotifications(res.data);
-          setNotifCount(res.data.length)
+          // Remove duplicate notifications
+          const uniqueNotifications = res.data.filter((notification, index, self) =>
+            index === self.findIndex((n) => n.msg === notification.msg)
+          );
+  
+          setNotifications(uniqueNotifications);
+          setNotifCount(uniqueNotifications.length);
         }
       } catch (error) {
         console.error(error);
       }
     };
+  
     fetchNotifications();
   }, [isFocused]);
+  
   
   return (
     <View style={styles.header}>

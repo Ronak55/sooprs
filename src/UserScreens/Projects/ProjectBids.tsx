@@ -107,14 +107,32 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
 
   // Render each bid as a card
   const renderBidCard = ({item}) => {
-    const isRewarded = rewardedBids.includes(item.id); // Check if this bid is rewarded
+    const [showFullDescription, setShowFullDescription] = useState(false); // Local state for toggling description
+  
+    const toggleDescription = () => {
+      setShowFullDescription(!showFullDescription);
+    };
+  
+    const truncatedDescription = item.cutDesc.length > 100
+      ? `${item.cutDesc.substring(0, 100)}...` // Limit description to 100 characters
+      : item.cutDesc;
+  
     return (
       <View style={styles.cardContainer}>
         <View style={styles.cardHeader}>
           <Text style={styles.proName}>{item.professional_name}</Text>
           <Text style={styles.amountText}>${item.amount}</Text>
         </View>
-        <Text style={styles.descriptionText}>{item.cutDesc}</Text>
+        <Text style={styles.descriptionText}>
+          {showFullDescription ? item.cutDesc : truncatedDescription}
+        </Text>
+        {item.cutDesc.length > 100 && (
+          <TouchableOpacity onPress={toggleDescription}>
+            <Text style={styles.toggleText}>
+              {showFullDescription ? 'Read Less' : 'Read More'}
+            </Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.dateText}>{item.createdDate}</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity
@@ -132,23 +150,25 @@ const ProjectBids = ({navigation, route}: {navigation: any; route: any}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              backgroundColor: isRewarded ? 'green' : Colors.sooprsblue, // Conditionally change color
+              backgroundColor: rewardedBids.includes(item.id)
+                ? 'green'
+                : Colors.sooprsblue, // Conditionally change color
               paddingVertical: hp(1),
               paddingHorizontal: wp(4),
               borderRadius: wp(2),
             }}
             onPress={() => handleReward(item.id)} // Pass the bid id
-            disabled={isRewarded} // Disable the button if it's already rewarded
+            disabled={rewardedBids.includes(item.id)} // Disable the button if it's already rewarded
           >
             <Text style={styles.rewardText}>
-              {isRewarded ? 'Rewarded' : 'Reward'}{' '}
-              {/* Change text based on state */}
+              {rewardedBids.includes(item.id) ? 'Rewarded' : 'Reward'}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
+  
 
   return (
     <View style={styles.section}>
@@ -263,4 +283,12 @@ const styles = StyleSheet.create({
     fontSize: FSize.fs16, // Medium size text
     color: Colors.gray, // Color for the text
   },
+
+  toggleText: {
+    color: Colors.primary, // Use your preferred color
+    fontSize: FSize.fs14, // Adjust font size as needed
+    fontWeight: 'bold',
+    marginTop: hp(0.5),
+  },
+  
 });

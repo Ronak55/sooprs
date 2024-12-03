@@ -38,7 +38,7 @@ const Projects = ({navigation}: {navigation: any}) => {
       console.log('Response Data:', responseData);
 
       if (responseData.status === 200) {
-        setProjectDetails((prev)=>[...prev, ...responseData.msg]);
+        setProjectDetails(responseData.msg);
       } else {
         console.warn('No projects found');
         setProjectDetails([]); // Ensure empty array if no projects are found

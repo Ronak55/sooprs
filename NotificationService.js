@@ -26,27 +26,6 @@ async function getFCMToken() {
   }
 }
 
-export const NotificationListener = () => {
-    // Handle foreground messages
-    // messaging().onMessage(async remoteMessage => {
-    //   console.log('Foreground message received:', remoteMessage);
-    // });
-  
-    // // Handle background messages
-    // messaging().setBackgroundMessageHandler(async remoteMessage => {
-    //   console.log('Background message received:', remoteMessage);
-    // });
-  
-    // // Handle messages when app is opened from quit state
-    // messaging()
-    //   .getInitialNotification()
-    //   .then(remoteMessage => {
-    //     if (remoteMessage) {
-    //       console.log('Quit state message:', remoteMessage);
-    //     }
-    //   });
-  };
-
 export const initializeApp = async () => {
     // Request notification permissions and create a notification channel
     const settings = await notifee.requestPermission();
@@ -65,19 +44,6 @@ export const initializeApp = async () => {
       name: 'default channel',
       importance: AndroidImportance.HIGH,
     });
-
-    // await notifee.displayNotification({
-    //   title: 'Voila !',
-    //   body:'Welcome to Sooprs 🎉',
-    //   android: {
-    //     channelId,
-    //     importance: AndroidImportance.HIGH,
-    //     // smallIcon: 'ic_stat_sooprslogo',
-    //     pressAction: {
-    //       id: 'default',
-    //     },
-    //   },
-    // });
 
     // Handle foreground notifications
     let lastNotificationId = null;
