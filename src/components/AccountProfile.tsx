@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Switch,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FSize from '../assets/commonCSS/FSize';
@@ -19,6 +20,7 @@ import ButtonNew from './ButtonNew';
 import {getDataWithToken} from '../services/mobile-api';
 import BankDetails from './BankDetails';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { storeDataToAsyncStorage } from '../services/CommonFunction';
 
 const AccountProfile = ({
   navigation,
@@ -54,6 +56,17 @@ const AccountProfile = ({
   const [experience, setExperience] = useState({});
   const [skillsList, setSkills] = useState('');
   const [academicDetails, setAcademicDetails] = useState({});
+
+  const [isBusinessOwner, setIsBusinessOwner] = useState(false);
+
+  const handleSwitchToggle = (value) => {
+    setIsBusinessOwner(value);
+    storeDataToAsyncStorage("businessOwner", value)
+    // Save the state if needed
+    console.log('Business Owner:', value);
+    // Example: Call API to save state
+    // saveBusinessOwnerState(userData.id, value);
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -170,6 +183,15 @@ const AccountProfile = ({
         <Text style={styles.profileName}>
           {userData?.name ? userData?.name : 'User'}
         </Text>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Business Owner:</Text>
+          <Switch
+            value={isBusinessOwner}
+            onValueChange={handleSwitchToggle}
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={isBusinessOwner ? '#f5dd4b' : '#f4f3f4'}
+          />
+        </View>
         {/* <Text style={styles.profileRole}>{role ? role : 'Role'}</Text> */}
       </View>
       <ScrollView contentContainerStyle={styles.profileSection}>
@@ -522,5 +544,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: FSize.fs14,
     fontWeight: 'bold',
+  },
+
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  switchLabel: {
+    marginRight: 10,
+    fontSize: 16,
   },
 });

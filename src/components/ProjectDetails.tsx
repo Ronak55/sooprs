@@ -21,6 +21,7 @@ import ButtonNew from './ButtonNew';
 import {mobile_siteConfig} from '../services/mobile-siteConfig';
 import CryptoJS from 'crypto-js';
 import Toast from 'react-native-toast-message';
+import { getDataFromAsyncStorage } from '../services/CommonFunction';
 
 const encryptionKey = 'Aniket@#@Sooprs#@#123';
 
@@ -51,6 +52,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
   const [mobile, setMobile] = useState('+91 92******33');
   const [btnvisible, setbtnVisible] = useState(true);
   const isFocused = useIsFocused();
+  const [business, setBusiness] = useState(false)
 
   const fetchBids = async () => {
     const formData = new FormData();
@@ -96,9 +98,19 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
     console.log('project status::::::::::::::', project_status);
   }, [isFocused, uid, isModalVisible]);
 
+  useEffect(()=>{
+
+    const isBusinessOwner = getDataFromAsyncStorage("businessOwner")
+
+    setBusiness(isBusinessOwner);
+
+  },[isFocused])
+
   useEffect(() => {
     console.log('button disabled ::::::::', isButtonDisabled);
   }, [isButtonDisabled]);
+
+
 
   const removeDuplicateBids = bids => {
     const bidMap = new Map(); // Use Map to ensure uniqueness by professional_id
@@ -295,22 +307,46 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
         </View>
         <View style={styles.rightPart}>
           {!isButtonDisabled ? (
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderColor: Colors.sooprsblue,
-                borderRadius: wp(5),
-                backgroundColor: isButtonDisabled
-                  ? Colors.gray
-                  : Colors.sooprsblue,
-                paddingVertical: hp(1.5),
-                paddingHorizontal: wp(6),
-              }}
-              disabled={isButtonDisabled}>
-              <Text style={styles.bidbtnText}>Bid</Text>
-            </TouchableOpacity>
+           <>
+           {business ? (
+             <TouchableOpacity
+               onPress={handleContactPress}
+               style={{
+                 justifyContent: 'center',
+                 alignItems: 'center',
+                 paddingVertical: hp(1.5),
+                 paddingHorizontal: wp(5),
+                 backgroundColor: isButtonDisabled ? '#72C250' : Colors.gray,
+                 borderRadius: wp(3),
+               }}>
+               <Text
+                 style={{
+                   color: isButtonDisabled ? Colors.black : Colors.white,
+                   fontSize: FSize.fs12,
+                   fontWeight: '700',
+                 }}>
+                 Get Contact
+               </Text>
+             </TouchableOpacity>
+           ) : (
+             <TouchableOpacity
+               onPress={() => setModalVisible(true)}
+               style={{
+                 justifyContent: 'center',
+                 alignItems: 'center',
+                 borderColor: Colors.sooprsblue,
+                 borderRadius: wp(5),
+                 backgroundColor: isButtonDisabled
+                   ? Colors.gray
+                   : Colors.sooprsblue,
+                 paddingVertical: hp(1.5),
+                 paddingHorizontal: wp(6),
+               }}
+               disabled={isButtonDisabled}>
+               <Text style={styles.bidbtnText}>Bid</Text>
+             </TouchableOpacity>
+           )}
+         </>       
           ) : (
             <Text
               style={{
@@ -363,7 +399,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
               <Image source={Images.phoneIcon} style={styles.contactIcon} />
               <Text style={styles.phoneText}>+91 92******33</Text>
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={handleContactPress}
               style={{
                 justifyContent: 'center',
@@ -381,7 +417,7 @@ const ProjectDetails = ({navigation, route}: {navigation: any; route: any}) => {
                 }}>
                 Get Contact
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {/* <TouchableOpacity
               onPress={() => setModalVisible(true)}
               style={{
